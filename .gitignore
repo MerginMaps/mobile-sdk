@@ -1,6 +1,5 @@
-android/build
+build-android/
 android/dist
-android/stage
 android/.packages
 android/.deps
 android/.optional-deps

@@ -28,17 +28,14 @@ fi
 
 # Paths
 ROOT_PATH="$(dirname $($PYTHON -c 'from __future__ import print_function; import os,sys;print(os.path.realpath(sys.argv[1]))' $0))"
-STAGE_PATH="${ROOT_PATH}/stage/$ARCH"
+ROOT_OUT_PATH="${ROOT_PATH}/../build-android"
+STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
 RECIPES_PATH="$ROOT_PATH/recipes"
-BUILD_PATH="$ROOT_PATH/build"
-LIBS_PATH="$ROOT_PATH/build/libs"
-JAVACLASS_PATH="$ROOT_PATH/build/java"
-PACKAGES_PATH="${PACKAGES_PATH:-$ROOT_PATH/.packages}"
+BUILD_PATH="${ROOT_OUT_PATH}/build"
+LIBS_PATH="${ROOT_OUT_PATH}/build/libs"
+PACKAGES_PATH="${PACKAGES_PATH:-$ROOT_OUT_PATH/.packages}"
 SRC_PATH="$ROOT_PATH/src"
-JNI_PATH="$SRC_PATH/jni"
-SITEPACKAGES_PATH="$BUILD_PATH/python-install/lib/python2.7/site-packages/"
-HOSTPYTHON="$BUILD_PATH/python-install/bin/python.host"
-CYTHON+=" -t"
+
 
 # Tools
 export LIBLINK_PATH="$BUILD_PATH/objects"
@@ -202,6 +199,7 @@ function push_arm() {
     ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
     ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$STAGE_PATH/lib"
     ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$QT_ANDROID/lib"
+    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-lz"
     export LDFLAGS="$LDFLAGS -Wl,-rpath=$STAGE_PATH/lib"
   fi
   export PATH="$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/bin/:$ANDROIDSDK/tools:$ANDROIDNDK:$QT_ANDROID/bin:$PATH"
@@ -519,8 +517,8 @@ function run_get_packages() {
 
   if [ ! -d "$BUILD_PATH/tmp" ]; then
     try mkdir $BUILD_PATH/tmp
-    $WGET $ROOT_PATH/.packages/config.sub "http://git.savannah.gnu.org/cgit/config.git/plain/config.sub"
-    $WGET $ROOT_PATH/.packages/config.guess "http://git.savannah.gnu.org/cgit/config.git/plain/config.guess"
+    $WGET $ROOT_OUT_PATH/.packages/config.sub "http://git.savannah.gnu.org/cgit/config.git/plain/config.sub"
+    $WGET $ROOT_OUT_PATH/.packages/config.guess "http://git.savannah.gnu.org/cgit/config.git/plain/config.guess"
   fi
 
   for module in $MODULES; do
@@ -732,7 +730,7 @@ function run() {
   check_build_deps
   for ARCH in ${ARCHES[@]}; do
     cd ${ROOT_PATH}
-    STAGE_PATH="${ROOT_PATH}/stage/$ARCH"
+    STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
     run_prepare
     run_source_modules
     run_get_packages
@@ -777,9 +775,6 @@ while getopts ":hCvlfxim:a:u:d:s" opt; do
       ;;
     u)
       MODULES_UPDATE="$OPTARG"
-      ;;
-    d)
-      DIST_PATH="$ROOT_PATH/dist/$OPTARG"
       ;;
     f)
       DO_CLEAN_BUILD=1

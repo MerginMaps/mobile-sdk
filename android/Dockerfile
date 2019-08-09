@@ -70,7 +70,7 @@ COPY extract-qt-installer.sh /tmp/qt/
 RUN curl -k -Lo /tmp/qt/installer.run "https://download.qt-project.org/official_releases/qt/$(echo ${QT_VERSION} | cut -d. -f 1-2)/${QT_VERSION}/qt-opensource-linux-x64-${QT_VERSION}.run" \
     && QT_CI_PACKAGES=\
 qt.qt5.$(echo "${QT_VERSION}" | tr -d .).android_arm64_v8a,\
-qt.qt5.$(echo "${QT_VERSION}" | tr -d .).android_armv7,\
+qt.qt5.$(echo "${QT_VERSION}" | tr -d .).android_armv7\
     /tmp/qt/extract-qt-installer.sh /tmp/qt/installer.run "${QT_PATH}" \
     && find "${QT_PATH}" -mindepth 1 -maxdepth 1 ! -name "${QT_VERSION}" -exec echo 'Cleaning Qt SDK: {}' \; -exec rm -r '{}' \; \
     && rm -rf /tmp/qt
@@ -101,8 +101,9 @@ RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 ####################################################################
 # now OSGeo libs
 
-COPY config_docker.conf /usr/src/config.conf
-COPY tools /usr/src/tools
-COPY recipes /usr/src/recipes
-COPY distribute.sh /usr/src/distribute.sh
-RUN /usr/src/distribute.sh -m qgis && mv /usr/src/stage /home/input-sdk && rm -rf /usr/src
+COPY config_docker.conf /usr/src/android/config.conf
+COPY tools /usr/src/android/tools
+COPY recipes /usr/src/android/recipes
+COPY distribute.sh /usr/src/android/distribute.sh
+RUN /usr/src/android/distribute.sh -m gdal
+RUN /usr/src/android/distribute.sh -m qgis && mv /usr/src/build-android/stage /home/input-sdk && rm -rf /usr/src
