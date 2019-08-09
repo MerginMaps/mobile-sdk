@@ -1,0 +1,34 @@
+### Currently suggested versions ####
+export ANDROIDNDKVER=r19
+export ANDROIDAPI=21 # min 15 max 21
+
+#### PATHS ####
+export ANDROIDSDK="/path/to/android-sdk"
+export ANDROIDNDK="/path/to/android-ndk"
+export QT_ANDROID_BASE="/path/to/qt/sdk/Qt/5.11.2"
+
+# For example:
+# export ANDROIDSDK="/opt/android/sdk"
+# export ANDROIDNDK="/opt/android-ndk-r19b/"
+# export QT_ANDROID_BASE="/opt/Qt/5.11.2"
+
+# QGIS needs a bison 3. On MacOS you may need
+# to install one with e.g. homebrew and add
+# it to the path
+# export PATH="/usr/local/opt/bison/bin:$PATH"
+
+### LOCAL SOURCES ###
+# To use local sourcecode instead of the configured URL:
+# export O4A_[module]_DIR=/usr/src/mymodulesource like this
+# export O4A_qgis_DIR="/path/to/repository/qgis/QGIS"
+
+### BUILD ###
+# Available architectures:
+#  - armeabi-v7a
+#  - arm64-v8a
+export ARCHES=("armeabi-v7a")
+#export ARCHES=("arm64-v8a")
+
+# By default all cores will be used to build
+# Use this option to override
+# export CORES=4

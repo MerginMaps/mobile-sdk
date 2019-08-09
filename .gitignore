@@ -1,0 +1,9 @@
+android/build
+android/dist
+android/stage
+android/.packages
+android/.deps
+android/.optional-deps
+android/config.conf
+.idea
+.DS_Store
