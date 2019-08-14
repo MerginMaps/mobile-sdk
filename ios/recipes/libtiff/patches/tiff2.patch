@@ -1,0 +1,26 @@
+--- a/libtiff/CMakeLists.txt	2015-09-01 04:40:53.000000000 +0200
++++ b/libtiff/CMakeLists.txt	2018-10-15 13:48:25.000000000 +0200
+@@ -114,9 +114,9 @@
+                     ${CMAKE_CURRENT_BINARY_DIR}
+                     ${TIFF_INCLUDES})
+
+-add_library(tiff ${tiff_SOURCES} ${tiff_HEADERS} ${nodist_tiff_HEADERS}
++add_library(tiff STATIC ${tiff_SOURCES} ${tiff_HEADERS} ${nodist_tiff_HEADERS}
+             ${tiff_port_SOURCES} libtiff.def)
+-target_link_libraries(tiff ${TIFF_LIBRARY_DEPS})
++
+ set_target_properties(tiff PROPERTIES SOVERSION ${SO_COMPATVERSION})
+ if(NOT CYGWIN)
+     # This property causes shared libraries on Linux to have the full version
+@@ -139,9 +139,8 @@
+         DESTINATION "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+
+ if(cxx)
+-  add_library(tiffxx ${tiffxx_SOURCES} ${tiffxx_HEADERS})
+-  target_link_libraries(tiffxx tiff)
+-  set_target_properties(tiffxx PROPERTIES SOVERSION ${SO_COMPATVERSION})
++  add_library(tiffxx STATIC ${tiffxx_SOURCES} ${tiffxx_HEADERS})
++
+   if(NOT CYGWIN)
+     # This property causes shared libraries on Linux to have the full version
+     # encoded into their final filename.  We disable this on Cygwin because

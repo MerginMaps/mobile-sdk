@@ -4,5 +4,13 @@ android/.packages
 android/.deps
 android/.optional-deps
 android/config.conf
+
+build-ios/
+ios/dist
+ios/.packages
+ios/.deps
+ios/.optional-deps
+ios/config.conf
+
 .idea
 .DS_Store

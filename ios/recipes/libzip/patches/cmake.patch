@@ -1,0 +1,17 @@
+--- a/CMakeLists.tx
++++ b/CMakeLists.txt
+@@ -234,10 +234,10 @@
+
+ # Targets
+ ADD_SUBDIRECTORY(lib)
+-ADD_SUBDIRECTORY(man)
++# ADD_SUBDIRECTORY(man)
+-ADD_SUBDIRECTORY(src)
+-ADD_SUBDIRECTORY(regress)
+-ADD_SUBDIRECTORY(examples)
++# ADD_SUBDIRECTORY(src)
++# ADD_SUBDIRECTORY(regress)
++# ADD_SUBDIRECTORY(examples)
+
+ # pkgconfig file
+ SET(prefix ${CMAKE_INSTALL_PREFIX})

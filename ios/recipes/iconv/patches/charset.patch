@@ -1,0 +1,13 @@
+--- a/libcharset/configure	2018-10-15 12:54:41.000000000 +0200
++++ b/libiconv-1.14/libcharset/configure	2018-10-15 12:55:06.000000000 +0200
+@@ -9847,8 +9847,8 @@
+   version_type=darwin
+   need_lib_prefix=no
+   need_version=no
+-  library_names_spec='${libname}${release}${major}$shared_ext ${libname}$shared_ext'
+-  soname_spec='${libname}${release}${major}$shared_ext'
++  library_names_spec='${libname}$shared_ext'
++  soname_spec='${libname}$shared_ext'
+   shlibpath_overrides_runpath=yes
+   shlibpath_var=DYLD_LIBRARY_PATH
+   shrext_cmds='`test .$module = .yes && echo .so || echo .dylib`'

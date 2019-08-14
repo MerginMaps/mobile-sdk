@@ -1,0 +1,20 @@
+--- a/Makefile.in	2015-09-07 15:56:46.000000000 +0200
++++ b/Makefile.in	2018-10-18 13:27:01.000000000 +0200
+@@ -189,7 +189,7 @@
+ ETAGS = etags
+ CTAGS = ctags
+ CSCOPE = cscope
+-DIST_SUBDIRS = src test examples
++DIST_SUBDIRS = src
+ am__DIST_COMMON = $(srcdir)/Doxyfile.in $(srcdir)/Makefile.in \
+ 	$(srcdir)/config.h.in $(srcdir)/spatialite.pc.in AUTHORS \
+ 	COPYING INSTALL README compile config.guess config.sub depcomp \
+@@ -372,7 +372,7 @@
+ 	spatialite-sql-latest.html config-msvc.h
+ 
+ @ENABLE_EXAMPLES_TRUE@EXAMPLES = examples
+-SUBDIRS = src test $(EXAMPLES)
++SUBDIRS = src
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = spatialite.pc
+ MOSTLYCLEANFILES = libspatialite_cov.info

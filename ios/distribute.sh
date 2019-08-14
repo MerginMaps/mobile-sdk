@@ -1,49 +1,38 @@
 #!/bin/bash
 
-# By default use all available cores, override in config.conf if desired
-if [ -f /proc/cpuinfo ]; then
-  CORES=$(cat /proc/cpuinfo | grep processor | wc -l)
+# Well, build tools are available only on MacOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  echo "Building iOSGeo for iOS"
 else
-  # on MacOS there is no such file
-  if hash sysctl 2>/dev/null; then
-     CORES=$(sysctl -n hw.ncpu)
-  else
-     echo "Unable to determine number of cpu cores, using single core. Override this in config.conf"
-     CORES=1
-  fi
+  echo "Unable to build iOS binaries on $OSTYPE"
+  exit 1;
 fi
 
+XCODE_DEVELOPER="$(xcode-select -print-path)"
+CORES=$(sysctl -n hw.ncpu)
+
 # Load configuration
-source `dirname $0`/config.conf
-
-# Modules
-MODULES=
-
-# Resolve Python path
-PYTHON="$(which python3)"
-if [ "X$PYTHON" == "X" ]; then
-    error "Unable to find python3"
-    exit 1
+if [ "X$IOS_CONFIG" == "X" ]; then
+    source `dirname $0`/config.conf
+else
+    source `dirname $0`/$IOS_CONFIG
 fi
 
 # Paths
-ROOT_PATH="$(dirname $($PYTHON -c 'from __future__ import print_function; import os,sys;print(os.path.realpath(sys.argv[1]))' $0))"
-ROOT_OUT_PATH="${ROOT_PATH}/../build-android"
+ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_OUT_PATH="${ROOT_PATH}/../build-ios"
 STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
 RECIPES_PATH="$ROOT_PATH/recipes"
 BUILD_PATH="${ROOT_OUT_PATH}/build"
 LIBS_PATH="${ROOT_OUT_PATH}/build/libs"
 PACKAGES_PATH="${PACKAGES_PATH:-$ROOT_OUT_PATH/.packages}"
 
-# Tools
-export LIBLINK_PATH="$BUILD_PATH/objects"
-export LIBLINK="$ROOT_PATH/src/tools/liblink"
 
 MD5SUM=$(which md5sum)
 if [ "X$MD5SUM" == "X" ]; then
   MD5SUM=$(which md5)
   if [ "X$MD5SUM" == "X" ]; then
-    error "you need at least md5sum or md5 installed."
+    echo "Error: you need at least md5sum or md5 installed."
     exit 1
   else
     MD5SUM="$MD5SUM -r"
@@ -54,7 +43,7 @@ WGET=$(which wget)
 if [ "X$WGET" == "X" ]; then
   WGET=$(which curl)
   if [ "X$WGET" == "X" ]; then
-    error "you need at least wget or curl installed."
+    echo "Error: you need at least wget or curl installed."
     exit 1
   else
     WGET="$WGET -L -o"
@@ -65,15 +54,13 @@ else
   WHEAD="wget --spider -q -S"
 fi
 
-case $OSTYPE in
-  darwin*)
-    SED="sed -i .orig"
-    ;;
-  *)
-    SED="sed -i"
-    ;;
-esac
+SED="sed -i ''"
 
+AUTORECONF=$(which autoreconf)
+if [ "X$AUTORECONF" == "X" ]; then
+  echo "Error: you need autoreconf installed (brew install automake)."
+  exit 1
+fi
 
 # Internals
 CRED="\x1b[31;01m"
@@ -82,14 +69,7 @@ CGRAY="\x1b[30;01m"
 CRESET="\x1b[39;49;00m"
 DO_CLEAN_BUILD=0
 DO_SET_X=0
-
-# Use ccache ?
-which ccache &>/dev/null
-if [ $? -eq 0 ]; then
-  export CC="ccache gcc"
-  export CXX="ccache g++"
-  export NDK_CCACHE="ccache"
-fi
+DEBUG=0
 
 function try () {
     "$@" || exit -1
@@ -110,7 +90,6 @@ function debug() {
 function get_directory() {
   case $1 in
     *.tar.gz) directory=$(basename $1 .tar.gz) ;;
-    *.tar.xz) directory=$(basename $1 .tar.xz) ;;
     *.tgz)    directory=$(basename $1 .tgz) ;;
     *.tar.bz2)  directory=$(basename $1 .tar.bz2) ;;
     *.tbz2)   directory=$(basename $1 .tbz2) ;;
@@ -133,116 +112,115 @@ function push_arm() {
   export OLD_LDFLAGS=$LDFLAGS
   export OLD_CC=$CC
   export OLD_CXX=$CXX
-  export OLD_AR=$AR
-  export OLD_RANLIB=$RANLIB
-  export OLD_STRIP=$STRIP
+  export OLD_MAKESMP=$MAKESMP
   export OLD_MAKE=$MAKE
   export OLD_LD=$LD
+  export OLD_PLATFORM=$PLATFORM
+  export OLD_SYSROOT=$SYSROOT
+  export OLD_TOOLCHAIN_PREFIX=$TOOLCHAIN_PREFIX
   export OLD_CMAKECMD=$CMAKECMD
-  export OLD_ANDROID_CMAKE_LINKER_FLAGS=$ANDROID_CMAKE_LINKER_FLAGS
 
-  # this must be something depending of the API level of Android
-  PYPLATFORM=$($PYTHON -c 'from __future__ import print_function; import sys; print(sys.platform)')
-  if [ "$PYPLATFORM" == "linux2" ]; then
-    PYPLATFORM="linux"
-  elif [ "$PYPLATFORM" == "linux3" ]; then
-    PYPLATFORM="linux"
-  fi
-
-  # Setup compiler toolchain based on CPU architecture
-  if [ "X${ARCH}" == "Xx86" ]; then
-      export TOOLCHAIN_FULL_PREFIX=i686-linux-android${ANDROIDAPI}
-      export TOOLCHAIN_SHORT_PREFIX=i686-linux-android
-      export TOOLCHAIN_PREFIX=i686-linux-android
-      export TOOLCHAIN_BASEDIR=x86
-      export QT_ARCH_PREFIX=x86
-      export QT_ANDROID=${QT_ANDROID_BASE}/android_x86
-      export ANDROID_SYSTEM=android
-  elif [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
-      export TOOLCHAIN_FULL_PREFIX=armv7a-linux-androideabi${ANDROIDAPI}
-      export TOOLCHAIN_SHORT_PREFIX=arm-linux-androideabi
-      export TOOLCHAIN_PREFIX=arm-linux-androideabi
-      export TOOLCHAIN_BASEDIR=arm-linux-androideabi
-      export QT_ARCH_PREFIX=armv7
-      export QT_ANDROID=${QT_ANDROID_BASE}/android_armv7
-      export ANDROID_SYSTEM=android
-  elif [ "X${ARCH}" == "Xarm64-v8a" ]; then
-      export TOOLCHAIN_FULL_PREFIX=aarch64-linux-android${ANDROIDAPI}
-      export TOOLCHAIN_SHORT_PREFIX=aarch64-linux-android
-      export TOOLCHAIN_PREFIX=aarch64-linux-android
-      export TOOLCHAIN_BASEDIR=aarch64-linux-android
-      export QT_ARCH_PREFIX=arm64 # watch out when changing this, openssl depends on it
-      export QT_ANDROID=${QT_ANDROID_BASE}/android_arm64_v8a
-      export ANDROID_SYSTEM=android64
-  else
-      echo "Error: Please report issue to enable support for arch (${ARCH})."
+  if [ "$ARCH" == "i386" ] || [ "$ARCH" == "x86_64" ]; then
+      SDK="iphonesimulator"
+      if [ "$ARCH" == "x86_64" ]; then
+          TARGET="darwin64-x86_64-cc"
+          PLATFORM="SIMULATOR64"
+      else
+          TARGET="darwin-i386-cc"
+          PLATFORM="SIMULATOR"
+      fi
+      VERSION_MIN="-mios-simulator-version-min=${IOS_MIN_SDK_VERSION}"
+      echo "TODO: not tested!"
       exit 1
-  fi
-
-  export CFLAGS="-DANDROID $OFLAG -fomit-frame-pointer --sysroot $NDKPLATFORM -I$STAGE_PATH/include"
-  export CFLAGS="$CFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH -isystem $ANDROIDNDK/sources/cxx-stl/llvm-libc++/include"
-  export CFLAGS="$CFLAGS -isystem $ANDROIDNDK/sysroot/usr/include -isystem $ANDROIDNDK/sysroot/usr/include/$TOOLCHAIN_SHORT_PREFIX "
-  export CFLAGS="$CFLAGS -D__ANDROID_API__=$ANDROIDAPI"
-
-  export CXXFLAGS="$CFLAGS"
-  export CPPFLAGS="$CFLAGS"
-
-  export LDFLAGS="-lm -L$STAGE_PATH/lib"
-  export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
-  export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_PREFIX/$ANDROIDAPI"
-
-  export ANDROID_CMAKE_LINKER_FLAGS=""
-  if [ "X${ARCH}" == "Xarm64-v8a" ]; then
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$QT_ARCH_PREFIX/usr/lib"
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$STAGE_PATH/lib"
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$QT_ANDROID/lib"
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-lz"
-    export LDFLAGS="$LDFLAGS -Wl,-rpath=$STAGE_PATH/lib"
-  fi
-  export PATH="$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/bin/:$ANDROIDSDK/tools:$ANDROIDNDK:$QT_ANDROID/bin:$PATH"
-
-  # search compiler in the path, to fail now instead of later.
-  CC=$(which ${TOOLCHAIN_FULL_PREFIX}-clang)
-  if [ "X$CC" == "X" ]; then
-    error "Unable to find compiler ($TOOLCHAIN_FULL_PREFIX-clang) !!"
-    error "1. Ensure that SDK/NDK paths are correct"
-    error "2. Ensure that you've the Android API $ANDROIDAPI SDK Platform (via android tool)"
-    exit 1
   else
+      SDK="iphoneos"
+      PLATFORM="OS"
+      TARGET="iphoneos-cross"
+      VERSION_MIN="-miphoneos-version-min=${IOS_MIN_SDK_VERSION}"
+      VERSION_MIN="-miphoneos-version-min=${IOS_MIN_SDK_VERSION}"
+  fi
+
+  QT_PATH="$QT_BASE/ios"
+  # Test QT libraries are compiled for this architecture
+  QT_ARCHS=`lipo -archs ${QT_PATH}/lib/libQt5Core.a`
+  if [[ $QT_ARCHS != *"$ARCH"* ]]; then
+    error "${QT_PATH}/lib/libQt5Core.a is available only for $QT_ARCHS, not $ARCH"
+    exit 1;
+  fi
+
+  export PLATFORM=${PLATFORM}
+  export SYSROOT="$(xcrun --sdk $SDK --show-sdk-path)"
+  if [ ! -d $SYSROOT ]; then
+    error "unable to locate SDK $SDK"
+    exit 1;
+  fi
+
+  # http://clang.llvm.org/docs/CrossCompilation.html#target-triple
+  #  <arch><sub>-<vendor>-<sys>-<abi>
+  if [ "${ARCH}" == "arm64" ];then
+    export TOOLCHAIN_PREFIX=aarch64-apple-darwin
+  else
+    export TOOLCHAIN_PREFIX=$ARCH-apple-darwin
+  fi
+
+  CMAKE_TOOLCHAIN_FILE=$ROOT_PATH/tools/ios.toolchain.cmake
+  export CFLAGS="-fobjc-nonfragile-abi -fobjc-legacy-dispatch -fPIC -arch ${ARCH} -isysroot $SYSROOT"
+  # TODO QtCrypto to QGIS, libxml2 to ?
+  export CFLAGS="${CFLAGS} -I$STAGE_PATH/include -I$SYSROOT/usr/include/libxml2"
+  export LDFLAGS="-arch ${ARCH} -isysroot $SYSROOT -L$STAGE_PATH/lib"
+  export CXXFLAGS="${CFLAGS}"
+  export PATH="$SYSROOT/usr/bin:${XCODE_DEVELOPER}/usr/bin:$QT_PATH/bin:${XCODE_DEVELOPER}/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH"
+  # search compiler in the path, to fail now instead of later.
+  if hash ${XCODE_DEVELOPER}/usr/bin/gcc 2>/dev/null; then
     debug "Compiler found at $CC"
+  else
+    error "Unable to find compiler ${CC} !!"
+    error "Ensure that XCode is installed"
+    exit 1
   fi
 
-  export CC="$TOOLCHAIN_FULL_PREFIX-clang $CFLAGS"
-  export CXX="$TOOLCHAIN_FULL_PREFIX-clang++ $CXXFLAGS"
-  export AR="$TOOLCHAIN_SHORT_PREFIX-ar" 
-  export RANLIB="$TOOLCHAIN_SHORT_PREFIX-ranlib"
-  export LD="$TOOLCHAIN_SHORT_PREFIX-ld"
-  export STRIP="$TOOLCHAIN_SHORT_PREFIX-strip --strip-unneeded"
-  export MAKESMP="make -j$CORES"
-  export MAKE="make"
-  export READELF="$TOOLCHAIN_SHORT_PREFIX-readelf"
-  export CMAKECMD="cmake"
-  export CMAKECMD="$CMAKECMD -DANDROID_LINKER_FLAGS=$ANDROID_CMAKE_LINKER_FLAGS"
-  export CMAKECMD="$CMAKECMD -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$ANDROIDNDK/build/cmake/android.toolchain.cmake"
-  export CMAKECMD="$CMAKECMD -DCMAKE_FIND_ROOT_PATH:PATH=$ANDROID_NDK;$QT_ANDROID;$BUILD_PATH;$STAGE_PATH"
-  export CMAKECMD="$CMAKECMD -DANDROID_ABI=$ARCH -DANDROID_NDK=$ANDROID_NDK -DANDROID_NATIVE_API_LEVEL=$ANDROIDAPI -DANDROID=ON"
-
-
-  # export environment for Qt
-  export ANDROID_NDK_ROOT=$ANDROIDNDK
-  # and for cmake
-  export ANDROID_NDK=$ANDROIDNDK
-
-  # This will need to be updated to support Python versions other than 2.7
-  export BUILDLIB_PATH="$BUILD_hostpython/build/lib.linux-`uname -m`-2.7/"
-
-  # Use ccache ?
-  which ccache &>/dev/null
-  if [ $? -eq 0 ]; then
-    export CC="ccache $CC"
-    export CXX="ccache $CXX"
+  # make sure CFLAGS CPPFLAGS are in match with CMAKE settings from toolchain file
+  CMAKECMD="cmake"
+  if [ $DEBUG -eq 1 ]; then
+    CMAKECMD="${CMAKECMD} -DCMAKE_BUILD_TYPE=Debug"
+  else
+    CMAKECMD="${CMAKECMD} -DCMAKE_BUILD_TYPE=Release"
   fi
+  CMAKECMD="${CMAKECMD} -DENABLE_VISIBILITY=1 -DIOS_ARCH=${ARCH} -IOS_PLATFORM=${PLATFORM}"
+  CMAKECMD="${CMAKECMD} -DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH"
+  CMAKECMD="${CMAKECMD} -DIOS_SYSROOT=$SYSROOT -DIOS_DEPLOYMENT_TARGET=${IOS_MIN_SDK_VERSION} -DQT_PATH=$QT_PATH"
+  CMAKECMD="$CMAKECMD -DCMAKE_PREFIX_PATH:PATH=$QT_PATH;$BUILD_PATH;$STAGE_PATH"
+  CFLAGS="${CFLAGS} $VERSION_MIN"
+
+  if false; then
+    CMAKECMD="${CMAKECMD} -DENABLE_BITCODE=1"
+    CFLAGS="${CFLAGS} -fembed-bitcode"
+  else
+    CMAKECMD="${CMAKECMD} -DENABLE_BITCODE=0"
+    CFLAGS="${CFLAGS} -headerpad_max_install_names"
+  fi
+
+  if true; then
+    CMAKECMD="${CMAKECMD} -DENABLE_ARC=0"
+    CFLAGS="${CFLAGS} -fno-objc-arc"
+  else
+    CMAKECMD="${CMAKECMD} -DENABLE_ARC=1"
+    CFLAGS="${CFLAGS} -fobjc-arc"
+  fi
+
+  export CC="${XCODE_DEVELOPER}/usr/bin/gcc $CFLAGS"
+  export CXX="${XCODE_DEVELOPER}/usr/bin/g++ $CXXFLAGS"
+  export LD="${XCODE_DEVELOPER}/usr/bin/ld"
+  export MAKESMP="${XCODE_DEVELOPER}/usr/bin/make -j$CORES"
+  export MAKE="${XCODE_DEVELOPER}/usr/bin/make"
+  export CFLAGS=$CFLAGS
+  export CXXFLAGS="$CXXFLAGS"
+
+  CMAKECMD="${CMAKECMD} -DCMAKE_C_COMPILER=${XCODE_DEVELOPER}/usr/bin/gcc"
+  CMAKECMD="${CMAKECMD} -DCMAKE_CXX_COMPILER=${XCODE_DEVELOPER}/usr/bin/g++"
+
+  export CMAKECMD=$CMAKECMD
+
 }
 
 function pop_arm() {
@@ -253,18 +231,18 @@ function pop_arm() {
   export LDFLAGS=$OLD_LDFLAGS
   export CC=$OLD_CC
   export CXX=$OLD_CXX
-  export AR=$OLD_AR
-  export LD=$OLD_LD
-  export RANLIB=$OLD_RANLIB
-  export STRIP=$OLD_STRIP
+  export MAKESMP=$OLD_MAKESMP
   export MAKE=$OLD_MAKE
+  export LD=$OLD_LD
+  export PLATFORM=$OLD_PLATFORM
+  export SYSROOT=$OLD_SYSROOT
+  export TOOLCHAIN_PREFIX=$OLD_TOOLCHAIN_PREFIX
   export CMAKECMD=$OLD_CMAKECMD
-  export ANDROID_CMAKE_LINKER_FLAGS=$OLD_ANDROID_CMAKE_LINKER_FLAGS
 }
 
 function usage() {
-  echo "Python for android - distribute.sh"
-  echo 
+  echo "iOSGeo - distribute.sh"
+  echo
   echo "Usage:   ./distribute.sh [options]"
   echo
   echo "  -h                     Show this help"
@@ -279,65 +257,16 @@ function usage() {
   exit 0
 }
 
-# Check installation state of a debian package list.
-# Return all missing packages.
-function check_pkg_deb_installed() {
-    PKGS=$1
-    MISSING_PKGS=""
-    for PKG in $PKGS; do
-        CHECK=$(dpkg -s $PKG 2>&1)
-        if [ $? -eq 1 ]; then
-           MISSING_PKGS="$PKG $MISSING_PKGS"
-        fi
-    done
-  if [ "X$MISSING_PKGS" != "X" ]; then
-    error "Packages missing: $MISSING_PKGS"
-    error "It might break the compilation, except if you installed thoses packages manually."
-  fi
-}
-
-function check_build_deps() {
-    # on MacOS there is no lsb_release command
-    if hash lsb_release 2>/dev/null; then
-        DIST=$(lsb_release -is)
-        info "Check build dependencies for $DIST"
-        case $DIST in
-            Debian|Ubuntu|LinuxMint)
-                check_pkg_deb_installed "build-essential zlib1g-dev cython"
-            ;;
-            *)
-                debug "Avoid check build dependencies, unknown platform $DIST"
-            ;;
-        esac
-    else
-        debug "Avoid check build dependencies, unknown platform"
-    fi
-}
-
 function run_prepare() {
   info "Check environment"
-  if [ "X$ANDROIDSDK" == "X" ]; then
-    error "No ANDROIDSDK environment set, abort"
+  if [ "X$QT_BASE" == "X" ]; then
+    error "No QT_BASE environment set, abort"
     exit -1
   fi
-  if [ ! -d "$ANDROIDSDK" ]; then
-    echo "ANDROIDSDK=$ANDROIDSDK"
-    error "ANDROIDSDK path is invalid, it must be a directory. abort."
-    exit 1
-  fi
 
-  if [ "X$ANDROIDNDK" == "X" ]; then
-    error "No ANDROIDNDK environment set, abort"
+  if [ "X$IOS_MIN_SDK_VERSION" == "X" ]; then
+    error "No IOS_MIN_SDK_VERSION environment set, abort"
     exit -1
-  fi
-  if [ ! -d "$ANDROIDNDK" ]; then
-    echo "ANDROIDNDK=$ANDROIDNDK"
-    error "ANDROIDNDK path is invalid, it must be a directory. abort."
-    exit 1
-  fi
-
-  if [ "X$ANDROIDAPI" == "X" ]; then
-    export ANDROIDAPI=14
   fi
 
   if [ "X$MODULES" == "X" ]; then
@@ -345,26 +274,18 @@ function run_prepare() {
     exit 0
   fi
 
-  debug "SDK located at $ANDROIDSDK"
-  debug "NDK located at $ANDROIDNDK"
-  debug "NDK version is $ANDROIDNDKVER"
-  debug "API level set to $ANDROIDAPI"
-  if [ "X${ARCH}" == "Xx86" ]; then
-      export SHORTARCH="x86"
-  elif [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
-      export SHORTARCH="arm"
-  elif [ "X${ARCH}" == "Xarm64-v8a" ]; then
-      export SHORTARCH="arm64"
-  else
-      echo "Error: Please report issue to enable support for newer arch (${ARCH})."
-      exit 1
-  fi
 
-  export NDKPLATFORM="$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$SHORTARCH"
+  info "QT located at $QT_BASE"
+  info "IOS MIN SDK version is $IOS_MIN_SDK_VERSION"
+  if [ "X$ARCH" == "Xi386" ] || [ "X$ARCH" == "Xx86_64" ]; then
+      info "Building for iOSSimulator"
+  else
+      info "Building for iOS"
+  fi
 
   info "Check mandatory tools"
   # ensure that some tools are existing
-  for tool in tar bzip2 unzip make gcc g++; do
+  for tool in tar bzip2 unzip; do
     which $tool &>/dev/null
     if [ $? -ne 0 ]; then
       error "Tool $tool is missing"
@@ -376,8 +297,6 @@ function run_prepare() {
     info "Cleaning build"
     try rm -rf $STAGE_PATH
     try rm -rf $BUILD_PATH
-    try rm -rf $SRC_PATH/obj
-    try rm -rf $SRC_PATH/libs
   fi
 
   info "Distribution will be located at $STAGE_PATH"
@@ -394,7 +313,6 @@ function run_prepare() {
 
   # check arm env
   push_arm
-  debug "PATH is $PATH"
   pop_arm
 }
 
@@ -522,10 +440,10 @@ function run_get_packages() {
   for module in $MODULES; do
     # download dependencies for this module
     # check if there is not an overload from environment
-    module_dir=$(eval "echo \$O4A_${module}_DIR")
+    module_dir=$(eval "echo \$O4iOS_${module}_DIR")
     if [ "$module_dir" ]
     then
-      debug "\$O4A_${module}_DIR is not empty, linking $module_dir dir instead of downloading"
+      debug "\$O4iOS_${module}_DIR is not empty, linking $module_dir dir instead of downloading"
       directory=$(eval "echo \$BUILD_${module}")
       if [ -e $directory ]; then
         try rm -rf "$directory"
@@ -653,13 +571,6 @@ function run_get_packages() {
           mv $root_directory $directory
         fi
         ;;
-      * )
-        try tar xf $pfilename
-        root_directory=$(basename $(try tar xf $pfilename|head -n1))
-        if [ "X$root_directory" != "X$directory" ]; then
-          mv $root_directory $directory
-        fi
-        ;;
     esac
   done
 }
@@ -723,9 +634,7 @@ function run_postbuild() {
   done
 }
 
-
 function run() {
-  check_build_deps
   for ARCH in ${ARCHES[@]}; do
     cd ${ROOT_PATH}
     STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
@@ -746,7 +655,7 @@ function list_modules() {
 }
 
 # Do the build
-while getopts ":hCvlfxim:a:u:d:s" opt; do
+while getopts ":hvlfxim:u:s:g" opt; do
   case $opt in
     h)
       usage
@@ -762,11 +671,12 @@ while getopts ":hCvlfxim:a:u:d:s" opt; do
       pop_arm
       exit 0
       ;;
-    a)
-      LAYOUT="$OPTARG"
-      ;;
     i)
       INSTALL=1
+      ;;
+    g)
+      DEBUG=1
+      echo "Requesting debug binaries"
       ;;
     m)
       MODULES="$OPTARG"

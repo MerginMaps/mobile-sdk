@@ -1,0 +1,41 @@
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -46,7 +46,7 @@
+ 	qca_securelayer.cpp
+ 	qca_securemessage.cpp
+ 	support/qpipe.cpp
+-	support/console.cpp 
++	# support/console.cpp
+ 	support/synchronizer.cpp
+ 	support/dirwatch.cpp
+ 	support/syncthread.cpp
+@@ -54,8 +54,8 @@
+
+ IF (WIN32)
+   SET( nonmoc_SOURCES ${nonmoc_SOURCES} qca_systemstore_win.cpp )
+-elseif(APPLE)
+-  set( nonmoc_SOURCES ${nonmoc_SOURCES} qca_systemstore_mac.cpp)
++# elseif(APPLE)
++#   set( nonmoc_SOURCES ${nonmoc_SOURCES} qca_systemstore_mac.cpp)
+ else()
+   SET( nonmoc_SOURCES ${nonmoc_SOURCES} qca_systemstore_flatfile.cpp )
+ endif()
+@@ -147,14 +147,12 @@
+ 	TARGET_LINK_LIBRARIES(${QCA_LIB_NAME} crypt32 ws2_32)
+ endif(WIN32)
+
+-if(APPLE)
+-   set(CARBON_LIBRARY_SECURITY "-framework Security")
+-   TARGET_LINK_LIBRARIES(${QCA_LIB_NAME} ${CARBON_LIBRARY} ${CARBON_LIBRARY_SECURITY})
+-endif(APPLE)
++# if(APPLE)
++#   set(CARBON_LIBRARY_SECURITY "-framework Security")
++#   TARGET_LINK_LIBRARIES(${QCA_LIB_NAME} ${CARBON_LIBRARY} ${CARBON_LIBRARY_SECURITY})
++# endif(APPLE)
+
+ set_target_properties(${QCA_LIB_NAME} PROPERTIES
+-                      VERSION ${QCA_LIB_MAJOR_VERSION}.${QCA_LIB_MINOR_VERSION}.${QCA_LIB_PATCH_VERSION}
+-                      SOVERSION ${QCA_LIB_MAJOR_VERSION}
+                       DEFINE_SYMBOL QCA_MAKEDLL
+                       PUBLIC_HEADER "${public_HEADERS}"
+                       FRAMEWORK ${OSX_FRAMEWORK}

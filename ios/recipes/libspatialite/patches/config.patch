@@ -1,0 +1,24 @@
+--- a/configure	2018-10-18 13:24:03.000000000 +0200
++++ b/configure	2018-10-18 13:24:28.000000000 +0200
+@@ -18119,8 +18119,8 @@
+ if test "$ac_res" != no; then :
+   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+ 
+-else
+-  as_fn_error $? "could not find libgeos_c (or obsolete 'libgeos_c' < v.3.3.0 found) - you may need to specify the directory of a geos-config file using --with-geosconfig" "$LINENO" 5
++# else
++#  as_fn_error $? "could not find libgeos_c (or obsolete 'libgeos_c' < v.3.3.0 found) - you may need to specify the directory of a geos-config file using --with-geosconfig" "$LINENO" 5
+ fi
+ 
+   LIBS="$LIBS_SAVE"
+@@ -18206,8 +18206,8 @@
+ if test "$ac_res" != no; then :
+   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+ 
+-else
+-  as_fn_error $? "'libgeos_c' (>= v.3.4.0) is required but it doesn't seem to be installed on this system." "$LINENO" 5
++# else
++#  as_fn_error $? "'libgeos_c' (>= v.3.4.0) is required but it doesn't seem to be installed on this system." "$LINENO" 5
+ fi
+ 
+ 	  $as_echo "#define GEOS_ADVANCED 1" >>confdefs.h

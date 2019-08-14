@@ -1,0 +1,21 @@
+### SDK #####
+export IOS_MIN_SDK_VERSION="12.0"
+
+#### PATHS ####
+export QT_BASE="/opt/Qt/5.13.0"
+
+# you need to use recent flex and bison
+# so you can install them with homebrew
+# and uncomment the line below
+# export PATH="/usr/local/opt/flex/bin/:/usr/local/opt/bison/bin/:${PATH}"
+
+### LOCAL QGIS ###
+# export O4iOS_qgis_DIR="/Users/<name>/Projects/QGIS"
+
+### BUILD ###
+export ARCHES=("arm64")
+# export ARCHES=("i386 x86_64 armv7 arm64")
+
+# By default all cores will be used to build
+# Use this option to override
+# export CORES=4

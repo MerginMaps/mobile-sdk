@@ -1,0 +1,99 @@
+--- a/config.h.in
++++ b/config.h.in
+@@ -286,10 +286,6 @@
+ #define isfinite gsl_finite
+ #endif
+
+-#if !HAVE_DECL_FINITE
+-#define finite gsl_finite
+-#endif
+-
+ #if !HAVE_DECL_ISNAN
+ #define isnan gsl_isnan
+ #endif
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -538,10 +538,6 @@
+ #define isfinite gsl_finite
+ #endif
+
+-#if !HAVE_DECL_FINITE
+-#define finite gsl_finite
+-#endif
+-
+ #if !HAVE_DECL_ISNAN
+ #define isnan gsl_isnan
+ #endif])
+
+--- a/specfunc/hyperg_U.c
++++ b/specfunc/hyperg_U.c
+@@ -524,7 +524,7 @@
+         t_err = a0_err + b0_err;
+         dchu_val += t_val;
+         dchu_err += t_err;
+-        if(!finite(t_val) || fabs(t_val) < EPS*fabs(dchu_val)) break;
++        if(!gsl_finite(t_val) || fabs(t_val) < EPS*fabs(dchu_val)) break;
+       }
+
+       result->val  = dchu_val;
+
+--- a/integration/cquad.c
++++ b/integration/cquad.c
+@@ -235,7 +235,7 @@
+     {
+       iv->fx[i] = GSL_FN_EVAL (f, m + xi[i] * h);
+       neval++;
+-      if (!finite (iv->fx[i]))
++      if (!gsl_finite (iv->fx[i]))
+ 	{
+ 	  nans[nnans++] = i;
+ 	  iv->fx[i] = 0.0;
+@@ -319,7 +319,7 @@
+ 	  nnans = 0;
+ 	  for (i = 0; i <= 32; i += skip[d])
+ 	    {
+-	      if (!finite (iv->fx[i]))
++	      if (!gsl_finite (iv->fx[i]))
+ 		{
+ 		  nans[nnans++] = i;
+ 		  iv->fx[i] = 0.0;
+@@ -444,7 +444,7 @@
+ 	  nnans = 0;
+ 	  for (i = 0; i <= 32; i += skip[0])
+ 	    {
+-	      if (!finite (ivl->fx[i]))
++	      if (!gsl_finite (ivl->fx[i]))
+ 		{
+ 		  nans[nnans++] = i;
+ 		  ivl->fx[i] = 0.0;
+@@ -510,7 +510,7 @@
+ 	  nnans = 0;
+ 	  for (i = 0; i <= 32; i += skip[0])
+ 	    {
+-	      if (!finite (ivr->fx[i]))
++	      if (!gsl_finite (ivr->fx[i]))
+ 		{
+ 		  nans[nnans++] = i;
+ 		  ivr->fx[i] = 0.0;
+
+--- a/sys/ldfrexp.c
++++ b/sys/ldfrexp.c
+@@ -60,7 +60,7 @@
+       *e = 0;
+       return 0.0;
+     }
+-  else if (!finite (x))
++  else if (!gsl_finite (x))
+     {
+       *e = 0;
+       return x;
+@@ -85,7 +85,7 @@
+
+       f = x * pow (2.0, -ei);
+
+-      if (!finite (f))
++      if (!gsl_finite (f))
+         {
+           /* This should not happen */
+           *e = 0;
