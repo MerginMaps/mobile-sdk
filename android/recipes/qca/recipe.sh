@@ -30,6 +30,8 @@ function prebuild_qca() {
     return
   fi
 
+  try patch -p1 < $RECIPE_qca/patches/no_setuid.patch
+
   touch .patched
 }
 
@@ -59,8 +61,7 @@ function build_qca() {
   -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE \
   $BUILD_qca
 
- # try $MAKESMP
- try $MAKESMP install VERBOSE=1
+ try $MAKESMP install
 
  pop_arm
 }
