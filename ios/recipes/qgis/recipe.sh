@@ -7,10 +7,10 @@ VERSION_qgis=3.7
 DEPS_qgis=(libtasn1 gdal qca proj libspatialite libspatialindex expat gsl postgresql libzip qtkeychain)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/356ffdbd6b9993dea786083bcb9d9ef398f4fc83.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/f7017c66ab378722ba3440f756edef9db10e2638.tar.gz
 
 # md5 of the package
-MD5_qgis=cb22df43ec0f4e04d7af8155bdf7c52d
+MD5_qgis=929a257010f12e07f0118eecd42db351
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -135,6 +135,10 @@ function build_qgis() {
   cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/
   cp $BUILD_PATH/qgis/build-$ARCH/src/quickgui/qgis_quick.h ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/Headers/
   cp $BUILD_qgis/src/quickgui/plugin/qgsquickplugin.h ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/Headers/
+
+  # https://github.com/qgis/QGIS/commit/90d40d5bb7408cc7afc91387305535f23aacbfb3
+  mkdir -p ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/nlohmann/
+  cp $BUILD_qgis/external/nlohmann/json_fwd.hpp ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/nlohmann/json_fwd.hpp
 
   pop_arm
 }

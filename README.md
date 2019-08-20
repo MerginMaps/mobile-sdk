@@ -12,7 +12,7 @@ Click here to download the app on your Android device:
 To publish new image of lutraconsulting/input-sdk on docker-hub, run build&publish script.
 The resulting image contains SDK for building Input app for armeabi-v7a and arm64-v8a architectures.
 
-Tagging: qt-X-Y, where X is QT's version and Y is incremental number for that QT version, e.g. qt-5.13.0-1
+Tagging: android-X, X is incremental number, e.g. android-1
 
 Contains:
   - Android-NDK
@@ -22,17 +22,20 @@ Contains:
   - QGIS core
   - QgsQuick
 
+[used versions](android/Dockerfile) - MAKE SURE YOU HAVE correct QT version (openssl) and NDK
+
 # iOS
 
 This provides a set of scripts to build opensource geo tools for iOS (iPhone and iPad)
 Only works on MacOS systems, since you need XCode to compile binaries for iOS. The build system is maintained for QGIS 3.x 
 releases.
 
-Tested with iPhoneOS12.0.sdk, Qt 5.13.0 and arm64, min SDK 12.0 on iPad running iOS 12.x
+Tested with iPhoneOS12.0.sdk, Qt 5.11.3 and arm64, min SDK 12.0 on iPad running iOS 12.x
+Due to the [Qt bug](https://bugreports.qt.io/browse/QTBUG-77031), use Qt 5.11.x or 5.12.5+ or 5.13.1+
 
 Dependencies instructions
 -------------------------
-- [Qt5 5.13.0] Install iOS arch support (if you want SDK 10.0 + and arm64 only)
+- [Qt5 5.11.3] Install iOS arch support (if you want SDK 10.0 + and arm64 only)
 - Install XCode and accept ToC
 
 If you want armv7 and different SDK, you may try to build QT yourself (not tested)
@@ -52,7 +55,7 @@ You may want to clone qgis/QGIS locally and point the config.conf file to your l
 repository, if you are working on qgis/QGIS development. 
 
 ```sh
-cd iOSGeo 
+cd ios 
 cp config.conf.default config.conf
 # nano config.conf
 ./distribute.sh -dqgis

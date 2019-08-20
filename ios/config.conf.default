@@ -2,7 +2,7 @@
 export IOS_MIN_SDK_VERSION="12.0"
 
 #### PATHS ####
-export QT_BASE="/opt/Qt/5.13.0"
+export QT_BASE="/opt/Qt/5.11.3"
 
 # you need to use recent flex and bison
 # so you can install them with homebrew

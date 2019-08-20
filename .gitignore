@@ -12,5 +12,7 @@ ios/.deps
 ios/.optional-deps
 ios/config.conf
 
+build-*
+
 .idea
 .DS_Store
