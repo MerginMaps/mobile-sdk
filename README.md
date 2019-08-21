@@ -36,7 +36,11 @@ Due to the [Qt bug](https://bugreports.qt.io/browse/QTBUG-77031), use Qt 5.11.x 
 Dependencies instructions
 -------------------------
 - [Qt5 5.11.3] Install iOS arch support (if you want SDK 10.0 + and arm64 only)
-- Install XCode and accept ToC
+- Install XCode 10.3 and accept ToC
+```
+$ xcrun --sdk iphoneos --show-sdk-path
+/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.4.sdk
+```
 
 If you want armv7 and different SDK, you may try to build QT yourself (not tested)
 

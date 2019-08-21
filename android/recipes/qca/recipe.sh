@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # version of your package
+
 VERSION_qca=2.2.1
 
 # dependencies of this recipe
@@ -30,6 +31,7 @@ function prebuild_qca() {
     return
   fi
 
+  # UPSTREAM patch: https://phabricator.kde.org/D23289
   try patch -p1 < $RECIPE_qca/patches/no_setuid.patch
 
   touch .patched
