@@ -140,6 +140,9 @@ function build_qgis() {
   mkdir -p ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/nlohmann/
   cp $BUILD_qgis/external/nlohmann/json_fwd.hpp ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/nlohmann/json_fwd.hpp
 
+  # we need images too
+  cp -R $BUILD_qgis/src/quickgui/images ${STAGE_PATH}/QGIS.app/Contents/Resources/images/QgsQuick
+
   pop_arm
 }
 
