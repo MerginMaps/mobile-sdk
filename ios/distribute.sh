@@ -166,8 +166,8 @@ function push_arm() {
   CMAKE_TOOLCHAIN_FILE=$ROOT_PATH/tools/ios.toolchain.cmake
   export CFLAGS="-fobjc-nonfragile-abi -fobjc-legacy-dispatch -fPIC -arch ${ARCH} -isysroot $SYSROOT"
   # TODO QtCrypto to QGIS, libxml2 to ?
-  export CFLAGS="${CFLAGS} -I$STAGE_PATH/include -I$SYSROOT/usr/include/libxml2"
-  export LDFLAGS="-arch ${ARCH} -isysroot $SYSROOT -L$STAGE_PATH/lib"
+  export CFLAGS="${CFLAGS} -I$STAGE_PATH/include -I$SYSROOT/usr/include/libxml2 $VERSION_MIN"
+  export LDFLAGS="-arch ${ARCH} -isysroot $SYSROOT -L$STAGE_PATH/lib $VERSION_MIN"
   export CXXFLAGS="${CFLAGS}"
   export PATH="$SYSROOT/usr/bin:${XCODE_DEVELOPER}/usr/bin:$QT_PATH/bin:${XCODE_DEVELOPER}/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH"
   # search compiler in the path, to fail now instead of later.
@@ -190,7 +190,6 @@ function push_arm() {
   CMAKECMD="${CMAKECMD} -DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH"
   CMAKECMD="${CMAKECMD} -DIOS_SYSROOT=$SYSROOT -DIOS_DEPLOYMENT_TARGET=${IOS_MIN_SDK_VERSION} -DQT_PATH=$QT_PATH"
   CMAKECMD="$CMAKECMD -DCMAKE_PREFIX_PATH:PATH=$QT_PATH;$BUILD_PATH;$STAGE_PATH"
-  CFLAGS="${CFLAGS} $VERSION_MIN"
 
   if false; then
     CMAKECMD="${CMAKECMD} -DENABLE_BITCODE=1"
@@ -431,8 +430,8 @@ function run_source_modules() {
 function run_get_packages() {
   info "Run get packages"
 
-  if [ ! -d "$BUILD_PATH/tmp" ]; then
-    try mkdir $BUILD_PATH/tmp
+  if [ ! -d "$ROOT_OUT_PATH/tmp" ]; then
+    try mkdir $ROOT_OUT_PATH/tmp
     $WGET $ROOT_OUT_PATH/.packages/config.sub "http://git.savannah.gnu.org/cgit/config.git/plain/config.sub"
     $WGET $ROOT_OUT_PATH/.packages/config.guess "http://git.savannah.gnu.org/cgit/config.git/plain/config.guess"
   fi
