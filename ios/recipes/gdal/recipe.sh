@@ -53,6 +53,9 @@ function build_gdal() {
   export LDFLAGS="${LDFLAGS} -liconv"
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 
+ # at runtime: Wrong JPEG library version: library is 62, caller expects 80
+ # (GDAL tries to build internal JPEG library incompatible with Qt's internal JPEG lib)
+ # with-mrf=no \ # depends on jpeg
   try ${BUILD_PATH}/gdal/build-$ARCH/configure \
     --prefix=$STAGE_PATH \
     --host=${TOOLCHAIN_PREFIX} \
@@ -60,6 +63,8 @@ function build_gdal() {
     --with-geos=$STAGE_PATH/bin/geos-config \
     --with-pg=no \
     --with-expat=$STAGE_PATH \
+    --with-jpeg=no \
+    --with-mrf=no \
     --disable-shared
 
   try $MAKESMP
