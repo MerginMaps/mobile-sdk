@@ -53,11 +53,18 @@ function build_gdal() {
   export LDFLAGS="${LDFLAGS} -liconv"
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 
- # at runtime: Wrong JPEG library version: library is 62, caller expects 80
- # (GDAL tries to build internal JPEG library incompatible with Qt's internal JPEG lib)
- # with-mrf=no \ # depends on jpeg
+  # png. by default -lpng is not found and internal is build. this causes crash in routine png_read_info
+  # during loading of Qt's components like CheckBox, ComboBox, etc, since the gdal's internal png lib is
+  # incompatible with Qt's required lib
+  # we can use /opt/Qt/5.13.1/ios//lib/libqtlibpng*, but there are no png.h headers in Qt's installation
+
+  # at runtime: Wrong JPEG library version: library is 62, caller expects 80
+  # (GDAL tries to build internal JPEG library incompatible with Qt's internal JPEG lib)
+  # /opt/Qt/5.13.1/ios//plugins/imageformats/libqjpeg.a ... maybe use Qt's one?
+  # with-mrf=no \ # depends on jpeg
+
   try ${BUILD_PATH}/gdal/build-$ARCH/configure \
-    --prefix=$STAGE_PATH \
+     --prefix=$STAGE_PATH \
     --host=${TOOLCHAIN_PREFIX} \
     --with-sqlite3=$SYSROOT \
     --with-geos=$STAGE_PATH/bin/geos-config \
@@ -65,6 +72,7 @@ function build_gdal() {
     --with-expat=$STAGE_PATH \
     --with-jpeg=no \
     --with-mrf=no \
+    --with-png=no \
     --disable-shared
 
   try $MAKESMP
