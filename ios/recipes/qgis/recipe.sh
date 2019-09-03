@@ -7,10 +7,10 @@ VERSION_qgis=3.7
 DEPS_qgis=(libtasn1 gdal qca proj libspatialite libspatialindex expat gsl postgresql libzip qtkeychain)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/f7017c66ab378722ba3440f756edef9db10e2638.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/f2d79675e2bdf07ab705979920ae1c627817fef9.tar.gz
 
 # md5 of the package
-MD5_qgis=929a257010f12e07f0118eecd42db351
+MD5_qgis=c8f57603dd48ff89ee6b77126ffb0494
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -129,7 +129,7 @@ function build_qgis() {
     -DGEOSCXX_LIBRARY=$STAGE_PATH/lib/libgeos.a \
     $BUILD_qgis
 
-  try $MAKESMP install VERBOSE=1
+  try $MAKESMP install
 
   # Why it is not copied by CMake?
   cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/
