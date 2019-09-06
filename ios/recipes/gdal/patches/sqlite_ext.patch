@@ -1,11 +1,12 @@
 ---  a/ogr/ogrsf_frmts/sqlite/ogrsqlitevirtualogr.cpp
 +++  b/ogr/ogrsf_frmts/sqlite/ogrsqlitevirtualogr.cpp
-@@ -71,7 +71,7 @@
- 
- void OGR2SQLITE_Register()
+@@ -2587,7 +2587,7 @@
  {
--    sqlite3_auto_extension ((void (*)(void)) OGR2SQLITE_static_register);
-+    // sqlite3_auto_extension ((void (*)(void)) OGR2SQLITE_static_register);
- }
- 
- #define VIRTUAL_OGR_DYNAMIC_EXTENSION_ENABLED
+     const sqlite3_api_routines * pApi = (const sqlite3_api_routines * )_pApi;
+ #ifndef WIN32
+-    if( pApi->create_module == nullptr )
++    if( ( pApi == nullptr ) || ( pApi->create_module == nullptr ) )
+     {
+         pApi = &OGRSQLITE_static_routines;
+     }
+
