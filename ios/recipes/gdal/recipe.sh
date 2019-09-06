@@ -33,6 +33,7 @@ function prebuild_gdal() {
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
 
+  # see https://github.com/OSGeo/gdal/issues/1820
   try patch -p1 < $RECIPE_gdal/patches/sqlite_ext.patch
 
   touch .patched
