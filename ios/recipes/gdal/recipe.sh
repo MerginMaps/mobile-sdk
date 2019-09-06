@@ -33,6 +33,8 @@ function prebuild_gdal() {
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
 
+  try patch -p1 < $RECIPE_gdal/patches/sqlite_ext.patch
+
   touch .patched
 }
 
@@ -52,6 +54,13 @@ function build_gdal() {
 
   export LDFLAGS="${LDFLAGS} -liconv"
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
+
+  GDAL_FLAGS="--disable-shared"
+  if [ $DEBUG -eq 1 ]; then
+    info "Building DEBUG version of GDAL!!"
+    GDAL_FLAGS="$GDAL_FLAGS --enable-debug"
+  fi
+
 
   # png. by default -lpng is not found and internal is build. this causes crash in routine png_read_info
   # during loading of Qt's components like CheckBox, ComboBox, etc, since the gdal's internal png lib is
@@ -73,7 +82,7 @@ function build_gdal() {
     --with-jpeg=no \
     --with-mrf=no \
     --with-png=no \
-    --disable-shared
+    $GDAL_FLAGS
 
   try $MAKESMP
   try make install &> install.log

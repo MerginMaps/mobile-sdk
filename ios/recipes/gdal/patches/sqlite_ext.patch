@@ -1,0 +1,11 @@
+---  a/ogr/ogrsf_frmts/sqlite/ogrsqlitevirtualogr.cpp
++++  b/ogr/ogrsf_frmts/sqlite/ogrsqlitevirtualogr.cpp
+@@ -71,7 +71,7 @@
+ 
+ void OGR2SQLITE_Register()
+ {
+-    sqlite3_auto_extension ((void (*)(void)) OGR2SQLITE_static_register);
++    // sqlite3_auto_extension ((void (*)(void)) OGR2SQLITE_static_register);
+ }
+ 
+ #define VIRTUAL_OGR_DYNAMIC_EXTENSION_ENABLED
