@@ -513,8 +513,7 @@ function run_source_modules() {
 function run_get_packages() {
   info "Run get packages"
 
-  if [ ! -d "$BUILD_PATH/tmp" ]; then
-    try mkdir $BUILD_PATH/tmp
+  if [ ! -f "$ROOT_OUT_PATH/.packages/config.sub" ]; then
     $WGET $ROOT_OUT_PATH/.packages/config.sub "http://git.savannah.gnu.org/cgit/config.git/plain/config.sub"
     $WGET $ROOT_OUT_PATH/.packages/config.guess "http://git.savannah.gnu.org/cgit/config.git/plain/config.guess"
   fi

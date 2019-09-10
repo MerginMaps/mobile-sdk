@@ -7,10 +7,10 @@ VERSION_qgis=3.9
 DEPS_qgis=(libtasn1 gdal qca proj libspatialite libspatialindex expat gsl postgresql libzip qtkeychain)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/a4ec73524994c3cd7b47a926f1fcf8f0be69b9c6.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/b884c0d5a1e081bd1de4924a084b89dc88ccdd2d.tar.gz
 
 # md5 of the package
-MD5_qgis=41c607ec5f5667d46c44a6eca09fa37b
+MD5_qgis=c349b03fd9beec1b0dcbbf886eb2c679
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
