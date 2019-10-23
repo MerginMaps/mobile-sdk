@@ -7,10 +7,10 @@ VERSION_qgis=3.9
 DEPS_qgis=(libtasn1 gdal qca proj libspatialite libspatialindex expat gsl postgresql libzip qtkeychain)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/b884c0d5a1e081bd1de4924a084b89dc88ccdd2d.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/31192093340f800d06d9ee67e1c3d46988520dd8.tar.gz
 
 # md5 of the package
-MD5_qgis=c349b03fd9beec1b0dcbbf886eb2c679
+MD5_qgis=b0d34871ad08ad5c3cc30f2fcaa9e0e5
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -135,10 +135,6 @@ function build_qgis() {
   cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/
   cp $BUILD_PATH/qgis/build-$ARCH/src/quickgui/qgis_quick.h ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/Headers/
   cp $BUILD_qgis/src/quickgui/plugin/qgsquickplugin.h ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/Headers/
-
-  # https://github.com/qgis/QGIS/commit/90d40d5bb7408cc7afc91387305535f23aacbfb3
-  mkdir -p ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/nlohmann/
-  cp $BUILD_qgis/external/nlohmann/json_fwd.hpp ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/nlohmann/json_fwd.hpp
 
   # we need images too
   cp -R $BUILD_qgis/src/quickgui/images ${STAGE_PATH}/QGIS.app/Contents/Resources/images/QgsQuick
