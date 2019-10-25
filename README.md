@@ -3,12 +3,7 @@ SDK for building [Input](https://github.com/lutraconsulting/input) for mobile de
 
 Input makes surveying of geospatial data easy. You can design your survey project in QGIS with custom forms.
 
-Click here to download the app on your Android/iOS device:
-
-<p>
-<a href='https://play.google.com/store/apps/details?id=uk.co.lutraconsulting&ah=GSqwibzO2n63iMlCjHmMuBk89t4&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://github.com/lutraconsulting/input/tree/master/images/google-play-store-badge.png' height="57" /></a>
-<a href='https://testflight.apple.com/join/JO5EIywn'><img alt='Download it from TestFlight' src='https://github.com/lutraconsulting/input/tree/master/images/app-store.png' width="170" /></a>
-</p>
+Click here to download the app on your Android/iOS device www.inputapp.io
 
 # Android 
 
