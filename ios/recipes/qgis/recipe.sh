@@ -4,7 +4,7 @@
 VERSION_qgis=3.9
 
 # dependencies of this recipe
-DEPS_qgis=(libtasn1 gdal qca proj libspatialite libspatialindex expat gsl postgresql libzip qtkeychain)
+DEPS_qgis=(libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain)
 
 # url of the package
 URL_qgis=https://github.com/qgis/QGIS/archive/31192093340f800d06d9ee67e1c3d46988520dd8.tar.gz
@@ -84,10 +84,6 @@ function build_qgis() {
     -DLIBZIP_INCLUDE_DIR=$STAGE_PATH/include \
     -DLIBZIP_CONF_INCLUDE_DIR=$STAGE_PATH/include \
     -DLIBZIP_LIBRARY=$STAGE_PATH/lib/libzip.a \
-    -DGSL_CONFIG=$STAGE_PATH/bin/gsl-config \
-    -DGSL_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
-    -DGSL_EXE_LINKER_FLAGS=-Wl,-rpath, \
-    -DGSL_INCLUDE_DIR=$STAGE_PATH/include/gsl \
     -DICONV_INCLUDE_DIR=$SYSROOT\
     -DICONV_LIBRARY=$SYSROOT/usr/lib/libiconv.tbd \
     -DSQLITE3_INCLUDE_DIR=$SYSROOT \

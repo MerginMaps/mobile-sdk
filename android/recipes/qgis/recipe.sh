@@ -4,7 +4,7 @@
 VERSION_qgis=3.9
 
 # dependencies of this recipe
-DEPS_qgis=(zlib gdal qca libspatialite libspatialindex expat gsl postgresql libzip qtkeychain exiv2)
+DEPS_qgis=(zlib gdal qca libspatialite libspatialindex expat postgresql libzip qtkeychain exiv2 geodiff)
 # DEPS_qgis=()
 
 # url of the package
@@ -51,10 +51,6 @@ function build_qgis() {
     -DGEOS_INCLUDE_DIR=$STAGE_PATH/include \
     -DGEOS_LIBRARY=$STAGE_PATH/lib/libgeos_c.so \
     -DGEOS_LIB_NAME_WITH_PREFIX=-lgeos_c \
-    -DGSL_CONFIG=$STAGE_PATH/bin/gsl-config \
-    -DGSL_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
-    -DGSL_EXE_LINKER_FLAGS=-Wl,-rpath, \
-    -DGSL_INCLUDE_DIR=$STAGE_PATH/include/gsl \
     -DICONV_INCLUDE_DIR=$STAGE_PATH/include \
     -DICONV_LIBRARY=$STAGE_PATH/lib/libiconv.so \
     -DSQLITE3_INCLUDE_DIR=$STAGE_PATH/include \
