@@ -1,4 +1,6 @@
 # input-sdk
+[![Build status](https://ci.appveyor.com/api/projects/status/76nx3nvjo3phwjcu/branch/master?svg=true)](https://ci.appveyor.com/project/PeterPetrik/input-sdk/branch/master)
+
 SDK for building [Input](https://github.com/lutraconsulting/input) for mobile devices
 
 Input makes surveying of geospatial data easy. You can design your survey project in QGIS with custom forms.
@@ -6,6 +8,8 @@ Input makes surveying of geospatial data easy. You can design your survey projec
 Click here to download the app on your Android/iOS device [inputapp.io](http://inputapp.io)
 
 # Android 
+
+![Docker Pulls](https://img.shields.io/docker/pulls/lutraconsulting/input-sdk)
 
 To publish new image of lutraconsulting/input-sdk on docker-hub, run build&publish script.
 The resulting image contains SDK for building Input app for armeabi-v7a and arm64-v8a architectures.
@@ -21,6 +25,14 @@ Contains:
   - QgsQuick
 
 [used versions](android/Dockerfile) - MAKE SURE YOU HAVE correct QT version (openssl) and NDK
+
+# Windows
+
+you need full installation of OSGeo4W (32 and/or 64b) and Visual Studio compiler
+
+## hints
+
+- to find library on disk: `where -F -R \ xyz.Lib`
 
 # iOS
 
