@@ -48,9 +48,8 @@ cmake -G "Visual Studio 15 2017 Win64" ^
 -DCMAKE_PREFIX_PATH=%STAGE_PATH%;%STAGE_PATH%/apps/Qt5/lib/cmake ^
 %BUILD_qgis%\src\QGIS-%VERSION_qgis%
 
-cmake --build . --config Release --target install --parallel %NUMBER_OF_PROCESSORS%
+cmake --build . --config Release --target install --parallel %NUMBER_OF_PROCESSORS% -- /verbosity:detailed
 
-REM -DCMAKE_PREFIX_PATH:PATH="C:/OSGeo4W64;C:/OSGeo4W64/apps/qt5/lib/cmake/QtCore;C:/OSGeo4W64/apps/qt5/lib/cmake/QtGui;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5WebKit;C:/OSGeo4W64/apps/qt5/lib/cmake/Qca-qt5;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5Location;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5Positioning;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5Qml;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5Quick;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5QuickCompiler;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5Quick;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5Xml;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5Sql;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5PrintSupport;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5Multimedia;C:/OSGeo4W64/apps/qt5/lib/cmake/QtQml;C:/OSGeo4W64/apps/qt5/lib/cmake/Qt5Keychain" ^
 
 REM  cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/
 REM  cp $BUILD_PATH/qgis/build-$ARCH/src/quickgui/qgis_quick.h ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/Headers/
