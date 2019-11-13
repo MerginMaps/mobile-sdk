@@ -28,9 +28,14 @@ Contains:
 
 # Windows
 
-you need full installation of OSGeo4W (32 and/or 64b) and Visual Studio compiler
+- install Visual Studio (Community) 2015 (14)
+- install OSGeo4W 64 bit to C:\OSGeo4W64b
+- install bison and flex (either cygwin or through `choco`)
+- modify `win/config.conf` with paths
+- `cd win`
+- run `distibute.cmd`
 
-## hints
+## Hints
 
 - to find library on disk: `where -F -R \ xyz.Lib`
 
