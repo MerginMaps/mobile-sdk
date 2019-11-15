@@ -43,6 +43,7 @@ for local developement do:
 - get geodiff, qgis, input-sdk repos to C:\input-sdk\x86_64\repo\
 - `cd input-sdk\win`
 - run `distibute.cmd`
+- optionally upload resulting sdk to common public place
 
 ## Hints
 
