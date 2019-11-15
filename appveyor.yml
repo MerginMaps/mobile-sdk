@@ -1,6 +1,7 @@
 image: Visual Studio 2017
 
 install:
+  - call choco install winflexbison3
   - call .\\win\\distribute.cmd
 
 build: off

@@ -3,23 +3,18 @@
 set VERSION_qgis=31192093340f800d06d9ee67e1c3d46988520dd8
 set URL_qgis=https://github.com/qgis/QGIS/archive/%VERSION_qgis%.tar.gz
 set BUILD_qgis=%BUILD_PATH%\qgis
-mkdir %BUILD_qgis%
+set REPO_qgis=%REPO_PATH%\qgis
+if not exist %BUILD_qgis% mkdir %BUILD_qgis%
+
+IF NOT EXIST %REPO_qgis% (
+  cd %DOWNLOAD_PATH%
+  curl -fsSL --connect-timeout 60  -o qgis.tar.gz %URL_qgis%
+  7z x "qgis.tar.gz" -so | 7z x -aoa -si -ttar -o"src"
+  move src\QGIS-%VERSION_qgis% %REPO_qgis%
+)
+
 cd %BUILD_qgis%
-
-curl -fsSL --connect-timeout 60  -o qgis.tar.gz %URL_qgis%
-
-7z x "qgis.tar.gz" -so | 7z x -aoa -si -ttar -o"src"
-
-mkdir %BUILD_qgis%\build
-cd %BUILD_qgis%\build
-
-set OLD_PATH=%PATH%
-
-set PATH=%STAGE_PATH%\apps\Qt5\bin;%PATH%
-set PATH=C:\Python36-x64;%PATH%
-set Qt5_DIR=%STAGE_PATH%\apps\qt5\lib\cmake\Qt5
-
-cmake -G "Visual Studio 15 2017 Win64" ^
+cmake -G %CMAKE_GENERATOR% ^
 -DCMAKE_INSTALL_PREFIX:PATH=%STAGE_PATH% ^
 -DWITH_DESKTOP=OFF ^
 -DDISABLE_DEPRECATED=ON ^
@@ -40,22 +35,15 @@ cmake -G "Visual Studio 15 2017 Win64" ^
 -DWITH_APIDOC=OFF ^
 -DWITH_ASTYLE=OFF ^
 -DWITH_GRASS7:BOOL=OFF ^
+-DPYTHON_EXECUTABLE:PATH=%PY36%/python.exe ^
 -DFORCE_STATIC_PROVIDERS=TRUE ^
--DSETUPAPI_LIBRARY:PATH="C:/Program Files (x86)/Microsoft SDKs/Windows/v7.1A/Lib/x64/SetupAPI.Lib" ^
--DVERSION_LIBRARY:PATH="C:/Program Files (x86)/Microsoft SDKs/Windows/v7.1A/Lib/x64/Version.Lib" ^
 -DFLEX_EXECUTABLE:PATH="C:/ProgramData/chocolatey/lib/winflexbison3/tools/win_flex.exe" ^
 -DBISON_EXECUTABLE:PATH="C:/ProgramData/chocolatey/lib/winflexbison3/tools/win_bison.exe" ^
--DCMAKE_PREFIX_PATH=%STAGE_PATH%;%STAGE_PATH%/apps/Qt5/lib/cmake ^
-%BUILD_qgis%\src\QGIS-%VERSION_qgis%
+%REPO_qgis%
 
-cmake --build . --config Release --target install --parallel %NUMBER_OF_PROCESSORS% -- /verbosity:detailed
+cmake --build . --config Release --target install --parallel %NUMBER_OF_PROCESSORS%
 
+copy %REPO_qgis%\src\quickgui\plugin\qgsquickplugin.h %STAGE_PATH%\include
 
-REM  cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/
-REM  cp $BUILD_PATH/qgis/build-$ARCH/src/quickgui/qgis_quick.h ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/Headers/
-REM  cp $BUILD_qgis/src/quickgui/plugin/qgsquickplugin.h ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/Headers/
-
-REM cp -R $BUILD_qgis/src/quickgui/images ${STAGE_PATH}/QGIS.app/Contents/Resources/images/QgsQuick
-
-set PATH=%OLD_PATH%
-
+mkdir %STAGE_PATH%\images\QgsQuick
+copy %REPO_qgis%\src\quickgui\images\* %STAGE_PATH%\images\QgsQuick\
