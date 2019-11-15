@@ -7,7 +7,7 @@ set STAGE_PATH=%ROOT_DIR%\stage
 set BUILD_PATH=%ROOT_DIR%\build
 set REPO_PATH=%ROOT_DIR%\repo
 set DOWNLOAD_PATH=%ROOT_DIR%\download
-set RESULT_FILE=%ROOT_DIR%\..\input-sdk-win-x86_64.zip
+set RESULT_FILE=%ROOT_DIR%\input-sdk-win-x86_64.zip
 set OSGEO4W_ROOT=%REPO_PATH%\OSGeo4W64
 
 if not exist %ROOT_DIR% mkdir %ROOT_DIR%
