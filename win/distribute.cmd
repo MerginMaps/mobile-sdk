@@ -9,6 +9,8 @@ set REPO_PATH=%ROOT_DIR%\repo
 set DOWNLOAD_PATH=%ROOT_DIR%\download
 set RESULT_FILE=%ROOT_DIR%\input-sdk-win-x86_64.zip
 set OSGEO4W_ROOT=%REPO_PATH%\OSGeo4W64
+set CMAKE=C:\Program Files\CMake\bin
+set CMAKE_GENERATOR="Visual Studio 14 2015 Win64"
 
 if not exist %ROOT_DIR% mkdir %ROOT_DIR%
 if not exist %BUILD_PATH% mkdir %BUILD_PATH%
