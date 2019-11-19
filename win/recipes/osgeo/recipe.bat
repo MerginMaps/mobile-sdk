@@ -15,7 +15,7 @@ osgeo4w-setup.exe ^
 --upgrade-also ^
 --site %SERVER% ^
 --only-site ^
---root %STAGE_PATH% ^
+--root %OSGEO4W_ROOT% ^
 --autoaccept ^
 --no-shortcuts ^
 --no-replaceonreboot ^

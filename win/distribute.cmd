@@ -16,9 +16,16 @@ if not exist %ROOT_DIR% mkdir %ROOT_DIR%
 if not exist %BUILD_PATH% mkdir %BUILD_PATH%
 if not exist %REPO_PATH% mkdir %REPO_PATH%
 if not exist %DOWNLOAD_PATH% mkdir %DOWNLOAD_PATH%
+
+rem OSGEO
 if not exist %OSGEO4W_ROOT% call %~dp0\recipes\osgeo\recipe.bat
 if not exist %STAGE_PATH% robocopy %OSGEO4W_ROOT% %STAGE_PATH% /E /NFL /NDL
+if exist %STAGE_PATH%\apps\grass RMDIR /S /Q %STAGE_PATH%\apps\grass
+if exist %STAGE_PATH%\apps\proj-dev RMDIR /S /Q %STAGE_PATH%\apps\proj-dev
+if exist %STAGE_PATH%\apps\gdal-dev RMDIR /S /Q %STAGE_PATH%\apps\gdal-dev 
+if exist %STAGE_PATH%\apps\Python37 RMDIR /S /Q %STAGE_PATH%\apps\Python37
 
+rem BUILD ENV
 if not "%PROGRAMFILES(X86)%"=="" set PF86=%PROGRAMFILES(X86)%
 if "%PF86%"=="" set PF86=%PROGRAMFILES%
 if "%PF86%"=="" (echo PROGRAMFILES not set & goto error)
@@ -34,10 +41,12 @@ set LIB=%STAGE_PATH%\apps\Qt5\lib;%STAGE_PATH%\lib
 set LIB=%LIB%;C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x64\
 set INCLUDE=%STAGE_PATH%\apps\Qt5\include;%STAGE_PATH%\include
 
+rem GEODIFF
 IF NOT EXIST "%STAGE_PATH%\lib\geodiff.dll" call %~dp0\recipes\geodiff\recipe.bat
 IF NOT EXIST "%STAGE_PATH%\lib\geodiff.dll" goto error
 
-IF NOT EXIST "%STAGE_PATH%\qml\QgsQuick\qgis_quick_plugin.dll" call %~dp0\recipes\qgis\recipe.bat
+rem QGIS
+call %~dp0\recipes\qgis\recipe.bat
 IF NOT EXIST "%STAGE_PATH%\qml\QgsQuick\qgis_quick_plugin.dll" goto error
 
 IF NOT EXIST %RESULT_FILE% 7z a %RESULT_FILE% %STAGE_PATH%\*
