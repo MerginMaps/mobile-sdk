@@ -28,6 +28,8 @@ Contains:
 
 # Windows
 
+SDK for builing on [WIN](https://www.dropbox.com/sh/k263vsl78k1t6fp/AAB28Demr_ZicsgP7G_BcGsUa?dl=0)
+
 it is building automatically on appveyor.com 
 for local developement do:
 
