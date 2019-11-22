@@ -1,6 +1,6 @@
 @echo on
 
-set VERSION_qgis=f8a143bce818f9dd4fe601facdf97deb7707e182
+set VERSION_qgis=5706a9f739b1d8588469a7d905f5b19e352867b8
 set URL_qgis=https://github.com/qgis/QGIS/archive/%VERSION_qgis%.tar.gz
 set BUILD_qgis=%BUILD_PATH%\qgis
 set REPO_qgis=%REPO_PATH%\qgis
@@ -37,7 +37,6 @@ cmake -G %CMAKE_GENERATOR% ^
 -DUSE_OPENCL=OFF ^
 -DWITH_GRASS7:BOOL=OFF ^
 -DPYTHON_EXECUTABLE:PATH=%PY36%/python.exe ^
--DFORCE_STATIC_PROVIDERS=TRUE ^
 -DFLEX_EXECUTABLE:PATH="C:/ProgramData/chocolatey/lib/winflexbison3/tools/win_flex.exe" ^
 -DBISON_EXECUTABLE:PATH="C:/ProgramData/chocolatey/lib/winflexbison3/tools/win_bison.exe" ^
 %REPO_qgis%

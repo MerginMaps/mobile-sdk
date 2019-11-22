@@ -42,8 +42,9 @@ set LIB=%LIB%;C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x64\
 set INCLUDE=%STAGE_PATH%\apps\Qt5\include;%STAGE_PATH%\include
 
 rem GEODIFF
-IF NOT EXIST "%STAGE_PATH%\lib\geodiff.dll" call %~dp0\recipes\geodiff\recipe.bat
-IF NOT EXIST "%STAGE_PATH%\lib\geodiff.dll" goto error
+IF NOT EXIST "%STAGE_PATH%\lib\geodiff.lib" call %~dp0\recipes\geodiff\recipe.bat
+IF NOT EXIST "%STAGE_PATH%\bin\geodiff.dll" goto error
+IF NOT EXIST "%STAGE_PATH%\lib\geodiff.lib" goto error
 
 rem QGIS
 call %~dp0\recipes\qgis\recipe.bat
