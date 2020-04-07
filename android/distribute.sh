@@ -30,6 +30,7 @@ fi
 ROOT_PATH="$(dirname $($PYTHON -c 'from __future__ import print_function; import os,sys;print(os.path.realpath(sys.argv[1]))' $0))"
 ROOT_OUT_PATH="${ROOT_PATH}/../build-android"
 STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
+NATIVE_STAGE_PATH="${ROOT_OUT_PATH}/stage/native"
 RECIPES_PATH="$ROOT_PATH/recipes"
 BUILD_PATH="${ROOT_OUT_PATH}/build"
 LIBS_PATH="${ROOT_OUT_PATH}/build/libs"
@@ -83,14 +84,6 @@ CRESET="\x1b[39;49;00m"
 DO_CLEAN_BUILD=0
 DO_SET_X=0
 
-# Use ccache ?
-which ccache &>/dev/null
-if [ $? -eq 0 ]; then
-  export CC="ccache gcc"
-  export CXX="ccache g++"
-  export NDK_CCACHE="ccache"
-fi
-
 function try () {
     "$@" || exit -1
 }
@@ -121,6 +114,53 @@ function get_directory() {
       ;;
   esac
   echo $directory
+}
+
+function push_native() {
+  info "Entering NATIVE environment"
+
+  # save for pop
+  export OLD_PATH=$PATH
+  export OLD_CFLAGS=$CFLAGS
+  export OLD_CXXFLAGS=$CXXFLAGS
+  export OLD_LDFLAGS=$LDFLAGS
+  export OLD_CC=$CC
+  export OLD_CXX=$CXX
+  export OLD_AR=$AR
+  export OLD_RANLIB=$RANLIB
+  export OLD_STRIP=$STRIP
+  export OLD_MAKE=$MAKE
+  export OLD_LD=$LD
+  export OLD_CMAKECMD=$CMAKECMD
+  export OLD_ANDROID_CMAKE_LINKER_FLAGS=$ANDROID_CMAKE_LINKER_FLAGS
+
+  unset CC
+  unset CXX
+  unset CPP
+  unset LD
+  unset CFLAGS
+  unset CXXFLAGS
+  unset CPPFLAGS
+  unset LDFLAGS
+  unset RANLIB
+  unset TOOLCHAIN_FULL_PREFIX
+  unset TOOLCHAIN_SHORT_PREFIX
+  unset TOOLCHAIN_PREFIX
+  unset TOOLCHAIN_BASEDIR
+  unset QT_ARCH_PREFIX
+  unset QT_ANDROID
+  unset ANDROID_SYSTEM
+  unset ANDROID_CMAKE_LINKER_FLAGS
+  export PATH=$OLD_PATH
+  unset AR
+  unset RANLIB
+  unset STRIP
+  unset READELF
+  unset CMAKECMD
+  unset MAKE
+  unset MAKESMP
+  unset ANDROID_NDK_ROOT
+  unset ANDROID_NDK
 }
 
 function push_arm() {
@@ -156,7 +196,6 @@ function push_arm() {
       export TOOLCHAIN_PREFIX=i686-linux-android
       export TOOLCHAIN_BASEDIR=x86
       export QT_ARCH_PREFIX=x86
-      export QT_ANDROID=${QT_ANDROID_BASE}/android_x86
       export ANDROID_SYSTEM=android
   elif [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
       export TOOLCHAIN_FULL_PREFIX=armv7a-linux-androideabi${ANDROIDAPI}
@@ -164,7 +203,6 @@ function push_arm() {
       export TOOLCHAIN_PREFIX=arm-linux-androideabi
       export TOOLCHAIN_BASEDIR=arm-linux-androideabi
       export QT_ARCH_PREFIX=armv7
-      export QT_ANDROID=${QT_ANDROID_BASE}/android_armv7
       export ANDROID_SYSTEM=android
   elif [ "X${ARCH}" == "Xarm64-v8a" ]; then
       export TOOLCHAIN_FULL_PREFIX=aarch64-linux-android${ANDROIDAPI}
@@ -172,14 +210,15 @@ function push_arm() {
       export TOOLCHAIN_PREFIX=aarch64-linux-android
       export TOOLCHAIN_BASEDIR=aarch64-linux-android
       export QT_ARCH_PREFIX=arm64 # watch out when changing this, openssl depends on it
-      export QT_ANDROID=${QT_ANDROID_BASE}/android_arm64_v8a
       export ANDROID_SYSTEM=android64
   else
       echo "Error: Please report issue to enable support for arch (${ARCH})."
       exit 1
   fi
+  export QT_ANDROID=${QT_ANDROID_BASE}/android
 
-  export CFLAGS="-DANDROID $OFLAG -fomit-frame-pointer --sysroot $NDKPLATFORM -I$STAGE_PATH/include"
+  export CFLAGS="-DANDROID -fomit-frame-pointer --sysroot $NDKPLATFORM -I$STAGE_PATH/include"
+  export CFLAGS="$CFLAGS -Wno-unused-command-line-argument"
   export CFLAGS="$CFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH -isystem $ANDROIDNDK/sources/cxx-stl/llvm-libc++/include"
   export CFLAGS="$CFLAGS -isystem $ANDROIDNDK/sysroot/usr/include -isystem $ANDROIDNDK/sysroot/usr/include/$TOOLCHAIN_SHORT_PREFIX "
   export CFLAGS="$CFLAGS -D__ANDROID_API__=$ANDROIDAPI"
@@ -192,15 +231,24 @@ function push_arm() {
   export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_PREFIX/$ANDROIDAPI"
 
   export ANDROID_CMAKE_LINKER_FLAGS=""
-  if [ "X${ARCH}" == "Xarm64-v8a" ]; then
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$QT_ARCH_PREFIX/usr/lib"
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
+  # if [ "X${ARCH}" == "Xarm64-v8a" ]; then
+    # ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$QT_ARCH_PREFIX/usr/lib"
+
+    # folder with libc++_shared.so
+    # ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
+
     ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$STAGE_PATH/lib"
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$QT_ANDROID/lib"
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-lz"
+    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-llog"
+    # ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$QT_ANDROID/lib"
+    # ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-lz"
     export LDFLAGS="$LDFLAGS -Wl,-rpath=$STAGE_PATH/lib"
-  fi
+
+    # keep in sync with CMake's -DANDROID_STL=c++_shared
+    export LDFLAGS="$LDFLAGS -Wl,-lc++_shared"
+  # fi
   export PATH="$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/bin/:$ANDROIDSDK/tools:$ANDROIDNDK:$QT_ANDROID/bin:$PATH"
+
+  echo $ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH
 
   # search compiler in the path, to fail now instead of later.
   CC=$(which ${TOOLCHAIN_FULL_PREFIX}-clang)
@@ -222,27 +270,19 @@ function push_arm() {
   export MAKESMP="make -j$CORES"
   export MAKE="make"
   export READELF="$TOOLCHAIN_SHORT_PREFIX-readelf"
+
+  # see https://developer.android.com/ndk/guides/cmake#variables
+  # https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android
   export CMAKECMD="cmake"
   export CMAKECMD="$CMAKECMD -DANDROID_LINKER_FLAGS=$ANDROID_CMAKE_LINKER_FLAGS"
   export CMAKECMD="$CMAKECMD -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$ANDROIDNDK/build/cmake/android.toolchain.cmake"
   export CMAKECMD="$CMAKECMD -DCMAKE_FIND_ROOT_PATH:PATH=$ANDROID_NDK;$QT_ANDROID;$BUILD_PATH;$STAGE_PATH"
-  export CMAKECMD="$CMAKECMD -DANDROID_ABI=$ARCH -DANDROID_NDK=$ANDROID_NDK -DANDROID_NATIVE_API_LEVEL=$ANDROIDAPI -DANDROID=ON"
-
+  export CMAKECMD="$CMAKECMD -DANDROID_ABI=$ARCH -DANDROID_NDK=$ANDROID_NDK -DANDROID_NATIVE_API_LEVEL=$ANDROIDAPI -DANDROID=ON -DANDROID_STL=c++_shared"
 
   # export environment for Qt
   export ANDROID_NDK_ROOT=$ANDROIDNDK
   # and for cmake
   export ANDROID_NDK=$ANDROIDNDK
-
-  # This will need to be updated to support Python versions other than 2.7
-  export BUILDLIB_PATH="$BUILD_hostpython/build/lib.linux-`uname -m`-2.7/"
-
-  # Use ccache ?
-  which ccache &>/dev/null
-  if [ $? -eq 0 ]; then
-    export CC="ccache $CC"
-    export CXX="ccache $CXX"
-  fi
 }
 
 function pop_arm() {
@@ -263,7 +303,7 @@ function pop_arm() {
 }
 
 function usage() {
-  echo "Python for android - distribute.sh"
+  echo "Android dependencies of InputApp - distribute.sh"
   echo 
   echo "Usage:   ./distribute.sh [options]"
   echo
@@ -303,6 +343,7 @@ function check_build_deps() {
         info "Check build dependencies for $DIST"
         case $DIST in
             Debian|Ubuntu|LinuxMint)
+                # see https://doc.qt.io/qt-5/android-getting-started.html#64-bit-linux
                 check_pkg_deb_installed "build-essential zlib1g-dev cython"
             ;;
             *)
@@ -378,6 +419,7 @@ function run_prepare() {
     try rm -rf $BUILD_PATH
     try rm -rf $SRC_PATH/obj
     try rm -rf $SRC_PATH/libs
+    try rm -rf $NATIVE_STAGE_PATH
   fi
 
   info "Distribution will be located at $STAGE_PATH"
@@ -390,6 +432,7 @@ function run_prepare() {
   # create build directory if not found
   test -d $PACKAGES_PATH || mkdir -p $PACKAGES_PATH
   test -d $BUILD_PATH || mkdir -p $BUILD_PATH
+  test -d $NATIVE_STAGE_PATH || mkdir -p $NATIVE_STAGE_PATH
   test -d $LIBS_PATH || mkdir -p $LIBS_PATH
 
   # check arm env
@@ -581,21 +624,10 @@ function run_get_packages() {
       fi
     fi
 
-    # check if the file HEAD in case of, only if there is no MD5 to check.
-    check_headers=0
     if [ -z "$md5" ]; then
       if [ "X$DO_CLEAN_BUILD" == "X1" ]; then
-        check_headers=1
+        do_download=1
       elif [ ! -f $filename ]; then
-        check_headers=1
-      fi
-    fi
-
-    if [ "X$check_headers" == "X1" ]; then
-      debug "Checking if $url changed"
-      $WHEAD $url &> .headers-$filename
-      $PYTHON "$ROOT_PATH/tools/check_headers.py" .headers-$filename .sig-$filename
-      if [ $? -ne 0 ]; then
         do_download=1
       fi
     fi

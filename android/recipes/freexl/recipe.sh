@@ -36,8 +36,7 @@ function prebuild_freexl() {
 }
 
 function shouldbuild_freexl() {
-  # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/freexl/build-$ARCH/src/.libs/libfreexl.so -nt $BUILD_freexl/.patched ]; then
+  if [ -f $STAGE_PATH/lib/libfreexl.so ]; then
     DO_BUILD=0
   fi
 }

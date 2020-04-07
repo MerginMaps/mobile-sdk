@@ -4,7 +4,7 @@
 VERSION_sqlite3=3270100
 
 # dependencies of this recipe
-DEPS_sqlite3=()
+DEPS_sqlite3=(zlib)
 
 # url of the package
 URL_sqlite3=http://www.sqlite.org/2019/sqlite-autoconf-${VERSION_sqlite3}.tar.gz
@@ -45,14 +45,17 @@ function shouldbuild_sqlite3() {
 function build_sqlite3() {
   try mkdir -p $BUILD_PATH/sqlite3/build-$ARCH
   try cd $BUILD_PATH/sqlite3/build-$ARCH
-	push_arm
+
+  push_arm
+
   export CFLAGS="${CFLAGS} -DSQLITE_ENABLE_COLUMN_METADATA"
   try $BUILD_sqlite3/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64
   try $MAKESMP install
-	pop_arm
+
+  pop_arm
 }
 
 # function called after all the compile have been done

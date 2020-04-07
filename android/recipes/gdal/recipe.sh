@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # version of your package
-VERSION_gdal=2.4.0
+VERSION_gdal=3.0.4
 
 # dependencies of this recipe
-DEPS_gdal=(iconv sqlite3 geos libtiff postgresql expat)
+DEPS_gdal=(iconv sqlite3 geos postgresql expat proj)
 
 # url of the package
 URL_gdal=http://download.osgeo.org/gdal/$VERSION_gdal/gdal-${VERSION_gdal}.tar.gz
 
 # md5 of the package
-MD5_gdal=f2c87eefd74f15ba652c92029f666a8f
+MD5_gdal=c6bbb5caca06e96bd97a32918e0aa9aa
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -57,7 +57,8 @@ function build_gdal() {
     --with-pg=no \
     --with-expat=$STAGE_PATH
   try $MAKESMP
-  try $MAKESMP install &> install.log
+  try $MAKESMP install
+
   pop_arm
 }
 

@@ -44,17 +44,28 @@ function shouldbuild_libspatialite() {
 
 # function called to build the source code
 function build_libspatialite() {
-  try mkdir -p $BUILD_PATH/libspatialite/build-$ARCH
+  try rsync -a $BUILD_libspatialite/ $BUILD_PATH/libspatialite/build-$ARCH/
   try cd $BUILD_PATH/libspatialite/build-$ARCH
   push_arm
-  LDFLAGS="$LDFLAGS -llog" \
-    try $BUILD_libspatialite/configure \
+
+  # Use Proj 6.0.0 compatibility headers.
+  # Remove in libspatialite 5.0.0
+  export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
+  # export CXXFLAGS="$CXXFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H"
+  # try autoreconf -fi
+  # exit 1
+  try ./configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64 \
     --target=android \
+    --enable-examples=no \
+    --enable-proj=yes \
+    --enable-static=no \
     --with-geosconfig=$STAGE_PATH/bin/geos-config \
-    --enable-libxml2=no
+    --enable-libxml2=no \
+    --disable-dependency-tracking \
+    --enable-silent-rules
 
   try $MAKESMP
   try make install &> install.log

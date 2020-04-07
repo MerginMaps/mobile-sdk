@@ -29,7 +29,7 @@ function prebuild_exiv2() {
     return
   fi
 
-  try patch -p1 < $RECIPE_exiv2/patches/exiv2.patch
+  # try patch -p1 < $RECIPE_exiv2/patches/exiv2.patch
   touch .patched
 }
 
