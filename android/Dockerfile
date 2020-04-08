@@ -57,7 +57,6 @@ RUN apt-get install -qq -y --no-install-recommends \
     gcc \
     g++ \
     autoconf \
-    g++-4.8 \
     gzip \
     libtool \
     cmake \
@@ -67,10 +66,8 @@ RUN apt-get install -qq -y --no-install-recommends \
     python3-six \
     rsync \
     flex \
-    bison
-
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 10
-RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 10
+    bison \
+    && apt-get -qq clean
 
 # Download & unpack Qt toolchains & clean
 RUN mkdir -p /opt/Qt/${QT_VERSION}
