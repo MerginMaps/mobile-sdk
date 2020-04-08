@@ -74,6 +74,7 @@ RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 10
 
 # Download & unpack Qt toolchains & clean
 RUN mkdir -p /opt/Qt/${QT_VERSION}
+RUN mkdir -p /tmp/qt
 RUN curl -k -Lo /tmp/qt/qt-${QT_VERSION}.tar.gz "https://www.dropbox.com/s/76h23kjqt3h92g2/android.tar.gz?dl=0"
 RUN cd /opt/Qt/${QT_VERSION} && tar -xvzf /tmp/qt/qt-${QT_VERSION}.tar.gz
 RUN rm -rf /tmp/qt/qt-${QT_VERSION}.tar.gz
