@@ -41,20 +41,20 @@ function build_native_protobuf() {
   # also we need to build protobuf native executable,
   # since we need to create C++ files
   # from .proto files at build time for QGIS
-  try rsync -a $BUILD_protobuf/ $BUILD_PATH/protobuf/build-native/
+  try mkdir -p $BUILD_PATH/protobuf/build-native/
   try cd $BUILD_PATH/protobuf/build-native
 
   push_native
 
-  export CFLAGS="-DNDEBUG"
-  export CXXFLAGS="${CFLAGS}"
-  export CPPFLAGS="${CFLAGS}"
+  #export CFLAGS="-DNDEBUG"
+  #export CXXFLAGS="${CFLAGS}"
+  #export CPPFLAGS="${CFLAGS}"
 
-  try ./autogen.sh
-  try ./configure \
-    --prefix=$NATIVE_STAGE_PATH \
-    --disable-debug \
-    --disable-dependency-tracking
+  try cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -Dprotobuf_BUILD_TESTS=OFF \
+    -DCMAKE_INSTALL_PREFIX:PATH=$NATIVE_STAGE_PATH \
+    $BUILD_protobuf/cmake
 
   try make -j$CORES
   try make install
@@ -64,23 +64,30 @@ function build_native_protobuf() {
 
 # function called to build the source code
 function build_android_protobuf() {
-  try rsync -a $BUILD_protobuf/ $BUILD_PATH/protobuf/build-$ARCH/
+  #try rsync -a $BUILD_protobuf/ $BUILD_PATH/protobuf/build-$ARCH/
+  try mkdir -p $BUILD_PATH/protobuf/build-$ARCH/
   try cd $BUILD_PATH/protobuf/build-$ARCH
   push_arm
 
-  export CXXFLAGS="$CXXFLAGS -DNDEBUG"
-  export CPPFLAGS="$CXXFLAGS"
+  #export CXXFLAGS="$CXXFLAGS -DNDEBUG"
+  #export CPPFLAGS="$CXXFLAGS"
   # see https://github.com/protocolbuffers/protobuf/issues/2719
   # ./.libs/libprotobuf.so: undefined reference to `__android_log_write'
-  export LDFLAGS="$LDFLAGS -llog"
+  #export LDFLAGS="$LDFLAGS -llog"
 
-  try ./autogen.sh
-  try ./configure \
-    --prefix=$STAGE_PATH \
-    --host=$TOOLCHAIN_PREFIX \
-    --disable-debug \
-    --disable-dependency-tracking \
-    --with-zlib
+  # try ./autogen.sh
+  #try ./configure \
+  #  --prefix=$STAGE_PATH \
+  #  --host=$TOOLCHAIN_PREFIX \
+  #  --disable-debug \
+  #  --disable-dependency-tracking \
+  #  --with-zlib
+
+  try $CMAKECMD \
+    -Dprotobuf_BUILD_TESTS=OFF \
+    -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+    -DBUILD_SHARED_LIBS=ON \
+    $BUILD_protobuf/cmake
 
   try $MAKESMP
   try $MAKE install

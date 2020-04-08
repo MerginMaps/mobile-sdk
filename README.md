@@ -128,7 +128,6 @@ The project is originally based on https://github.com/opengisch/OSGeo4A
 and https://github.com/rabits/dockerfiles
 
 - [Dockerfiles](https://github.com/rabits/dockerfiles) Apache-2.0, rabits.org
-- [extract-qt-installer.sh](https://github.com/benlau/qtci) Apache-2.0, QT-CI Project
 - [distribute.sh](https://github.com/opengisch/OSGeo4A/blob/master/LICENSE-for-distribute-sh) MIT license, Copyright (c) 2010-2013 Kivy Team and other contributors
 - [Dockerfiles & recipes](https://github.com/opengisch/OSGeo4A) MIT license
 - [iOS toolchain](https://github.com/cristeab/ios-cmake.git)

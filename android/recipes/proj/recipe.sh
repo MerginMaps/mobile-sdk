@@ -28,7 +28,6 @@ function prebuild_proj() {
     return
   fi
 
-  # patch -p1 < $RECIPE_proj/patches/notest.patch
   touch .patched
 }
 

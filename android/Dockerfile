@@ -56,7 +56,12 @@ RUN apt-get install -qq -y --no-install-recommends \
     unzip \
     gcc \
     g++ \
+    autoconf \
+    g++-4.8 \
+    gzip \
+    libtool \
     cmake \
+    automake \
     patch \
     python3 \
     python3-six \
@@ -64,14 +69,14 @@ RUN apt-get install -qq -y --no-install-recommends \
     flex \
     bison
 
-COPY extract-qt-installer.sh /tmp/qt/
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 10
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 10
 
 # Download & unpack Qt toolchains & clean
 RUN mkdir -p /opt/Qt/${QT_VERSION}
 RUN curl -k -Lo /tmp/qt/qt-${QT_VERSION}.tar.gz "https://www.dropbox.com/s/76h23kjqt3h92g2/android.tar.gz?dl=0"
 RUN cd /opt/Qt/${QT_VERSION} && tar -xvzf /tmp/qt/qt-${QT_VERSION}.tar.gz
 RUN rm -rf /tmp/qt/qt-${QT_VERSION}.tar.gz
-
 
 # Download & unpack android SDK
 ENV PATH=java-8-openjdk-amd64/bin:$PATH
@@ -98,10 +103,19 @@ RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
 ####################################################################
 # now OSGeo libs
+# TODO move above!
+
 
 COPY config_docker.conf /usr/src/android/config.conf
 COPY tools /usr/src/android/tools
 COPY recipes /usr/src/android/recipes
 COPY distribute.sh /usr/src/android/distribute.sh
+
 RUN /usr/src/android/distribute.sh -m gdal
-RUN /usr/src/android/distribute.sh -m qgis && mv /usr/src/build-android/stage /home/input-sdk && rm -rf /usr/src
+RUN /usr/src/android/distribute.sh -m protobuf
+RUN /usr/src/android/distribute.sh -m qca
+RUN /usr/src/android/distribute.sh -m qtkeychain
+RUN /usr/src/android/distribute.sh -m libspatialite
+RUN /usr/src/android/distribute.sh -m qgis
+
+RUN mv /usr/src/build-android/stage /home/input-sdk && rm -rf /usr/src

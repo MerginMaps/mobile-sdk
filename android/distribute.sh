@@ -231,24 +231,23 @@ function push_arm() {
   export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_PREFIX/$ANDROIDAPI"
 
   export ANDROID_CMAKE_LINKER_FLAGS=""
-  # if [ "X${ARCH}" == "Xarm64-v8a" ]; then
-    # ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$QT_ARCH_PREFIX/usr/lib"
+  # for libGLESv2.so and similar
+  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$QT_ARCH_PREFIX/usr/lib"
 
-    # folder with libc++_shared.so
-    # ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
+  # folder with libc++_shared.so
+  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
+  # keep in sync with CMake's -DANDROID_STL=c++_shared
+  export LDFLAGS="$LDFLAGS -Wl,-lc++_shared"
 
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$STAGE_PATH/lib"
-    ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-llog"
-    # ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$QT_ANDROID/lib"
-    # ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-lz"
-    export LDFLAGS="$LDFLAGS -Wl,-rpath=$STAGE_PATH/lib"
+  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$STAGE_PATH/lib"
+  export LDFLAGS="$LDFLAGS -Wl,-rpath=$STAGE_PATH/lib"
 
-    # keep in sync with CMake's -DANDROID_STL=c++_shared
-    export LDFLAGS="$LDFLAGS -Wl,-lc++_shared"
-  # fi
+  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-llog"
+
+  # for libQt5AndroidExtras_arm64-v8a.so and similar
+  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$QT_ANDROID/lib"
+
   export PATH="$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/bin/:$ANDROIDSDK/tools:$ANDROIDNDK:$QT_ANDROID/bin:$PATH"
-
-  echo $ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH
 
   # search compiler in the path, to fail now instead of later.
   CC=$(which ${TOOLCHAIN_FULL_PREFIX}-clang)
