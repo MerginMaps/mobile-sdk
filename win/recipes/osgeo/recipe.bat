@@ -20,7 +20,7 @@ osgeo4w-setup.exe ^
 --no-shortcuts ^
 --no-replaceonreboot ^
 --packages exiv2,exiv2-devel,expat,freexl,hdf5,hdf4,gdal,geos,iconv,^
-iconv-vc14,libjpeg,libkml,liblwgeom,^
+iconv-vc14,libjpeg,libkml,liblwgeom,protobuf-devel,protobuf,^
 libpng,libpq,libspatialindex,libtiff,libxml2,libzip-devel,^
 libzip-libs,netcdf,openssl,openssl10,proj,qca-qt5-devel,qca-qt5-libs,^
 qt5-devel,qt5-qml,qt5-libs,qt5-libs-debug,qtkeychain-qt5-devel,^

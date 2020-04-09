@@ -1,5 +1,4 @@
 # input-sdk
-[![Build status](https://ci.appveyor.com/api/projects/status/76nx3nvjo3phwjcu/branch/master?svg=true)](https://ci.appveyor.com/project/PeterPetrik/input-sdk/branch/master)
 
 SDK for building [Input](https://github.com/lutraconsulting/input) for mobile devices
 
@@ -28,10 +27,9 @@ Contains:
 
 # Windows
 
-SDK for builing on [WIN](https://www.dropbox.com/sh/k263vsl78k1t6fp/AAB28Demr_ZicsgP7G_BcGsUa?dl=0)
+Latest SDK for building on [WIN](https://www.dropbox.com/sh/k263vsl78k1t6fp/AAB28Demr_ZicsgP7G_BcGsUa?dl=0)
 
-it is building automatically on appveyor.com 
-for local developement do:
+To build SDK:
 
 - install Visual Studio (Community) 2015 (14)
 - install Microsoft SDK 8.1
@@ -45,7 +43,7 @@ for local developement do:
 - get geodiff, qgis, input-sdk repos to C:\input-sdk\x86_64\repo\
 - `cd input-sdk\win`
 - run `distibute.cmd`
-- optionally upload resulting sdk to common public place
+- optionally upload resulting sdk to common public place (dropbox)
 
 ## Hints
 
