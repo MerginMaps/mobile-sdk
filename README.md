@@ -40,7 +40,8 @@ To build SDK:
 - make sure you have file Microsoft Visual Studio 14.0\VC\vcvarsall.bat present on the installation!
 - install OSGeo4W 64 bit to C:\projects\input-sdk\x86_64\repo\OSGeo4W64
 - install bison and flex and cmake and 7zip (through `choco`)
-- get geodiff, qgis, input-sdk repos to C:\input-sdk\x86_64\repo\
+- get geodiff, qgis, input-sdk repos to C:\projects\input-sdk\x86_64\repo\
+- remove leftovers from the previous installations, notably build and stage directories and resulting sdk.zip file
 - `cd input-sdk\win`
 - run `distibute.cmd`
 - optionally upload resulting sdk to common public place (dropbox)
