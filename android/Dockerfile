@@ -3,10 +3,10 @@ MAINTAINER Peter Petrik <peter.petrik@lutraconsulting.co.uk>
 
 USER root
 
-ARG QT_VERSION=5.13.0
-ARG NDK_VERSION=r19
-ARG SDK_PLATFORM=android-26
-ARG SDK_BUILD_TOOLS=28.0.2
+ARG QT_VERSION=5.14.1
+ARG NDK_VERSION=r21
+ARG SDK_PLATFORM=android-29
+ARG SDK_BUILD_TOOLS=28.0.3
 ARG SDK_PACKAGES="tools platform-tools"
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -16,7 +16,7 @@ ENV ANDROID_HOME /opt/android-sdk
 ENV ANDROID_SDK_ROOT ${ANDROID_HOME}
 ENV ANDROID_NDK_ROOT /opt/android-ndk
 ENV ANDROID_NDK_HOST linux-x86_64
-ENV ANDROID_NDK_PLATFORM android-21
+ENV ANDROID_NDK_PLATFORM android-23
 ENV QMAKESPEC android-clang
 ENV PATH ${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}
 
@@ -56,24 +56,25 @@ RUN apt-get install -qq -y --no-install-recommends \
     unzip \
     gcc \
     g++ \
+    autoconf \
+    gzip \
+    libtool \
     cmake \
+    automake \
     patch \
     python3 \
     python3-six \
     rsync \
     flex \
-    bison
-
-COPY extract-qt-installer.sh /tmp/qt/
+    bison \
+    && apt-get -qq clean
 
 # Download & unpack Qt toolchains & clean
-RUN curl -k -Lo /tmp/qt/installer.run "https://download.qt-project.org/official_releases/qt/$(echo ${QT_VERSION} | cut -d. -f 1-2)/${QT_VERSION}/qt-opensource-linux-x64-${QT_VERSION}.run" \
-    && QT_CI_PACKAGES=\
-qt.qt5.$(echo "${QT_VERSION}" | tr -d .).android_arm64_v8a,\
-qt.qt5.$(echo "${QT_VERSION}" | tr -d .).android_armv7\
-    /tmp/qt/extract-qt-installer.sh /tmp/qt/installer.run "${QT_PATH}" \
-    && find "${QT_PATH}" -mindepth 1 -maxdepth 1 ! -name "${QT_VERSION}" -exec echo 'Cleaning Qt SDK: {}' \; -exec rm -r '{}' \; \
-    && rm -rf /tmp/qt
+RUN mkdir -p /opt/Qt/${QT_VERSION} \
+    && mkdir -p /tmp/qt \
+    && curl -k -Lo /tmp/qt/qt-${QT_VERSION}.tar.gz "https://www.dropbox.com/s/76h23kjqt3h92g2/android.tar.gz?dl=0" \
+    && cd /opt/Qt/${QT_VERSION} && tar -xvzf /tmp/qt/qt-${QT_VERSION}.tar.gz \
+    && rm -rf /tmp/qt/qt-${QT_VERSION}.tar.gz
 
 # Download & unpack android SDK
 ENV PATH=java-8-openjdk-amd64/bin:$PATH
@@ -100,10 +101,11 @@ RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
 ####################################################################
 # now OSGeo libs
-
 COPY config_docker.conf /usr/src/android/config.conf
 COPY tools /usr/src/android/tools
 COPY recipes /usr/src/android/recipes
 COPY distribute.sh /usr/src/android/distribute.sh
-RUN /usr/src/android/distribute.sh -m gdal
-RUN /usr/src/android/distribute.sh -m qgis && mv /usr/src/build-android/stage /home/input-sdk && rm -rf /usr/src
+
+RUN /usr/src/android/distribute.sh -m qgis \
+    && mv /usr/src/build-android/stage /home/input-sdk \
+    && rm -rf /usr/src

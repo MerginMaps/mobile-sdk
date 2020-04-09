@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # version of your package
-VERSION_qgis=3.9
+VERSION_qgis=3.13
 
 # dependencies of this recipe
-DEPS_qgis=(zlib gdal qca libspatialite libspatialindex expat postgresql libzip qtkeychain exiv2 geodiff)
-# DEPS_qgis=()
+DEPS_qgis=(zlib gdal qca libspatialindex libspatialite expat postgresql libzip qtkeychain exiv2 geodiff protobuf)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/31192093340f800d06d9ee67e1c3d46988520dd8.tar.gz
+# some random commit from the 7th April
+URL_qgis=https://github.com/qgis/QGIS/archive/24f705c9fc33c6986425f7458eeb5a7185027fd5.tar.gz
 
 # md5 of the package
-MD5_qgis=b0d34871ad08ad5c3cc30f2fcaa9e0e5
+MD5_qgis=4a60f598718417023ac7fcb6ff2b4fd2
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -61,10 +61,13 @@ function build_qgis() {
     -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.so \
     -DPYTHON_EXECUTABLE=`which python3` \
     -DWITH_BINDINGS=OFF \
-    -DWITH_INTERNAL_SPATIALITE=OFF \
     -DWITH_GRASS=OFF \
     -DWITH_QTMOBILITY=OFF \
     -DWITH_QUICK=ON \
+    -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt5/QtCrypto \
+    -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5_$ARCH.so \
+    -DQTKEYCHAIN_INCLUDE_DIR=$STAGE_PATH/include/qt5keychain \
+    -DQTKEYCHAIN_LIBRARY=$STAGE_PATH/lib/libqt5keychain_$ARCH.so \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DENABLE_QT5=ON \
     -DENABLE_TESTS=OFF \
@@ -79,6 +82,12 @@ function build_qgis() {
     -DWITH_QUICK=ON \
     -DWITH_QT5SERIALPORT=OFF \
     -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
+    -DProtobuf_PROTOC_EXECUTABLE:FILEPATH=$NATIVE_STAGE_PATH/bin/protoc \
+    -DProtobuf_INCLUDE_DIRS:PATH=$STAGE_PATH/include \
+    -DProtobuf_LIBRARY=$STAGE_PATH/lib/libprotobuf.so \
+    -DProtobuf_LITE_LIBRARY=$STAGE_PATH/lib/libprotobuf-lite.so \
+    -DProtobuf_PROTOC_LIBRARY=$STAGE_PATH/lib/libprotoc.so \
+    -DWITH_QSPATIALITE=OFF \
     $BUILD_qgis
 
   try $MAKESMP install

@@ -34,8 +34,7 @@ function prebuild_zlib() {
 }
 
 function shouldbuild_zlib() {
-  # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libz.so -nt $BUILD_zlib/.patched ]; then
+  if [ -f $STAGE_PATH/lib/libz.so ]; then
     DO_BUILD=0
   fi
 }
@@ -50,6 +49,7 @@ function build_zlib() {
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     $BUILD_zlib
+
   try $MAKESMP install
 
   pop_arm
