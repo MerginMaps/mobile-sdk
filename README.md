@@ -27,7 +27,7 @@ Contains:
 
 # Windows
 
-Latest SDK for building on [WIN](https://www.dropbox.com/sh/k263vsl78k1t6fp/AAB28Demr_ZicsgP7G_BcGsUa?dl=0)
+Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input-sdk-win-x86_64-7.zip?dl=0)
 
 To build SDK:
 

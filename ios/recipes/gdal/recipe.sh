@@ -2,17 +2,16 @@
 
 # version of your package
 # NOTE: if changed, update also qgis's recipe
-VERSION_gdal=2.4.0
+VERSION_gdal=3.0.4
 
 # dependencies of this recipe
-#DEPS_gdal=(iconv sqlite3 geos libtiff postgresql expat)
-DEPS_gdal=(geos libtiff postgresql expat)
+DEPS_gdal=(iconv geos postgresql expat)
 
 # url of the package
 URL_gdal=http://download.osgeo.org/gdal/$VERSION_gdal/gdal-${VERSION_gdal}.tar.gz
 
 # md5 of the package
-MD5_gdal=f2c87eefd74f15ba652c92029f666a8f
+MD5_gdal=c6bbb5caca06e96bd97a32918e0aa9aa
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -32,9 +31,6 @@ function prebuild_gdal() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
-
-  # see https://github.com/OSGeo/gdal/issues/1820
-  try patch -p1 < $RECIPE_gdal/patches/sqlite_ext.patch
 
   touch .patched
 }
@@ -80,8 +76,15 @@ function build_gdal() {
     --with-geos=$STAGE_PATH/bin/geos-config \
     --with-pg=no \
     --with-expat=$STAGE_PATH \
+    --with-rename-internal-libtiff-symbols=yes \
+    --with-rename-internal-libgeotiff-symbols=yes \
+    --with-rename-internal-shapelib-symbols=yes \
+    --with-poppler=no \
+    --with-podofo=no \
+    --with-pdfium=no \
+    --disable-driver-mrf \
     --with-jpeg=no \
-    --with-mrf=no \
+    --with-proj=$STAGE_PATH \
     --with-png=no \
     $GDAL_FLAGS
 

@@ -22,6 +22,7 @@ fi
 ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOT_OUT_PATH="${ROOT_PATH}/../build-ios"
 STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
+NATIVE_STAGE_PATH="${ROOT_OUT_PATH}/stage/native"
 RECIPES_PATH="$ROOT_PATH/recipes"
 BUILD_PATH="${ROOT_OUT_PATH}/build"
 LIBS_PATH="${ROOT_OUT_PATH}/build/libs"
@@ -100,6 +101,43 @@ function get_directory() {
       ;;
   esac
   echo $directory
+}
+
+function push_native() {
+  info "Entering NATIVE environment"
+
+  # save for pop
+  export OLD_PATH=$PATH
+  export OLD_CFLAGS=$CFLAGS
+  export OLD_CXXFLAGS=$CXXFLAGS
+  export OLD_LDFLAGS=$LDFLAGS
+  export OLD_CC=$CC
+  export OLD_CXX=$CXX
+  export OLD_AR=$AR
+  export OLD_RANLIB=$RANLIB
+  export OLD_STRIP=$STRIP
+  export OLD_MAKE=$MAKE
+  export OLD_LD=$LD
+  export OLD_CMAKECMD=$CMAKECMD
+  export OLD_TOOLCHAIN_PREFIX=$TOOLCHAIN_PREFIX
+
+  unset CC
+  unset CXX
+  unset CPP
+  unset LD
+  unset CFLAGS
+  unset CXXFLAGS
+  unset CPPFLAGS
+  unset LDFLAGS
+  unset RANLIB
+  unset QT_ARCH_PREFIX
+  export PATH=$OLD_PATH
+  unset AR
+  unset RANLIB
+  unset STRIP
+  unset CMAKECMD
+  unset MAKE
+  unset MAKESMP
 }
 
 function push_arm() {
@@ -182,9 +220,9 @@ function push_arm() {
   # make sure CFLAGS CPPFLAGS are in match with CMAKE settings from toolchain file
   CMAKECMD="cmake"
   if [ $DEBUG -eq 1 ]; then
-    CMAKECMD="${CMAKECMD} -DCMAKE_BUILD_TYPE=Debug"
-  else
     CMAKECMD="${CMAKECMD} -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+  else
+    CMAKECMD="${CMAKECMD} -DCMAKE_BUILD_TYPE=Release"
   fi
   CMAKECMD="${CMAKECMD} -DENABLE_VISIBILITY=1 -DIOS_ARCH=${ARCH} -IOS_PLATFORM=${PLATFORM}"
   CMAKECMD="${CMAKECMD} -DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH"
@@ -296,6 +334,7 @@ function run_prepare() {
     info "Cleaning build"
     try rm -rf $STAGE_PATH
     try rm -rf $BUILD_PATH
+    try rm -rf $NATIVE_STAGE_PATH
   fi
 
   info "Distribution will be located at $STAGE_PATH"
@@ -309,6 +348,7 @@ function run_prepare() {
   test -d $PACKAGES_PATH || mkdir -p $PACKAGES_PATH
   test -d $BUILD_PATH || mkdir -p $BUILD_PATH
   test -d $LIBS_PATH || mkdir -p $LIBS_PATH
+  test -d $NATIVE_STAGE_PATH || mkdir -p $NATIVE_STAGE_PATH
 
   # check arm env
   push_arm
