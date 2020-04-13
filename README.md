@@ -56,16 +56,17 @@ This provides a set of scripts to build opensource geo tools for iOS (iPhone and
 Only works on MacOS systems, since you need XCode to compile binaries for iOS. The build system is maintained for QGIS 3.x 
 releases.
 
-Tested with iPhoneOS12.0.sdk, Qt 5.11.3 and arm64, min SDK 12.0 on iPad running iOS 12.x
-Due to the [Qt bug](https://bugreports.qt.io/browse/QTBUG-77031), use Qt 5.11.x or 5.12.5+ or 5.13.1+
+Tested with iPhoneOS13.4.sdk, Qt 5.14.1 and arm64, min SDK 12.0 on iPad running iOS 12.x
 
 Dependencies instructions
 -------------------------
-- [Qt5 5.11.3] Install iOS arch support (if you want SDK 10.0 + and arm64 only)
-- Install XCode 10.3 and accept ToC
+- [Qt5 5.14.1] Install iOS arch support
+- Install XCode 11.4, command line tools and accept ToC
+- You should have SDK iPhoneOS13.4
+
 ```
 $ xcrun --sdk iphoneos --show-sdk-path
-/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.4.sdk
+/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.4.sdk
 ```
 
 If you want armv7 and different SDK, you may try to build QT yourself (not tested)
