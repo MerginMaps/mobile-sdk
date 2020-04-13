@@ -4,7 +4,7 @@
 VERSION_qgis=3.13
 
 # dependencies of this recipe
-DEPS_qgis=(libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain)
+DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain)
 
 # url of the package
 URL_qgis=https://github.com/qgis/QGIS/archive/24f705c9fc33c6986425f7458eeb5a7185027fd5.tar.gz
@@ -52,9 +52,6 @@ function build_qgis() {
   try cd $BUILD_PATH/qgis/build-$ARCH
 
   push_arm
-
-  clang++ -v
-  exit 1;
 
   try ${CMAKECMD} \
     -DCMAKE_DISABLE_FIND_PACKAGE_HDF5=TRUE \
@@ -131,6 +128,7 @@ function build_qgis() {
     -DProtobuf_LIBRARY=$STAGE_PATH/lib/libprotobuf.a \
     -DProtobuf_LITE_LIBRARY=$STAGE_PATH/lib/libprotobuf-lite.a \
     -DProtobuf_PROTOC_LIBRARY=$STAGE_PATH/lib/libprotoc.a \
+    -DQGIS_MACAPP_BUNDLE=-1 \
     $BUILD_qgis
 
   try $MAKESMP install
@@ -148,9 +146,5 @@ function build_qgis() {
 
 # function called after all the compile have been done
 function postbuild_qgis() {
-  LIB_ARCHS=`lipo -archs ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/qgis_quick`
-  if [[ $LIB_ARCHS != *"$ARCH"* ]]; then
-    error "Library was not successfully build for ${ARCH}"
-    exit 1;
-  fi
+  :
 }
