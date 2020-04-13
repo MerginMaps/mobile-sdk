@@ -52,13 +52,22 @@ function build_libspatialite() {
 
   push_arm
 
+  # Use Proj 6.0.0 compatibility headers.
+  # Remove in libspatialite 5.0.0
+  export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H"
+  # so the configure script can check that proj library contains pj_init_plus
+  export LDFLAGS="$LDFLAGS -lc++"
+
   try $BUILD_libspatialite/configure \
     --prefix=$STAGE_PATH \
     --host=${TOOLCHAIN_PREFIX} \
     --with-geosconfig=$STAGE_PATH/bin/geos-config \
     --enable-libxml2=no \
-    --disable-shared
-    --disable-examples
+    --disable-shared \
+    --disable-examples \
+    --enable-proj=yes \
+    --enable-static=yes
+
 
   try $MAKESMP
   try make install &> install.log

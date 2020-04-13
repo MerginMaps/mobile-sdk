@@ -22,6 +22,7 @@ fi
 ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOT_OUT_PATH="${ROOT_PATH}/../build-ios"
 STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
+NATIVE_STAGE_PATH="${ROOT_OUT_PATH}/stage/native"
 RECIPES_PATH="$ROOT_PATH/recipes"
 BUILD_PATH="${ROOT_OUT_PATH}/build"
 LIBS_PATH="${ROOT_OUT_PATH}/build/libs"
@@ -102,6 +103,43 @@ function get_directory() {
   echo $directory
 }
 
+function push_native() {
+  info "Entering NATIVE environment"
+
+  # save for pop
+  export OLD_PATH=$PATH
+  export OLD_CFLAGS=$CFLAGS
+  export OLD_CXXFLAGS=$CXXFLAGS
+  export OLD_LDFLAGS=$LDFLAGS
+  export OLD_CC=$CC
+  export OLD_CXX=$CXX
+  export OLD_AR=$AR
+  export OLD_RANLIB=$RANLIB
+  export OLD_STRIP=$STRIP
+  export OLD_MAKE=$MAKE
+  export OLD_LD=$LD
+  export OLD_CMAKECMD=$CMAKECMD
+  export OLD_TOOLCHAIN_PREFIX=$TOOLCHAIN_PREFIX
+
+  unset CC
+  unset CXX
+  unset CPP
+  unset LD
+  unset CFLAGS
+  unset CXXFLAGS
+  unset CPPFLAGS
+  unset LDFLAGS
+  unset RANLIB
+  unset QT_ARCH_PREFIX
+  export PATH=$OLD_PATH
+  unset AR
+  unset RANLIB
+  unset STRIP
+  unset CMAKECMD
+  unset MAKE
+  unset MAKESMP
+}
+
 function push_arm() {
   info "Entering in ${ARCH} environment"
 
@@ -164,31 +202,24 @@ function push_arm() {
   fi
 
   CMAKE_TOOLCHAIN_FILE=$ROOT_PATH/tools/ios.toolchain.cmake
-  export CFLAGS="-fobjc-nonfragile-abi -fobjc-legacy-dispatch -fPIC -arch ${ARCH} -isysroot $SYSROOT"
+  export CFLAGS=
+  export CFLAGS="$CFLAGS -fobjc-nonfragile-abi -fobjc-legacy-dispatch -fPIC -arch ${ARCH} -isysroot $SYSROOT"
   # TODO QtCrypto to QGIS, libxml2 to ?
   export CFLAGS="${CFLAGS} -I$STAGE_PATH/include -I$SYSROOT/usr/include/libxml2 $VERSION_MIN"
   export LDFLAGS="-arch ${ARCH} -isysroot $SYSROOT -L$STAGE_PATH/lib $VERSION_MIN"
   export CXXFLAGS="${CFLAGS}"
-  export PATH="$SYSROOT/usr/bin:${XCODE_DEVELOPER}/usr/bin:$QT_PATH/bin:${XCODE_DEVELOPER}/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH"
-  # search compiler in the path, to fail now instead of later.
-  if hash ${XCODE_DEVELOPER}/usr/bin/gcc 2>/dev/null; then
-    debug "Compiler found at $CC"
-  else
-    error "Unable to find compiler ${CC} !!"
-    error "Ensure that XCode is installed"
-    exit 1
-  fi
+  export PATH="$SYSROOT/usr/bin:$QT_PATH/bin:${XCODE_DEVELOPER}/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:$PATH:/usr/bin"
 
   # make sure CFLAGS CPPFLAGS are in match with CMAKE settings from toolchain file
   CMAKECMD="cmake"
   if [ $DEBUG -eq 1 ]; then
-    CMAKECMD="${CMAKECMD} -DCMAKE_BUILD_TYPE=Debug"
-  else
     CMAKECMD="${CMAKECMD} -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+  else
+    CMAKECMD="${CMAKECMD} -DCMAKE_BUILD_TYPE=Release"
   fi
-  CMAKECMD="${CMAKECMD} -DENABLE_VISIBILITY=1 -DIOS_ARCH=${ARCH} -IOS_PLATFORM=${PLATFORM}"
+  CMAKECMD="${CMAKECMD} -DENABLE_VISIBILITY=1 -DARCHS=${ARCH} -DPLATFORM=${PLATFORM}"
   CMAKECMD="${CMAKECMD} -DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH"
-  CMAKECMD="${CMAKECMD} -DIOS_SYSROOT=$SYSROOT -DIOS_DEPLOYMENT_TARGET=${IOS_MIN_SDK_VERSION} -DQT_PATH=$QT_PATH"
+  CMAKECMD="${CMAKECMD} -DDEPLOYMENT_TARGET=${IOS_MIN_SDK_VERSION} -DQT_PATH=$QT_PATH"
   CMAKECMD="$CMAKECMD -DCMAKE_PREFIX_PATH:PATH=$QT_PATH;$BUILD_PATH;$STAGE_PATH"
 
   if false; then
@@ -207,16 +238,16 @@ function push_arm() {
     CFLAGS="${CFLAGS} -fobjc-arc"
   fi
 
-  export CC="${XCODE_DEVELOPER}/usr/bin/gcc $CFLAGS"
-  export CXX="${XCODE_DEVELOPER}/usr/bin/g++ $CXXFLAGS"
-  export LD="${XCODE_DEVELOPER}/usr/bin/ld"
-  export MAKESMP="${XCODE_DEVELOPER}/usr/bin/make -j$CORES"
-  export MAKE="${XCODE_DEVELOPER}/usr/bin/make"
+  export CC="/usr/bin/clang"
+  export CXX="/usr/bin/clang++"
+  export LD="/usr/bin/ld"
+  export MAKESMP="/usr/bin/make -j$CORES"
+  export MAKE="/usr/bin/make"
   export CFLAGS=$CFLAGS
   export CXXFLAGS="$CXXFLAGS"
 
-  CMAKECMD="${CMAKECMD} -DCMAKE_C_COMPILER=${XCODE_DEVELOPER}/usr/bin/gcc"
-  CMAKECMD="${CMAKECMD} -DCMAKE_CXX_COMPILER=${XCODE_DEVELOPER}/usr/bin/g++"
+  # CMAKECMD="${CMAKECMD} -DCMAKE_C_COMPILER=${CC}"
+  # CMAKECMD="${CMAKECMD} -DCMAKE_CXX_COMPILER=${CXX}"
 
   export CMAKECMD=$CMAKECMD
 
@@ -296,6 +327,7 @@ function run_prepare() {
     info "Cleaning build"
     try rm -rf $STAGE_PATH
     try rm -rf $BUILD_PATH
+    try rm -rf $NATIVE_STAGE_PATH
   fi
 
   info "Distribution will be located at $STAGE_PATH"
@@ -309,6 +341,7 @@ function run_prepare() {
   test -d $PACKAGES_PATH || mkdir -p $PACKAGES_PATH
   test -d $BUILD_PATH || mkdir -p $BUILD_PATH
   test -d $LIBS_PATH || mkdir -p $LIBS_PATH
+  test -d $NATIVE_STAGE_PATH || mkdir -p $NATIVE_STAGE_PATH
 
   # check arm env
   push_arm

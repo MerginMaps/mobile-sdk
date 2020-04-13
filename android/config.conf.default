@@ -13,9 +13,9 @@ export QT_ANDROID_BASE="/path/to/qt/sdk/Qt/5.14.1"
 # export QT_ANDROID_BASE="/opt/Qt/5.14.1"
 
 # QGIS needs a bison 3. On MacOS you may need
-# to install one with e.g. homebrew and add
-# it to the path
-# export PATH="/usr/local/opt/bison/bin:$PATH"
+# to install one with e.g. homebrew or qgis_deps
+# and add it to the path
+# export PATH="<path_to_bison/flex>:$PATH"
 
 ### LOCAL SOURCES ###
 # To use local sourcecode instead of the configured URL:

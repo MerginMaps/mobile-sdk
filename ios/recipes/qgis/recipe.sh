@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # version of your package
-VERSION_qgis=3.9
+VERSION_qgis=3.13
 
 # dependencies of this recipe
-DEPS_qgis=(libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain)
+DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/31192093340f800d06d9ee67e1c3d46988520dd8.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/24f705c9fc33c6986425f7458eeb5a7185027fd5.tar.gz
 
 # md5 of the package
-MD5_qgis=b0d34871ad08ad5c3cc30f2fcaa9e0e5
+MD5_qgis=4a60f598718417023ac7fcb6ff2b4fd2
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -67,7 +67,7 @@ function build_qgis() {
     -DGDAL_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
     -DGDAL_INCLUDE_DIR=$STAGE_PATH/include \
     -DGDAL_LIBRARY=$STAGE_PATH/lib/libgdal.a \
-    -DGDAL_VERSION=2.4.0 \
+    -DGDAL_VERSION=3.0.4 \
     -DGEOS_CONFIG=$STAGE_PATH/bin/geos-config \
     -DGEOS_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
     -DGEOS_INCLUDE_DIR=$STAGE_PATH/include \
@@ -123,6 +123,12 @@ function build_qgis() {
     -DFREEXL_LIBRARY=$STAGE_PATH/lib/libfreexl.a \
     -DCHARSET_LIBRARY=$STAGE_PATH/lib/libcharset.a \
     -DGEOSCXX_LIBRARY=$STAGE_PATH/lib/libgeos.a \
+    -DProtobuf_PROTOC_EXECUTABLE:FILEPATH=$NATIVE_STAGE_PATH/bin/protoc \
+    -DProtobuf_INCLUDE_DIRS:PATH=$STAGE_PATH/include \
+    -DProtobuf_LIBRARY=$STAGE_PATH/lib/libprotobuf.a \
+    -DProtobuf_LITE_LIBRARY=$STAGE_PATH/lib/libprotobuf-lite.a \
+    -DProtobuf_PROTOC_LIBRARY=$STAGE_PATH/lib/libprotoc.a \
+    -DQGIS_MACAPP_BUNDLE=-1 \
     $BUILD_qgis
 
   try $MAKESMP install
@@ -140,9 +146,5 @@ function build_qgis() {
 
 # function called after all the compile have been done
 function postbuild_qgis() {
-  LIB_ARCHS=`lipo -archs ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/qgis_quick`
-  if [[ $LIB_ARCHS != *"$ARCH"* ]]; then
-    error "Library was not successfully build for ${ARCH}"
-    exit 1;
-  fi
+  :
 }

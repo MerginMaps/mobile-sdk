@@ -2,12 +2,12 @@
 export IOS_MIN_SDK_VERSION="12.0"
 
 #### PATHS ####
-export QT_BASE="/opt/Qt/5.11.3"
+export QT_BASE="/opt/Qt/5.14.1"
 
 # you need to use recent flex and bison
-# so you can install them with homebrew
+# so you can install them with homebrew or qgis_deps
 # and uncomment the line below
-# export PATH="/usr/local/opt/flex/bin/:/usr/local/opt/bison/bin/:${PATH}"
+# export PATH="<path_to_bison/flex>:${PATH}"
 
 ### LOCAL QGIS ###
 # export O4iOS_qgis_DIR="/Users/<name>/Projects/QGIS"
