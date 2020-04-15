@@ -57,6 +57,10 @@ function build_libzip() {
     -DENABLE_OPENSSL=OFF \
     -DENABLE_COMMONCRYPTO=OFF \
     -DENABLE_GNUTLS=OFF \
+    -DBUILD_TOOLS=OFF \
+    -DBUILD_REGRESS=OFF \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_DOC=OFF \
     -DIOS=TRUE \
   $BUILD_libzip
   try $MAKESMP install
