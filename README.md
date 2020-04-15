@@ -63,6 +63,7 @@ Dependencies instructions
 - [Qt5 5.14.1] Install iOS arch support
 - Install XCode 11.4, command line tools and accept ToC
 - You should have SDK iPhoneOS13.4
+- CMake >= 3.17.0 required
 
 ```
 $ xcrun --sdk iphoneos --show-sdk-path
