@@ -57,6 +57,12 @@ function build_proj() {
     -DPROJ_TESTS=OFF \
     -DBUILD_LIBPROJ_SHARED=OFF \
     -DEXE_SQLITE3=`which sqlite3` \
+    -DBUILD_CCT=OFF \
+    -DBUILD_CS2CS=OFF \
+    -DBUILD_GEOD=OFF \
+    -DBUILD_GIE=OFF \
+    -DBUILD_PROJ=OFF \
+    -DBUILD_PROJINFO=OFF \
     $BUILD_proj
   try $MAKESMP install
 
