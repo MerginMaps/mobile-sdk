@@ -7,10 +7,10 @@ VERSION_qgis=3.13
 DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/24f705c9fc33c6986425f7458eeb5a7185027fd5.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/1e4b816a14884f661895ad2d39a3a8bf6def341d.tar.gz
 
 # md5 of the package
-MD5_qgis=4a60f598718417023ac7fcb6ff2b4fd2
+MD5_qgis=e48d192ec13cdc0f70ff8ac6e948869b
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -123,6 +123,7 @@ function build_qgis() {
     -DFREEXL_LIBRARY=$STAGE_PATH/lib/libfreexl.a \
     -DCHARSET_LIBRARY=$STAGE_PATH/lib/libcharset.a \
     -DGEOSCXX_LIBRARY=$STAGE_PATH/lib/libgeos.a \
+    -DWITH_QGIS_PROCESS=OFF \
     -DProtobuf_PROTOC_EXECUTABLE:FILEPATH=$NATIVE_STAGE_PATH/bin/protoc \
     -DProtobuf_INCLUDE_DIRS:PATH=$STAGE_PATH/include \
     -DProtobuf_LIBRARY=$STAGE_PATH/lib/libprotobuf.a \
