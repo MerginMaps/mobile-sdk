@@ -5,12 +5,12 @@ export ANDROIDAPI=23 # == CMake's ANDROID_NATIVE_API_LEVEL == gradle's minSdkVer
 #### PATHS ####
 export ANDROIDSDK="/path/to/android-sdk"
 export ANDROIDNDK="/path/to/android-ndk"
-export QT_ANDROID_BASE="/path/to/qt/sdk/Qt/5.14.1"
+export QT_ANDROID_BASE="/path/to/qt/sdk/Qt/5.14.2"
 
 # For example:
 # export ANDROIDSDK="/opt/android/sdk"
 # export ANDROIDNDK="/opt/android-ndk-r21/"
-# export QT_ANDROID_BASE="/opt/Qt/5.14.1"
+# export QT_ANDROID_BASE="/opt/Qt/5.14.2"
 
 # QGIS needs a bison 3. On MacOS you may need
 # to install one with e.g. homebrew or qgis_deps

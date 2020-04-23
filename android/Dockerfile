@@ -3,7 +3,7 @@ MAINTAINER Peter Petrik <peter.petrik@lutraconsulting.co.uk>
 
 USER root
 
-ARG QT_VERSION=5.14.1
+ARG QT_VERSION=5.14.2
 ARG NDK_VERSION=r21
 ARG SDK_PLATFORM=android-29
 ARG SDK_BUILD_TOOLS=28.0.3
