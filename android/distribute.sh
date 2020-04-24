@@ -274,7 +274,10 @@ function push_arm() {
   # https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android
   export CMAKECMD="cmake"
   export CMAKECMD="$CMAKECMD -DANDROID_LINKER_FLAGS=$ANDROID_CMAKE_LINKER_FLAGS"
-  export CMAKECMD="$CMAKECMD -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$ANDROIDNDK/build/cmake/android.toolchain.cmake"
+  export CMAKECMD="$CMAKECMD -DCMAKE_BUILD_TYPE=Release"
+  # official toolchain adds -g by default!
+  # see https://github.com/android/ndk/issues/243
+  CMAKECMD="$CMAKECMD -DCMAKE_TOOLCHAIN_FILE=$ANDROIDNDK/build/cmake/android.toolchain.cmake -DCMAKE_CXX_FLAGS_RELEASE=-g0"
   export CMAKECMD="$CMAKECMD -DCMAKE_FIND_ROOT_PATH:PATH=$ANDROID_NDK;$QT_ANDROID;$BUILD_PATH;$STAGE_PATH"
   export CMAKECMD="$CMAKECMD -DANDROID_ABI=$ARCH -DANDROID_NDK=$ANDROID_NDK -DANDROID_NATIVE_API_LEVEL=$ANDROIDAPI -DANDROID=ON -DANDROID_STL=c++_shared"
 
