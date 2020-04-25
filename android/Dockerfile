@@ -3,7 +3,15 @@ MAINTAINER Peter Petrik <peter.petrik@lutraconsulting.co.uk>
 
 USER root
 
+# QT is just downloaded and extracted
+# from dropbox archive. When updating QT version
+# 1. download QT for Android from the official downloader
+# 2. compress the /opt/Qt/${QT_VERSION} folder and
+# 3. upload compressed file qt-${QT_VERSION}-android.tar.gz to dropbox
+# 4. change the dropbox link in the curl command down
+
 ARG QT_VERSION=5.14.2
+
 ARG NDK_VERSION=r21
 ARG SDK_PLATFORM=android-29
 ARG SDK_BUILD_TOOLS=28.0.3
@@ -72,9 +80,12 @@ RUN apt-get install -qq -y --no-install-recommends \
 # Download & unpack Qt toolchains & clean
 RUN mkdir -p /opt/Qt/${QT_VERSION} \
     && mkdir -p /tmp/qt \
-    && curl -k -Lo /tmp/qt/qt-${QT_VERSION}.tar.gz "https://www.dropbox.com/s/76h23kjqt3h92g2/android.tar.gz?dl=0" \
+    && curl -k -Lo /tmp/qt/qt-${QT_VERSION}.tar.gz "https://www.dropbox.com/s/76h23kjqt3h92g2/qt-${QT_VERSION}-android.tar.gz?dl=0" \
     && cd /opt/Qt/${QT_VERSION} && tar -xvzf /tmp/qt/qt-${QT_VERSION}.tar.gz \
     && rm -rf /tmp/qt/qt-${QT_VERSION}.tar.gz
+
+# check that we have good android version
+RUN /opt/Qt/${QT_VERSION}/android/bin/qmake --version
 
 # Download & unpack android SDK
 ENV PATH=java-8-openjdk-amd64/bin:$PATH
