@@ -80,7 +80,7 @@ RUN apt-get install -qq -y --no-install-recommends \
 # Download & unpack Qt toolchains & clean
 RUN mkdir -p /opt/Qt/${QT_VERSION} \
     && mkdir -p /tmp/qt \
-    && curl -k -Lo /tmp/qt/qt-${QT_VERSION}.tar.gz "https://www.dropbox.com/s/76h23kjqt3h92g2/qt-${QT_VERSION}-android.tar.gz?dl=0" \
+    && curl -k -Lo /tmp/qt/qt-${QT_VERSION}.tar.gz "https://www.dropbox.com/s/w7y9i0heh56cdrb/qt-${QT_VERSION}-android.tar.gz?dl=0" \
     && cd /opt/Qt/${QT_VERSION} && tar -xvzf /tmp/qt/qt-${QT_VERSION}.tar.gz \
     && rm -rf /tmp/qt/qt-${QT_VERSION}.tar.gz
 
