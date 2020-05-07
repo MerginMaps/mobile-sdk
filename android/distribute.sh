@@ -190,14 +190,7 @@ function push_arm() {
   fi
 
   # Setup compiler toolchain based on CPU architecture
-  if [ "X${ARCH}" == "Xx86" ]; then
-      export TOOLCHAIN_FULL_PREFIX=i686-linux-android${ANDROIDAPI}
-      export TOOLCHAIN_SHORT_PREFIX=i686-linux-android
-      export TOOLCHAIN_PREFIX=i686-linux-android
-      export TOOLCHAIN_BASEDIR=x86
-      export QT_ARCH_PREFIX=x86
-      export ANDROID_SYSTEM=android
-  elif [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
+  if [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
       export TOOLCHAIN_FULL_PREFIX=armv7a-linux-androideabi${ANDROIDAPI}
       export TOOLCHAIN_SHORT_PREFIX=arm-linux-androideabi
       export TOOLCHAIN_PREFIX=arm-linux-androideabi
@@ -229,15 +222,18 @@ function push_arm() {
   export LDFLAGS="-lm -L$STAGE_PATH/lib"
   export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
   export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_PREFIX/$ANDROIDAPI"
-  # make sure that symbols from the following system libs are not exported - on 32-bit ARM this was causing crashes when unwinding
-  # stack when handling c++ exceptions. In our case, sqlite3.so exported some unwinding-related symbols which were being picked up
-  # by libproj.so and causing havoc.
-  # https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#Unwinding
-  # https://github.com/android/ndk/issues/785
-  # https://github.com/android/ndk/issues/379
-  # https://github.com/lutraconsulting/input/issues/641
-  export LDFLAGS="$LDFLAGS -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libunwind.a"
 
+  if [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
+      # make sure that symbols from the following system libs are not exported - on 32-bit ARM this was causing crashes when unwinding
+      # stack when handling c++ exceptions. In our case, sqlite3.so exported some unwinding-related symbols which were being picked up
+      # by libproj.so and causing havoc.
+      # https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#Unwinding
+      # https://github.com/android/ndk/issues/785
+      # https://github.com/android/ndk/issues/379
+      # https://github.com/lutraconsulting/input/issues/641
+      export LDFLAGS="$LDFLAGS -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libunwind.a"
+  fi
+  
   export ANDROID_CMAKE_LINKER_FLAGS=""
   # for libGLESv2.so and similar
   ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$QT_ARCH_PREFIX/usr/lib"
