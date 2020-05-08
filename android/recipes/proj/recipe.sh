@@ -48,6 +48,7 @@ function build_proj() {
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DPROJ_TESTS=OFF \
+    -DEXE_SQLITE3=`which sqlite3` \
     $BUILD_proj
 
   try $MAKESMP install
