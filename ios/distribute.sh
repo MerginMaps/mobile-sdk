@@ -18,16 +18,26 @@ else
     source `dirname $0`/$IOS_CONFIG
 fi
 
+if [ "X$ROOT_OUT_PATH" == "X" ]; then
+  error "you need ROOT_OUT_PATH argument in config.conf"
+fi
+
+if [ "X$SDK_VERSION" == "X" ]; then
+  error "you need SDK_VERSION argument in config.conf"
+fi
+
+if [ "X$QT_VERSION" == "X" ]; then
+  error "you need QT_VERSION argument in config.conf"
+fi
+
 # Paths
 ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_OUT_PATH="${ROOT_PATH}/../build-ios"
 STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
 NATIVE_STAGE_PATH="${ROOT_OUT_PATH}/stage/native"
 RECIPES_PATH="$ROOT_PATH/recipes"
 BUILD_PATH="${ROOT_OUT_PATH}/build"
 LIBS_PATH="${ROOT_OUT_PATH}/build/libs"
 PACKAGES_PATH="${PACKAGES_PATH:-$ROOT_OUT_PATH/.packages}"
-
 
 MD5SUM=$(which md5sum)
 if [ "X$MD5SUM" == "X" ]; then
