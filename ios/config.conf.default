@@ -1,8 +1,13 @@
+export SDK_VERSION=4
+export QT_VERSION=5.14.2
+
+export ROOT_OUT_PATH=/opt/INPUT/input-sdk-ios-$SDK_VERSION
+
 ### SDK #####
 export IOS_MIN_SDK_VERSION="12.0"
 
 #### PATHS ####
-export QT_BASE="/opt/Qt/5.14.2"
+export QT_BASE="/opt/Qt/$QT_VERSION"
 
 # you need to use recent flex and bison
 # so you can install them with homebrew or qgis_deps
