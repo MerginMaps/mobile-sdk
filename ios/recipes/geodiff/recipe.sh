@@ -33,7 +33,7 @@ function prebuild_geodiff() {
 
 function shouldbuild_geodiff() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/geodiff/build-$ARCH/libgeodiff.so -nt $BUILD_geodiff/.patched ]; then
+  if [ $STAGE_PATH/lib/libgeodiff.a -nt $BUILD_geodiff/.patched ]; then
     DO_BUILD=0
   fi
 }
