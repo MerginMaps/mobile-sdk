@@ -1,0 +1,7 @@
+#### PATHS ####
+export QT_BASE="/opt/Qt/5.14.2/clang_64"
+export QGIS_DEPS="/opt/QGIS/qgis-deps-0.4.0/stage"
+export PATH="$QGIS_DEPS/bin:$QT_BASE/bin:$PATH"
+
+### BUILD ###
+export ARCH="mac"

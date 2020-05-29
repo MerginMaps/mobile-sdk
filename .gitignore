@@ -12,6 +12,12 @@ ios/.deps
 ios/.optional-deps
 ios/config.conf
 
+build-mac/
+mac/config.conf
+mac/.packages
+mac/.deps
+mac/.optional-deps
+
 build-*
 
 .idea
