@@ -16,7 +16,6 @@ source `dirname $0`/config.conf
 
 # Paths
 ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_OUT_PATH="${ROOT_PATH}/../build-mac"
 STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
 RECIPES_PATH="$ROOT_PATH/recipes"
 BUILD_PATH="${ROOT_OUT_PATH}/build"

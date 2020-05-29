@@ -1,6 +1,11 @@
 #### PATHS ####
-export QT_BASE="/opt/Qt/5.14.2/clang_64"
-export QGIS_DEPS="/opt/QGIS/qgis-deps-0.4.0/stage"
+export QT_VER="5.14.2"
+export DEPS_VER="0.4.0"
+export SDK_VERSION=2
+export ROOT_OUT_PATH=/opt/INPUT/input-sdk-mac-$SDK_VERSION
+
+export QT_BASE="/opt/Qt/$QT_VER/clang_64"
+export QGIS_DEPS="/opt/QGIS/qgis-deps-$DEPS_VER/stage"
 export PATH="$QGIS_DEPS/bin:$QT_BASE/bin:$PATH"
 
 ### BUILD ###
