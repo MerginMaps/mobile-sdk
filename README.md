@@ -22,6 +22,10 @@ Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input
 
 [iOS notes](ios/ios.md)
 
+# MacOS
+
+[MacOS notes](mac/mac.md)
+
 # License & Acknowledgement
 
 The project is originally based on https://github.com/opengisch/OSGeo4A
