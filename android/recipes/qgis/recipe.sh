@@ -7,11 +7,11 @@ VERSION_qgis=3.13
 DEPS_qgis=(zlib gdal qca libspatialindex libspatialite expat postgresql libzip qtkeychain exiv2 geodiff protobuf)
 
 # url of the package
-# some random commit from the 5th May 2020
-URL_qgis=https://github.com/qgis/QGIS/archive/da042bb61dc7447b41b021838efe42d08b31cdd8.tar.gz
+# some random commit from the 13th June 2020
+URL_qgis=https://github.com/qgis/QGIS/archive/e4987fd911c8a6625819dfd7985c41f2e9560599.tar.gz
 
 # md5 of the package
-MD5_qgis=7bb8177647370b999078134bae663cce
+MD5_qgis=01feb958cb6eefc7870a49deb43a7ef0
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -62,6 +62,7 @@ function build_qgis() {
     -DPYTHON_EXECUTABLE=`which python3` \
     -DWITH_BINDINGS=OFF \
     -DWITH_GRASS=OFF \
+    -DWITH_GEOREFERENCER=OFF \
     -DWITH_QTMOBILITY=OFF \
     -DWITH_QUICK=ON \
     -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt5/QtCrypto \
