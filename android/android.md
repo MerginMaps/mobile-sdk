@@ -13,5 +13,5 @@ Contains:
   - QGIS core
   - QgsQuick
 
-[used versions](/Dockerfile) - MAKE SURE YOU HAVE correct QT version (openssl) and NDK
+[used versions](Dockerfile) - MAKE SURE YOU HAVE correct QT version (openssl) and NDK
 
