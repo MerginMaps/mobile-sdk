@@ -7,11 +7,11 @@ VERSION_qgis=3.15
 DEPS_qgis=(gdal qca libspatialindex libspatialite expat postgresql libzip qtkeychain exiv2 geodiff protobuf)
 
 # url of the package
-# some random commit from the 13th June 2020
-URL_qgis=https://github.com/qgis/QGIS/archive/ba5a85710b36cfc2e7b6106fd6afa912d2cc2764.tar.gz
+# some random commit from the 13th July 2020
+URL_qgis=https://github.com/qgis/QGIS/archive/ebd4cd8c138574f0c6d6ea7911cc89abc6ad587a.tar.gz
 
 # md5 of the package
-MD5_qgis=02cfb77ba0be30c43f06ac65e085a540
+MD5_qgis=2ed8b8ac4217b7d290459a073710cc73
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
