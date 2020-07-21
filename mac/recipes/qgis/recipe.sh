@@ -7,11 +7,11 @@ VERSION_qgis=3.13
 DEPS_qgis=(geodiff)
 
 # url of the package
-# some random commit from the 9th May 2020
-URL_qgis=https://github.com/qgis/QGIS/archive/da042bb61dc7447b41b021838efe42d08b31cdd8.tar.gz
+# some random commit from the 14th June 2020
+URL_qgis=https://github.com/qgis/QGIS/archive/e4987fd911c8a6625819dfd7985c41f2e9560599.tar.gz
 
 # md5 of the package
-MD5_qgis=7bb8177647370b999078134bae663cce
+MD5_qgis=01feb958cb6eefc7870a49deb43a7ef0
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -60,6 +60,7 @@ function build_qgis() {
     -DDISABLE_DEPRECATED=ON \
     -DWITH_QTWEBKIT=OFF \
     -DWITH_GRASS=OFF \
+    -DWITH_GEOREFERENCER=OFF \
     -DWITH_QTMOBILITY=OFF \
     -DWITH_QUICK=ON \
     -DENABLE_QT5=ON \

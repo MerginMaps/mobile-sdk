@@ -1,6 +1,6 @@
 @echo on
 
-set VERSION_qgis=da042bb61dc7447b41b021838efe42d08b31cdd8
+set VERSION_qgis=ebd4cd8c138574f0c6d6ea7911cc89abc6ad587a
 set URL_qgis=https://github.com/qgis/QGIS/archive/%VERSION_qgis%.tar.gz
 set BUILD_qgis=%BUILD_PATH%\qgis
 set REPO_qgis=%REPO_PATH%\qgis
@@ -24,6 +24,7 @@ cmake -G %CMAKE_GENERATOR% ^
 -DWITH_INTERNAL_SPATIALITE=OFF ^
 -DWITH_ANALYSIS=OFF ^
 -DWITH_GRASS=OFF ^
+-DWITH_GEOREFERENCER=OFF ^
 -DCMAKE_DISABLE_FIND_PACKAGE_QtQmlTools=TRUE ^
 -DWITH_QTMOBILITY=OFF ^
 -DWITH_QUICK=ON ^
