@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # version of your package
-VERSION_qgis=3.13
+VERSION_qgis=3.15
 
 # dependencies of this recipe
 DEPS_qgis=(geodiff)
 
 # url of the package
-# some random commit from the 14th June 2020
-URL_qgis=https://github.com/qgis/QGIS/archive/e4987fd911c8a6625819dfd7985c41f2e9560599.tar.gz
+# final-3_14_1 release
+URL_qgis=https://github.com/qgis/QGIS/archive/de08d6b71d88ac2a8c7b1ba55e74b1165a21d760.tar.gz
 
 # md5 of the package
-MD5_qgis=01feb958cb6eefc7870a49deb43a7ef0
+MD5_qgis=a3dc754e1dca4751cc4c4bafaaaeae1d
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -26,13 +26,6 @@ function prebuild_qgis() {
   # check marker
   if [ -f .patched ]; then
     return
-  fi
-
-  module_dir=$(eval "echo \$O4iOS_qgis_DIR")
-  if [ "$module_dir" ]; then
-    echo "\$O4iOS_qgis_DIR is not empty, manually patch your files if needed!"
-  else
-    try patch -p1 <$RECIPE_qgis/patches/std++11.patch
   fi
 
   touch .patched
