@@ -4,7 +4,7 @@
 VERSION_qgis=3.15
 
 # dependencies of this recipe
-DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain)
+DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff)
 
 # url of the package
 # final-3_14_1 release
