@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # version of your package
-VERSION_qgis=3.13
+VERSION_qgis=3.15
 
 # dependencies of this recipe
 DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain)
 
 # url of the package
-# some random commit from the 9th May 2020
-URL_qgis=https://github.com/qgis/QGIS/archive/da042bb61dc7447b41b021838efe42d08b31cdd8.tar.gz
+# final-3_14_1 release
+URL_qgis=https://github.com/qgis/QGIS/archive/de08d6b71d88ac2a8c7b1ba55e74b1165a21d760.tar.gz
 
 # md5 of the package
-MD5_qgis=7bb8177647370b999078134bae663cce
+MD5_qgis=a3dc754e1dca4751cc4c4bafaaaeae1d
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)

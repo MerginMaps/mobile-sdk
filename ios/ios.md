@@ -8,6 +8,17 @@ from dropbox archive. When updating QT version
 3. upload compressed file qt-${QT_VERSION}-ios.tar.gz to dropbox
 
 # How to release input-sdk for iOS 
+bump version in config.pri
+1. build locally ios/distribute.sh -mqgis
+2. compress the `cd /opt/INPUT/input-sdk-ios-<version>/stage` with `tar -c -z -f ../input-sdk-ios-<version>.tar.gz ./ `
+2. upload to dropbox "Lutra Consulting/_Support/input/input-sdks/ios-sdk" & share
+4. tag the repo
+5. update input to use new SDK version
+
+
+
+# Building instructions
+
 This provides a set of scripts to build opensource geo tools for iOS (iPhone and iPad)
 Only works on MacOS systems, since you need XCode to compile binaries for iOS. The build system is maintained for QGIS 3.x 
 releases.

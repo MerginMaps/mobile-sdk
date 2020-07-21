@@ -61,6 +61,7 @@ function build_qca() {
   -DWITH_nss_PLUGIN=OFF \
   -DWITH_pkcs11_PLUGIN=OFF \
   -DWITH_gnupg_PLUGIN=OFF \
+  -DWITH_gcrypt_PLUGIN=OFF \
   -DOSX_FRAMEWORK=OFF \
   -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE \
   -DLIBRARY_TYPE=STATIC \
