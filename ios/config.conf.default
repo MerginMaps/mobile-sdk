@@ -1,4 +1,4 @@
-export SDK_VERSION=4
+export SDK_VERSION=6
 export QT_VERSION=5.14.2
 
 export ROOT_OUT_PATH=/opt/INPUT/input-sdk-ios-$SDK_VERSION

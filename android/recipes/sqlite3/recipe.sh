@@ -1,19 +1,19 @@
 #!/bin/bash
 
 # version of your package
-VERSION_sqlite3=3270100
+VERSION_sqlite3=3300100
 
 # dependencies of this recipe
-DEPS_sqlite3=(zlib)
+DEPS_sqlite3=()
 
 # url of the package
-URL_sqlite3=http://www.sqlite.org/2019/sqlite-autoconf-${VERSION_sqlite3}.tar.gz
+URL_sqlite3=https://www.dropbox.com/s/8x1ese8mx0sif3c/sqlite-autoconf-${VERSION_sqlite3}.tar.gz?dl=1
 
 # md5 of the package
-MD5_sqlite3=cb72c5f93235cd56b18ee2aa1504cdaf
+MD5_sqlite3=51252dc6bc9094ba11ab151ba650ff3c
 
 # default build path
-BUILD_sqlite3=$BUILD_PATH/sqlite3/$(get_directory $URL_sqlite3)
+BUILD_sqlite3=$BUILD_PATH/sqlite3/sqlite-autoconf-${VERSION_sqlite3}
 
 # default recipe path
 RECIPE_sqlite3=$RECIPES_PATH/sqlite3
@@ -36,7 +36,7 @@ function prebuild_sqlite3() {
 
 function shouldbuild_sqlite3() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/sqlite3/build-$ARCH/.libs/libsqlite3.so -nt $BUILD_sqlite3/.patched ]; then
+  if [ $STAGE_PATH/lib/libsqlite3.so -nt $BUILD_sqlite3/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -48,7 +48,10 @@ function build_sqlite3() {
 
   push_arm
 
-  export CFLAGS="${CFLAGS} -DSQLITE_ENABLE_COLUMN_METADATA"
+  export CFLAGS="${CFLAGS} -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_SESSION -DSQLITE_ENABLE_PREUPDATE_HOOK"
+  export CFLAGS="${CFLAGS} -DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_MAX_VARIABLE_NUMBER=250000 -DSQLITE_ENABLE_FTS3=1"
+  export CFLAGS="${CFLAGS} -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_JSON1=1"
+
   try $BUILD_sqlite3/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \

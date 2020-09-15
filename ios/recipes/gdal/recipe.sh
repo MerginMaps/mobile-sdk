@@ -2,7 +2,7 @@
 
 # version of your package
 # NOTE: if changed, update also qgis's recipe
-VERSION_gdal=3.0.4
+VERSION_gdal=3.1.3
 
 # dependencies of this recipe
 DEPS_gdal=(iconv geos postgresql expat)
@@ -11,7 +11,7 @@ DEPS_gdal=(iconv geos postgresql expat)
 URL_gdal=http://download.osgeo.org/gdal/$VERSION_gdal/gdal-${VERSION_gdal}.tar.gz
 
 # md5 of the package
-MD5_gdal=c6bbb5caca06e96bd97a32918e0aa9aa
+MD5_gdal=4094633f28a589a7b4b483aa51beb37c
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -45,7 +45,7 @@ function shouldbuild_gdal() {
 # function called to build the source code
 function build_gdal() {
   try rsync -a $BUILD_gdal/ $BUILD_PATH/gdal/build-$ARCH/
-  try cd $BUILD_PATH/gdal/build-$ARCH
+  try cd $BUILD_PATH/gdal/build-$ARCH/gdal
 
   push_arm
 
@@ -58,7 +58,6 @@ function build_gdal() {
     GDAL_FLAGS="$GDAL_FLAGS --enable-debug"
   fi
 
-
   # png. by default -lpng is not found and internal is build. this causes crash in routine png_read_info
   # during loading of Qt's components like CheckBox, ComboBox, etc, since the gdal's internal png lib is
   # incompatible with Qt's required lib
@@ -69,8 +68,8 @@ function build_gdal() {
   # /opt/Qt/5.13.1/ios//plugins/imageformats/libqjpeg.a ... maybe use Qt's one?
   # with-mrf=no \ # depends on jpeg
 
-  try ${BUILD_PATH}/gdal/build-$ARCH/configure \
-     --prefix=$STAGE_PATH \
+  try ./configure \
+    --prefix=$STAGE_PATH \
     --host=${TOOLCHAIN_PREFIX} \
     --with-sqlite3=$SYSROOT \
     --with-geos=$STAGE_PATH/bin/geos-config \

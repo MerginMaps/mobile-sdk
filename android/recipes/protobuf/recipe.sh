@@ -4,7 +4,7 @@
 VERSION_protobuf=3.11.4
 
 # dependencies of this recipe
-DEPS_protobuf=(zlib)
+DEPS_protobuf=()
 
 # url of the package
 URL_protobuf=https://github.com/protocolbuffers/protobuf/releases/download/v${VERSION_protobuf}/protobuf-cpp-${VERSION_protobuf}.tar.gz
@@ -46,10 +46,6 @@ function build_native_protobuf() {
 
   push_native
 
-  #export CFLAGS="-DNDEBUG"
-  #export CXXFLAGS="${CFLAGS}"
-  #export CPPFLAGS="${CFLAGS}"
-
   try cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -Dprotobuf_BUILD_TESTS=OFF \
@@ -68,20 +64,6 @@ function build_android_protobuf() {
   try mkdir -p $BUILD_PATH/protobuf/build-$ARCH/
   try cd $BUILD_PATH/protobuf/build-$ARCH
   push_arm
-
-  #export CXXFLAGS="$CXXFLAGS -DNDEBUG"
-  #export CPPFLAGS="$CXXFLAGS"
-  # see https://github.com/protocolbuffers/protobuf/issues/2719
-  # ./.libs/libprotobuf.so: undefined reference to `__android_log_write'
-  #export LDFLAGS="$LDFLAGS -llog"
-
-  # try ./autogen.sh
-  #try ./configure \
-  #  --prefix=$STAGE_PATH \
-  #  --host=$TOOLCHAIN_PREFIX \
-  #  --disable-debug \
-  #  --disable-dependency-tracking \
-  #  --with-zlib
 
   try $CMAKECMD \
     -Dprotobuf_BUILD_TESTS=OFF \

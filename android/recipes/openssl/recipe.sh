@@ -18,7 +18,7 @@
 VERSION_openssl=1.1.1f
 
 # dependencies of this recipe
-DEPS_openssl=(zlib)
+DEPS_openssl=()
 
 # url of the package
 URL_openssl=https://github.com/openssl/openssl/archive/OpenSSL_${VERSION_openssl//./_}.tar.gz

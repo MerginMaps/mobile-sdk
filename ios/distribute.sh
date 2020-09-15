@@ -515,7 +515,9 @@ function run_get_packages() {
       continue
     fi
 
-    filename=$(basename $url)
+    filename=${url//?dl=1/}
+    filename=${filename//\/download/}
+    filename=$(basename $filename)
     marker_filename=".mark-$filename"
     do_download=1
 

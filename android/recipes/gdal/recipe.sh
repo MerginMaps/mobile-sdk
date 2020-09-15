@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # version of your package
-VERSION_gdal=3.0.4
+VERSION_gdal=3.1.3
 
 # dependencies of this recipe
-DEPS_gdal=(iconv sqlite3 geos postgresql expat proj)
+DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp libpng)
 
 # url of the package
-URL_gdal=http://download.osgeo.org/gdal/$VERSION_gdal/gdal-${VERSION_gdal}.tar.gz
+URL_gdal=https://github.com/OSGeo/gdal/archive/v${VERSION_gdal}.tar.gz
 
 # md5 of the package
-MD5_gdal=c6bbb5caca06e96bd97a32918e0aa9aa
+MD5_gdal=6c4d8cca9e39ba17bc3e3ab630973e21
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -44,11 +44,11 @@ function shouldbuild_gdal() {
 # function called to build the source code
 function build_gdal() {
   try rsync -a $BUILD_gdal/ $BUILD_PATH/gdal/build-$ARCH/
-  try cd $BUILD_PATH/gdal/build-$ARCH
+  try cd $BUILD_PATH/gdal/build-$ARCH/gdal
 
   push_arm
 
-  try ${BUILD_PATH}/gdal/build-$ARCH/configure \
+  try ./configure \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64 \
     --prefix=$STAGE_PATH \
