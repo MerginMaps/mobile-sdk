@@ -1,6 +1,6 @@
 @echo on
 
-set VERSION_qgis=ebd4cd8c138574f0c6d6ea7911cc89abc6ad587a
+set VERSION_qgis=4fe3d2f4e6032e502b10725ad3cd78c18f6a739c
 set URL_qgis=https://github.com/qgis/QGIS/archive/%VERSION_qgis%.tar.gz
 set BUILD_qgis=%BUILD_PATH%\qgis
 set REPO_qgis=%REPO_PATH%\qgis
