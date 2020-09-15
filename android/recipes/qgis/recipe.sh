@@ -7,7 +7,6 @@ VERSION_qgis=3.16
 DEPS_qgis=(gdal qca libspatialindex libspatialite expat postgresql libzip qtkeychain exiv2 geodiff protobuf)
 
 # url of the package
-# some random commit from the 13th July 2020
 URL_qgis=https://github.com/qgis/QGIS/archive/4fe3d2f4e6032e502b10725ad3cd78c18f6a739c.tar.gz
 
 # md5 of the package

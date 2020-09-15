@@ -6,6 +6,10 @@ Input makes surveying of geospatial data easy. You can design your survey projec
 
 Click here to download the app on your Android/iOS/Windows device [inputapp.io](http://inputapp.io)
 
+# Tips
+
+how to do diff `diff -rupN file.orig file`
+
 # Android 
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/lutraconsulting/input-sdk)

@@ -7,7 +7,6 @@ VERSION_qgis=3.16
 DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff)
 
 # url of the package
-# final-3_14_1 release
 URL_qgis=https://github.com/qgis/QGIS/archive/4fe3d2f4e6032e502b10725ad3cd78c18f6a739c.tar.gz
 
 # md5 of the package

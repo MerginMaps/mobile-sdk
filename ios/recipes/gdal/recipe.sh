@@ -37,7 +37,7 @@ function prebuild_gdal() {
 
 function shouldbuild_gdal() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/gdal/build-$ARCH/.libs/libgdal.a -nt $BUILD_gdal/.patched ]; then
+  if [ $STAGE_PATH/lib/libgdal.a -nt $BUILD_gdal/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -45,7 +45,7 @@ function shouldbuild_gdal() {
 # function called to build the source code
 function build_gdal() {
   try rsync -a $BUILD_gdal/ $BUILD_PATH/gdal/build-$ARCH/
-  try cd $BUILD_PATH/gdal/build-$ARCH/gdal
+  try cd $BUILD_PATH/gdal/build-$ARCH
 
   push_arm
 

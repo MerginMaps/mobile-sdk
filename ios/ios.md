@@ -10,7 +10,7 @@ from dropbox archive. When updating QT version
 # How to release input-sdk for iOS 
 bump version in config.pri
 1. build locally ios/distribute.sh -mqgis
-2. compress the `cd /opt/INPUT/input-sdk-ios-<version>/stage` with `tar -c -z -f ../input-sdk-ios-<version>.tar.gz ./ `
+2. compress with the `create_package.bash`
 2. upload to dropbox "Lutra Consulting/_Support/input/input-sdks/ios-sdk" & share
 4. tag the repo
 5. update input to use new SDK version
