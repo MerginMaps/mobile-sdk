@@ -12,6 +12,8 @@ how to do diff `diff -rupN file.orig file`
 
 # Android 
 
+Download latest SDK on Docker with `docker pull lutraconsulting/input-sdk`
+
 ![Docker Pulls](https://img.shields.io/docker/pulls/lutraconsulting/input-sdk)
 
 [Android notes](android/android.md)
@@ -24,9 +26,13 @@ Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input
 
 # iOS
 
+Download prebuild [ios-SDK](https://www.dropbox.com/sh/mkkx6v2kixy1yzo/AAA0ZL7u9K-PUsjhgf4IQWB-a?dl=0)
+
 [iOS notes](ios/ios.md)
 
 # MacOS
+
+Download prebuild [mac-SDK](https://www.dropbox.com/sh/dfrvx3iuu4tssg4/AABcFHrA6WF1eb_C5v1d6oJAa?dl=0)
 
 [MacOS notes](mac/mac.md)
 
