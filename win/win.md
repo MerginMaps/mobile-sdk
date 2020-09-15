@@ -15,7 +15,9 @@ To build SDK:
 - remove leftovers from the previous installations, notably build and stage directories and resulting sdk.zip file
 - `cd input-sdk\win`
 - run `distibute.cmd`
-- optionally upload resulting sdk to common public place (dropbox)
+- upload to dropbox "Lutra Consulting/_Support/input/input-sdks/ios-sdk" & share
+- tag the repo
+- update input to use new SDK version
 
 ## Hints
 
