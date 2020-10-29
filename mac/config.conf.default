@@ -1,7 +1,7 @@
 #### PATHS ####
 export QT_VER="5.14.2"
-export DEPS_VER="0.5.4"
-export SDK_VERSION=4
+export DEPS_VER="0.5.5"
+export SDK_VERSION=5
 export ROOT_OUT_PATH=/opt/INPUT/input-sdk-mac-$SDK_VERSION
 
 export QT_BASE="/opt/Qt/$QT_VER/clang_64"

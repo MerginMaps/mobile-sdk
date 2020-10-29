@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # version of your package
-VERSION_geodiff=0.8.5
+VERSION_geodiff=0.8.6
 
 # dependencies of this recipe
 DEPS_geodiff=()
@@ -10,7 +10,7 @@ DEPS_geodiff=()
 URL_geodiff=https://github.com/lutraconsulting/geodiff/archive/${VERSION_geodiff}.tar.gz
 
 # md5 of the package
-MD5_geodiff=a7aa5825178ae24b28667c729bc7d14a
+MD5_geodiff=3e2af0aaccaf3be1573ab6dc436b65dc
 
 # default build path
 BUILD_geodiff=$BUILD_PATH/geodiff/$(get_directory $URL_geodiff)
