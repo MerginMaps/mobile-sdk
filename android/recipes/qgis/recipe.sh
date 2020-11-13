@@ -79,7 +79,7 @@ function build_qgis() {
     -DSPATIALINDEX_LIBRARY=$STAGE_PATH/lib/libspatialindex.so \
     -DWITH_APIDOC=OFF \
     -DWITH_ASTYLE=OFF \
-    -DWITH_QUICK=OFF \
+    -DWITH_QUICK=OFFv \
     -DWITH_QT5SERIALPORT=OFF \
     -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     -DWITH_QGIS_PROCESS=OFF \
@@ -93,6 +93,10 @@ function build_qgis() {
 
   try $MAKESMP install
   pop_arm
+
+  # bundle QGIS's find packages too
+  try mkdir -p $STAGE_PATH/cmake/
+  try cp -Rf $BUILD_qgis/cmake/* $STAGE_PATH/cmake/
 }
 
 # function called after all the compile have been done
