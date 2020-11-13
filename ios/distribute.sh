@@ -353,8 +353,14 @@ function run_prepare() {
   test -d $LIBS_PATH || mkdir -p $LIBS_PATH
   test -d $NATIVE_STAGE_PATH || mkdir -p $NATIVE_STAGE_PATH
 
+
   # check arm env
   push_arm
+
+  # copy the build tools
+  mkdir -p $STAGE_PATH/tools
+  cp $ROOT_PATH/tools/ios.toolchain.cmake $STAGE_PATH/tools/
+
   pop_arm
 }
 

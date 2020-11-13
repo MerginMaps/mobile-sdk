@@ -63,7 +63,7 @@ function build_qgis() {
     -DWITH_GRASS=OFF \
     -DWITH_GEOREFERENCER=OFF \
     -DWITH_QTMOBILITY=OFF \
-    -DWITH_QUICK=ON \
+    -DWITH_QUICK=OFF \
     -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt5/QtCrypto \
     -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5_$ARCH.so \
     -DQTKEYCHAIN_INCLUDE_DIR=$STAGE_PATH/include/qt5keychain \
@@ -79,7 +79,7 @@ function build_qgis() {
     -DSPATIALINDEX_LIBRARY=$STAGE_PATH/lib/libspatialindex.so \
     -DWITH_APIDOC=OFF \
     -DWITH_ASTYLE=OFF \
-    -DWITH_QUICK=ON \
+    -DWITH_QUICK=OFF \
     -DWITH_QT5SERIALPORT=OFF \
     -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     -DWITH_QGIS_PROCESS=OFF \

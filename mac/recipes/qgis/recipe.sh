@@ -54,7 +54,7 @@ function build_qgis() {
     -DWITH_GRASS=OFF \
     -DWITH_GEOREFERENCER=OFF \
     -DWITH_QTMOBILITY=OFF \
-    -DWITH_QUICK=ON \
+    -DWITH_QUICK=OFF \
     -DENABLE_QT5=ON \
     -DENABLE_TESTS=OFF \
     -DWITH_INTERNAL_QWTPOLAR=OFF \
@@ -71,16 +71,14 @@ function build_qgis() {
 
   try $MAKESMP install
 
-  # Why it is not copied by CMake?
   try cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/
-  try cp $BUILD_PATH/qgis/build-$ARCH/src/quickgui/qgis_quick.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_quick.framework/Headers/
-  try cp $BUILD_qgis/src/quickgui/plugin/qgsquickplugin.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_quick.framework/Headers/
 
   # TODO
   # the installed QGIS references frameworks from build/qgis/build-mac/output/lib, see input/.github/workflows/autotests.yml
 
-  # we need images too
-  try cp -R $BUILD_qgis/src/quickgui/images ${STAGE_PATH}/QGIS.app/Contents/Resources/images/QgsQuick
+  # bundle QGIS's find packages too
+  try mkdir -p $STAGE_PATH/cmake/
+  try cp -Rf $BUILD_qgis/cmake/* $STAGE_PATH/cmake/
 
   pop_env
 }
