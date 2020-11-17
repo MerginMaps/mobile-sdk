@@ -45,7 +45,6 @@ cmake -G %CMAKE_GENERATOR% ^
 
 cmake --build . --config Release --target install --parallel %NUMBER_OF_PROCESSORS%
 
-copy %REPO_qgis%\src\quickgui\plugin\qgsquickplugin.h %STAGE_PATH%\include
-
-mkdir %STAGE_PATH%\images\QgsQuick
-copy %REPO_qgis%\src\quickgui\images\* %STAGE_PATH%\images\QgsQuick\
+mkdir %STAGE_PATH%\cmake
+mkdir %STAGE_PATH%\cmake\qgis
+copy %REPO_qgis%\cmake\* %STAGE_PATH%\cmake\qgis\

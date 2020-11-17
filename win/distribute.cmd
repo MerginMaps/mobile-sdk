@@ -48,7 +48,7 @@ IF NOT EXIST "%STAGE_PATH%\lib\geodiff.lib" goto error
 
 rem QGIS
 call %~dp0\recipes\qgis\recipe.bat
-IF NOT EXIST "%STAGE_PATH%\qml\QgsQuick\qgis_quick_plugin.dll" goto error
+IF NOT EXIST "%STAGE_PATH%\bin\qgis_core.dll" goto error
 
 IF NOT EXIST %RESULT_FILE% 7z a %RESULT_FILE% %STAGE_PATH%\*
 dir %RESULT_FILE%
