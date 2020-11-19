@@ -79,7 +79,7 @@ function build_qgis() {
     -DSPATIALINDEX_LIBRARY=$STAGE_PATH/lib/libspatialindex.so \
     -DWITH_APIDOC=OFF \
     -DWITH_ASTYLE=OFF \
-    -DWITH_QUICK=OFFv \
+    -DWITH_QUICK=OFF \
     -DWITH_QT5SERIALPORT=OFF \
     -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     -DWITH_QGIS_PROCESS=OFF \
