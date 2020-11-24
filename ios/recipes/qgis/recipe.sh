@@ -4,13 +4,13 @@
 VERSION_qgis=3.16
 
 # dependencies of this recipe
-DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff)
+DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff qtlocation)
 
-# url of the package (close after 3.16 release)
-URL_qgis=https://github.com/qgis/QGIS/archive/1132494fcb679e814857d5cf7fa4f1712b52f5e1.tar.gz
+# url of the package
+URL_qgis=https://github.com/qgis/QGIS/archive/a1f85d4df8c79f044bfec956e1a24d001fc1a01e.tar.gz
 
 # md5 of the package
-MD5_qgis=28a9a37012f673b1e0ad7d3851b87f28
+MD5_qgis=8330a1242bae4f0ee0b6e528ebdb37d3
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -32,7 +32,7 @@ function prebuild_qgis() {
   then
     echo "\$O4iOS_qgis_DIR is not empty, manually patch your files if needed!"
   else
-    try patch -p1 < $RECIPE_qgis/patches/std++11.patch
+    : # try patch -p1 < $RECIPE_qgis/patches/std++11.patch
   fi
 
   touch .patched
@@ -100,6 +100,7 @@ function build_qgis() {
     -DSPATIALITE_LIBRARY=$STAGE_PATH/lib/libspatialite.a \
     -DPYTHON_EXECUTABLE=`which python3` \
     -DWITH_QT5SERIALPORT=OFF \
+    -DWITH_INTERNAL_POLY2TRI=OFF \
     -DWITH_BINDINGS=OFF \
     -DWITH_INTERNAL_SPATIALITE=OFF \
     -DWITH_ANALYSIS=OFF \
@@ -108,6 +109,8 @@ function build_qgis() {
     -DWITH_QTMOBILITY=OFF \
     -DWITH_QUICK=OFF \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+    -DPoly2Tri_INCLUDE_DIR=$STAGE_PATH/include/poly2tri \
+    -DPoly2Tri_LIBRARY=$QT_PATH/lib/libpoly2tri.a \
     -DENABLE_QT5=ON \
     -DENABLE_TESTS=OFF \
     -DEXPAT_INCLUDE_DIR=$STAGE_PATH/include \
