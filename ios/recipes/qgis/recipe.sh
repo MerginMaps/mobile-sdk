@@ -7,10 +7,10 @@ VERSION_qgis=3.16
 DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff qtlocation)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/a1f85d4df8c79f044bfec956e1a24d001fc1a01e.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/42e16a60138c7a497d2a693b4ec73056b2feaba0.tar.gz
 
 # md5 of the package
-MD5_qgis=8330a1242bae4f0ee0b6e528ebdb37d3
+MD5_qgis=865b4fbb7624b13f8e57b93af73c08e3
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -58,6 +58,8 @@ function build_qgis() {
     -DWITH_DESKTOP=OFF \
     -DDISABLE_DEPRECATED=ON \
     -DWITH_QTWEBKIT=OFF \
+    -DWITH_EPT=OFF \
+    -DWITH_PDAL=OFF \
     -FORCE_STATIC_LIBS=TRUE \
     -DQT_LRELEASE_EXECUTABLE=`which lrelease` \
     -DFLEX_EXECUTABLE=`which flex` \
