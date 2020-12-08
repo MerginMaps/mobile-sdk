@@ -7,10 +7,10 @@ VERSION_qgis=3.16
 DEPS_qgis=(gdal qca libspatialindex libspatialite expat postgresql libzip qtkeychain exiv2 geodiff protobuf)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/1132494fcb679e814857d5cf7fa4f1712b52f5e1.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/da5da6f0cbff30b2c87d01d5a0cfdea158bcf739.tar.gz
 
 # md5 of the package
-MD5_qgis=28a9a37012f673b1e0ad7d3851b87f28
+MD5_qgis=9db2493c2504758344e09c51aeb7f75c
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
