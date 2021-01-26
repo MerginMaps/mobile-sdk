@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 MAINTAINER Peter Petrik <peter.petrik@lutraconsulting.co.uk>
 
 USER root
@@ -39,12 +39,10 @@ RUN dpkg --add-architecture i386 && apt-get -qq update && apt-get -qq dist-upgra
     sudo \
     curl \
     make \
-    file \
-    zip \
-    openjdk-8-jre \
     openjdk-8-jdk \
     ant \
-    bsdtar \
+    libarchive-tools \
+    p7zip-full \
     libsm6 \
     libice6 \
     libxext6 \
@@ -52,11 +50,14 @@ RUN dpkg --add-architecture i386 && apt-get -qq update && apt-get -qq dist-upgra
     libfontconfig1 \
     libdbus-1-3 \
     xz-utils \
-    libx11-xcb-dev \
     libc6:i386 \
     libncurses5:i386 \
     libstdc++6:i386 \
     libz1:i386 \
+    libxkbcommon-x11-0 \
+    file \
+    zip \
+    openjdk-8-jre \
     && apt-get -qq clean
 
 RUN apt-get install -qq -y --no-install-recommends \
@@ -72,6 +73,10 @@ RUN apt-get install -qq -y --no-install-recommends \
     patch \
     python3 \
     python3-six \
+    python3-distutils \
+    zip \
+    pkg-config \
+    ninja-build \
     rsync \
     flex \
     bison \
