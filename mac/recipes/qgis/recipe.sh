@@ -7,10 +7,10 @@ VERSION_qgis=3.16
 DEPS_qgis=(geodiff)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/1132494fcb679e814857d5cf7fa4f1712b52f5e1.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/981b8037c15e250d992e942d04f2728abe0add57.tar.gz
 
 # md5 of the package
-MD5_qgis=28a9a37012f673b1e0ad7d3851b87f28
+MD5_qgis=5b3b8456d92f426fffe37e352b47ff40
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -48,6 +48,8 @@ function build_qgis() {
     -DQGIS_MAC_DEPS_DIR=$QGIS_DEPS \
     -DWITH_BINDINGS=FALSE \
     -DWITH_DESKTOP=OFF \
+    -DWITH_EPT=OFF \
+    -DWITH_PDAL=OFF \
     -DWITH_ANALYSIS=OFF \
     -DDISABLE_DEPRECATED=ON \
     -DWITH_QTWEBKIT=OFF \
