@@ -4,7 +4,7 @@
 VERSION_qgis=3.16
 
 # dependencies of this recipe
-DEPS_qgis=(geodiff)
+DEPS_qgis=(geodiff zxing)
 
 # url of the package
 URL_qgis=https://github.com/qgis/QGIS/archive/981b8037c15e250d992e942d04f2728abe0add57.tar.gz
