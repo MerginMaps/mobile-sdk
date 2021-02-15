@@ -46,6 +46,11 @@ IF NOT EXIST "%STAGE_PATH%\lib\geodiff.lib" call %~dp0\recipes\geodiff\recipe.ba
 IF NOT EXIST "%STAGE_PATH%\bin\geodiff.dll" goto error
 IF NOT EXIST "%STAGE_PATH%\lib\geodiff.lib" goto error
 
+rem zxing
+IF NOT EXIST "%STAGE_PATH%\lib\libZXing.lib" call %~dp0\recipes\zxing\recipe.bat
+IF NOT EXIST "%STAGE_PATH%\bin\libZXing.dll" goto error
+IF NOT EXIST "%STAGE_PATH%\lib\libZXing.lib" goto error
+
 rem QGIS
 call %~dp0\recipes\qgis\recipe.bat
 IF NOT EXIST "%STAGE_PATH%\bin\qgis_core.dll" goto error
