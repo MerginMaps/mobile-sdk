@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # version of your package
-VERSION_qgis=3.16
+VERSION_qgis=3.19
 
 # dependencies of this recipe
 DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff qtlocation zxing)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/981b8037c15e250d992e942d04f2728abe0add57.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/1d17bf5bd35d7872f53c8e1c8b0a1e371616bf07.tar.gz
 
 # md5 of the package
-MD5_qgis=5b3b8456d92f426fffe37e352b47ff40
+MD5_qgis=594cbf6bf2464d36a670f98fe23a6caa
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -75,7 +75,7 @@ function build_qgis() {
     -DGEOS_INCLUDE_DIR=$STAGE_PATH/include \
     -DGEOS_LIBRARY=$STAGE_PATH/lib/libgeos_c.a \
     -DGEOS_LIB_NAME_WITH_PREFIX=-lgeos_c \
-    -DGEOS_VERSION=3.7.2 \
+    -DGEOS_VERSION=3.9.1 \
     -DQCA_INCLUDE_DIR=$STAGE_PATH/include/QtCrypto \
     -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5.a \
     -DQCA_VERSION_STR=2.1.0 \

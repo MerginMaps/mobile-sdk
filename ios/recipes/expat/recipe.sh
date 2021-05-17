@@ -7,7 +7,7 @@ VERSION_expat=2.0.1
 DEPS_expat=()
 
 # url of the package
-URL_expat=http://freefr.dl.sourceforge.net/project/expat/expat/$VERSION_expat/expat-${VERSION_expat}.tar.gz
+URL_expat=http://freefr.dl.sourceforge.net/project/expat/expat/$VERSION_expat/expat-${VERSION_expat}-RENAMED-VULNERABLE-PLEASE-USE-2.3.0-INSTEAD.tar.gz
 
 # md5 of the package
 MD5_expat=ee8b492592568805593f81f8cdf2a04c

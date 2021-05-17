@@ -43,7 +43,7 @@ QT_INSTALL_DIR=\$\{input_sdk_ios_PREFIX\}$QT_BASE/ios
 if [ -f $QT_PACKAGE ]; then
   echo "Archive $QT_PACKAGE exists, skipping"
 else
-  echo "Arching $QT_PACKAGE"
+  echo "Archiving $QT_PACKAGE"
   cd $QT_BASE/ios
   $COMPRESS ${QT_PACKAGE} ./
   cd $PWD
@@ -58,7 +58,7 @@ if [ -f $input_sdk_ios_PACKAGE ]; then
   rm -rf $input_sdk_ios_PACKAGE
 fi
 
-echo "Arching $input_sdk_ios_PACKAGE"
+echo "Archiving $input_sdk_ios_PACKAGE"
 cd $STAGE_DIR
 $COMPRESS ${input_sdk_ios_PACKAGE} ./
 cd $PWD
