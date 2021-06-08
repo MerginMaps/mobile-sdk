@@ -29,8 +29,8 @@ function prebuild_gdal() {
     return
   fi
 
-  try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
-  try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
+  try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_gdal"
+  try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_gdal"
 
   touch .patched
 }

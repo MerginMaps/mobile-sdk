@@ -29,8 +29,8 @@ function prebuild_proj() {
     return
   fi
 
-  try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_proj
-  try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_proj
+  try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_proj"
+  try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_proj"
 
   touch .patched
 }

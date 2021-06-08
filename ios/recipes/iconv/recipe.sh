@@ -28,10 +28,10 @@ function prebuild_iconv() {
     return
   fi
 
-  try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_iconv/build-aux
-  try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_iconv/build-aux
-  try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_iconv/libcharset/build-aux
-  try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_iconv/libcharset/build-aux
+  try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_iconv/build-aux"
+  try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_iconv/build-aux"
+  try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_iconv/libcharset/build-aux"
+  try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_iconv/libcharset/build-aux"
 
   try patch -p1 < $RECIPE_iconv/patches/iconv.patch
   try patch -p1 < $RECIPE_iconv/patches/charset.patch

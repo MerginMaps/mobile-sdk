@@ -28,8 +28,8 @@ function prebuild_libtasn1() {
     return
   fi
 
-  try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_libtasn1
-  try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_libtasn1
+  try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_libtasn1"
+  try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_libtasn1"
 
   touch .patched
 }

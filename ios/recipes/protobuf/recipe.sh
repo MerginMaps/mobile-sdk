@@ -28,8 +28,8 @@ function prebuild_protobuf() {
     return
   fi
 
-  try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_protobuf
-  try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_protobuf
+  try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_protobuf"
+  try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_protobuf"
 
   touch .patched
 }

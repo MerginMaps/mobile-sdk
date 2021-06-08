@@ -7,10 +7,10 @@ VERSION_qgis=3.19
 DEPS_qgis=(protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff qtlocation zxing)
 
 # url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/1d17bf5bd35d7872f53c8e1c8b0a1e371616bf07.tar.gz
+URL_qgis=https://github.com/qgis/QGIS/archive/3cba518cd3c73016856f4a40f40a52b33a0d41b4.tar.gz
 
 # md5 of the package
-MD5_qgis=594cbf6bf2464d36a670f98fe23a6caa
+MD5_qgis=a01b432c5e55586b3efb141d59929122
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -53,6 +53,7 @@ function build_qgis() {
 
   push_arm
 
+  # -DWITH_OAUTH2_PLUGIN=OFF \
   try ${CMAKECMD} \
     -DCMAKE_DISABLE_FIND_PACKAGE_HDF5=TRUE \
     -DWITH_DESKTOP=OFF \
@@ -60,7 +61,7 @@ function build_qgis() {
     -DWITH_QTWEBKIT=OFF \
     -DWITH_EPT=OFF \
     -DWITH_PDAL=OFF \
-    -FORCE_STATIC_LIBS=TRUE \
+    -DFORCE_STATIC_LIBS=TRUE \
     -DQT_LRELEASE_EXECUTABLE=`which lrelease` \
     -DFLEX_EXECUTABLE=`which flex` \
     -DBISON_EXECUTABLE=`which bison` \
@@ -69,7 +70,7 @@ function build_qgis() {
     -DGDAL_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
     -DGDAL_INCLUDE_DIR=$STAGE_PATH/include \
     -DGDAL_LIBRARY=$STAGE_PATH/lib/libgdal.a \
-    -DGDAL_VERSION=3.0.4 \
+    -DGDAL_VERSION=3.1.3 \
     -DGEOS_CONFIG=$STAGE_PATH/bin/geos-config \
     -DGEOS_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
     -DGEOS_INCLUDE_DIR=$STAGE_PATH/include \

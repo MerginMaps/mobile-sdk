@@ -29,8 +29,8 @@ function prebuild_freexl() {
     return
   fi
 
-  try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_freexl
-  try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_freexl
+  try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_freexl"
+  try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_freexl"
 
   touch .patched
 }
