@@ -31,8 +31,6 @@ function prebuild_qgis() {
   if [ "$module_dir" ]
   then
     echo "\$O4iOS_qgis_DIR is not empty, manually patch your files if needed!"
-  else
-    : # try patch -p1 < $RECIPE_qgis/patches/std++11.patch
   fi
 
   touch .patched
@@ -53,7 +51,6 @@ function build_qgis() {
 
   push_arm
 
-  # -DWITH_OAUTH2_PLUGIN=OFF \
   try ${CMAKECMD} \
     -DCMAKE_DISABLE_FIND_PACKAGE_HDF5=TRUE \
     -DWITH_DESKTOP=OFF \
@@ -65,6 +62,7 @@ function build_qgis() {
     -DQT_LRELEASE_EXECUTABLE=`which lrelease` \
     -DFLEX_EXECUTABLE=`which flex` \
     -DBISON_EXECUTABLE=`which bison` \
+    -DWITH_AUTH=OFF \
     -DGDAL_CONFIG=$STAGE_PATH/bin/gdal-config \
     -DGDAL_CONFIG_PREFER_FWTOOLS_PAT=/bin_safe \
     -DGDAL_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
