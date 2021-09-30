@@ -6,6 +6,8 @@ Input makes surveying of geospatial data easy. You can design your survey projec
 
 Click here to download the app on your Android/iOS/Windows device [inputapp.io](http://inputapp.io)
 
+<div><img align="left" width="45" height="45" src="https://raw.githubusercontent.com/MerginMaps/docs/main/src/.vuepress/public/slack.svg"><a href="https://merginmaps.com/community/join">Join our community chat</a><br/>and ask questions!</div><br />
+
 # Tips
 
 how to do diff `diff -rupN file.orig file`
