@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # version of your package
-VERSION_geodiff=0.8.6
+VERSION_geodiff=1.0.3
 
 # dependencies of this recipe
-DEPS_geodiff=()
+DEPS_geodiff=( sqlite3 )
 
 # url of the package
 URL_geodiff=https://github.com/lutraconsulting/geodiff/archive/${VERSION_geodiff}.tar.gz
 
 # md5 of the package
-MD5_geodiff=3e2af0aaccaf3be1573ab6dc436b65dc
+MD5_geodiff=824782942c66e710d0a003851e0bac99
 
 # default build path
 BUILD_geodiff=$BUILD_PATH/geodiff/$(get_directory $URL_geodiff)
@@ -49,7 +49,10 @@ function build_geodiff() {
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DENABLE_TESTS=OFF \
     -DBUILD_TOOLS=OFF \
-    -DBUILD_STATIC_LIBS=ON \
+    -DBUILD_STATIC=ON \
+    -DWITH_POSTGRESQL=OFF \
+    -DSQLite3_INCLUDE_DIR=$STAGE_PATH/include \
+    -DSQLite3_LIBRARY=$STAGE_PATH/lib/libsqlite3.a \
     $BUILD_geodiff/geodiff
 
   try $MAKESMP
