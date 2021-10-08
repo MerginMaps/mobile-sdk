@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # version of your package
-VERSION_geodiff=1.0.3
+VERSION_geodiff=a21f693b289357162e3729463997ed9f0168d5d8 # 1.0.3 with fix for cmake
 
 # dependencies of this recipe
 DEPS_geodiff=( sqlite3 )
@@ -10,7 +10,7 @@ DEPS_geodiff=( sqlite3 )
 URL_geodiff=https://github.com/lutraconsulting/geodiff/archive/${VERSION_geodiff}.tar.gz
 
 # md5 of the package
-MD5_geodiff=824782942c66e710d0a003851e0bac99
+MD5_geodiff=58c499df6dc61ed99942f4df1f6c9f7f
 
 # default build path
 BUILD_geodiff=$BUILD_PATH/geodiff/$(get_directory $URL_geodiff)
@@ -50,6 +50,7 @@ function build_geodiff() {
     -DENABLE_TESTS=OFF \
     -DBUILD_TOOLS=OFF \
     -DBUILD_STATIC=ON \
+    -DBUILD_SHARED=OFF \
     -DWITH_POSTGRESQL=OFF \
     -DSQLite3_INCLUDE_DIR=$STAGE_PATH/include \
     -DSQLite3_LIBRARY=$STAGE_PATH/lib/libsqlite3.a \
@@ -62,5 +63,9 @@ function build_geodiff() {
 
 # function called after all the compile have been done
 function postbuild_geodiff() {
-	true
+	LIB_ARCHS=`lipo -archs ${STAGE_PATH}/lib/libgeodiff.a`
+  if [[ $LIB_ARCHS != *"$ARCH"* ]]; then
+    error "Library was not successfully build for ${ARCH}"
+    exit 1;
+  fi
 }
