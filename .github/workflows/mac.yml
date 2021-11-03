@@ -114,12 +114,20 @@ jobs:
       - name: Build Sdk
         run: |
           ./mac/distribute.sh -mqgis
+ 
+      - name: Get TimeStamp
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 8
+          format: 'YYYYMMDD'
 
       - name: Create package
         run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-deps-${{ env.QGIS_DEPS_VERSION }}-mac-${{ env.SDK_VERSION }}.tar.gz
+          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-deps-${{ env.QGIS_DEPS_VERSION }}-mac-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          ./mac/create_package.bash
+		  cd ${{ env.ROOT_OUT_PATH }}/stage/mac
+		  tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
@@ -130,7 +138,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ github.run_number }}
+          tag: mac-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}
