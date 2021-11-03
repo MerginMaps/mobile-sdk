@@ -19,7 +19,7 @@ jobs:
       QGIS_DEPS_PATCH_VERSION: 0
       QT_VERSION: 5.15.2
       QT_BASE: /opt/Qt/5.15.2/clang_64
-      ROOT_OUT_PATH: ${{ github.workspace }}/input-sdk-mac-${{ github.run_number }}
+      ROOT_OUT_PATH: ${{ github.workspace }}/build
       ARCHES: 'mac'
       CACHE_VERSION: 1
       CCACHE_DIR: /Users/runner/work/ccache
@@ -31,30 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Prepare build cache for pull request
-        uses: pat-s/always-upload-cache@v2.1.5
-        if: github.event_name == 'pull_request'
-        with:
-          path: ${{ env.CCACHE_DIR }}
-          key: build-mac-ccache-${{ github.actor }}-${{ github.head_ref }}-${{ github.sha }}
-          # The head_ref or source branch of the pull request in a workflow run.
-          # The base_ref or target branch of the pull request in a workflow run.
-          restore-keys: |
-            build-mac-ccache-${{ github.actor }}-${{ github.head_ref }}-
-            build-mac-ccache-refs/heads/${{ github.base_ref }}-
-            build-mac-ccache-refs/heads/master-
-
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
         uses: pat-s/always-upload-cache@v2.1.5
-        if: github.event_name != 'pull_request'
         with:
-          path: ${{ env.CCACHE_DIR }}
+          path: ${{ github.workspace }}/build
           # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: build-mac-ccache-${{ github.ref }}-${{ github.sha }}
+          key: cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            build-mac-ccache-${{ github.ref }}-
-            build-mac-ccache-refs/heads/master-
+            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
+            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
 
       # Qt caching
       - name: Cache Qt
@@ -111,13 +97,6 @@ jobs:
           echo ::endgroup::
           [[ ${QT_ALREADY_CACHED} != "true" ]] && cp -r /opt/Qt/${QT_VERSION} ${DEPS_CACHE_DIR}/Qt/${QT_VERSION} || true
           [[ ${QGIS_DEPS_ALREADY_CACHED} != "true" ]] && cp -r /opt/QGIS/qgis-deps-${QGIS_DEPS_VERSION} ${DEPS_CACHE_DIR}/QGIS/qgis-deps-${QGIS_DEPS_VERSION}.${QGIS_DEPS_PATCH_VERSION} || true
-
-      - name: Install ccache
-        run: |
-          mkdir -p ${CCACHE_DIR}
-          brew install ccache
-          ccache --set-config=max_size=2.0G
-          ccache -s
 
       - name: Export config.conf
         run: |
