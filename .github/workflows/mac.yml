@@ -121,15 +121,15 @@ jobs:
 
       - name: Export config.conf
         run: |
-		  touch ./mac/config.conf
-          echo "export SDK_VERSION=${{ env.SDK_VERSION }}" >> ./mac/config.conf
-          echo "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./mac/config.conf
-          echo "export DEPS_VER=${{ env.QGIS_DEPS_VERSION }}"  >> ./mac/config.conf
-          echo "export QGIS_DEPS="/opt/QGIS/qgis-deps-${{ env.QGIS_DEPS_VERSION }}/stage"  >> ./mac/config.conf		  
-          echo "export ROOT_OUT_PATH=${{ env.ROOT_OUT_PATH }}"  >> ./mac/config.conf
-          echo "export PATH=/opt/QGIS/qgis-deps-${{ env.QGIS_DEPS_VERSION }}/stage/bin:${{ env.QT_BASE }}/bin:\$PATH"  >> ./mac/config.conf
-          echo "export QT_BASE=${{ env.QT_BASE }}"  >> ./mac/config.conf
-          echo 'export ARCHES=("${{ env.ARCHES }}")'  >> ./mac/config.conf		  
+          touch ./mac/config.conf
+          echo -e "export SDK_VERSION=${{ env.SDK_VERSION }}" >> ./mac/config.conf
+          echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./mac/config.conf
+          echo -e "export DEPS_VER=${{ env.QGIS_DEPS_VERSION }}"  >> ./mac/config.conf
+          echo -e "export QGIS_DEPS="/opt/QGIS/qgis-deps-${{ env.QGIS_DEPS_VERSION }}/stage"  >> ./mac/config.conf		  
+          echo -e "export ROOT_OUT_PATH=${{ env.ROOT_OUT_PATH }}"  >> ./mac/config.conf
+          echo -e "export PATH=/opt/QGIS/qgis-deps-${{ env.QGIS_DEPS_VERSION }}/stage/bin:${{ env.QT_BASE }}/bin:\$PATH"  >> ./mac/config.conf
+          echo -e "export QT_BASE=${{ env.QT_BASE }}"  >> ./mac/config.conf
+          echo -e "export ARCHES=(\"${{ env.ARCHES }}\""  >> ./mac/config.conf		  
           cat ./mac/config.conf
 
       - name: Build Sdk
