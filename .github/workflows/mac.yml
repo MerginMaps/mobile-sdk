@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - 'mac/**'
+	- '.github/workflows/mac.yml'
   release:
     types:
       - published
@@ -11,7 +12,7 @@ on:
 jobs:
   mac_os_build:
     runs-on: macos-10.15
-	if: github.repository == 'lutraconsulting/input-sdk'
+    if: github.repository == 'lutraconsulting/input-sdk'
     env:
 	  SDK_VERSION: ${{ github.run_number }}
 	  QGIS_DEPS_VERSION: 0.9
