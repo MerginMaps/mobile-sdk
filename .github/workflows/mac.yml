@@ -129,7 +129,7 @@ jobs:
           echo -e "export ROOT_OUT_PATH=${{ env.ROOT_OUT_PATH }}"  >> ./mac/config.conf
           echo -e "export PATH=/opt/QGIS/qgis-deps-${{ env.QGIS_DEPS_VERSION }}/stage/bin:${{ env.QT_BASE }}/bin:\$PATH"  >> ./mac/config.conf
           echo -e "export QT_BASE=${{ env.QT_BASE }}"  >> ./mac/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./mac/config.conf		  
+          echo -e "export ARCHES=\("\""${{ env.ARCHES }}"\""\)"  >> ./mac/config.conf		  
           cat ./mac/config.conf
 
       - name: Build Sdk
