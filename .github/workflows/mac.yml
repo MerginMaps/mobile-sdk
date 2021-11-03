@@ -121,7 +121,8 @@ jobs:
 
       - name: Export config.conf
         run: |
-          echo "export SDK_VERSION=${{ env.SDK_VERSION }}" > ./mac/config.conf
+		  touch ./mac/config.conf
+          echo "export SDK_VERSION=${{ env.SDK_VERSION }}" >> ./mac/config.conf
           echo "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./mac/config.conf
           echo "export DEPS_VER=${{ env.QGIS_DEPS_VERSION }}"  >> ./mac/config.conf
           echo "export QGIS_DEPS="/opt/QGIS/qgis-deps-${{ env.QGIS_DEPS_VERSION }}/stage"  >> ./mac/config.conf		  
