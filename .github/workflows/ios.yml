@@ -3,8 +3,8 @@ name: Build ios
 on:
   push:
     paths:
-    - 'ios/**'
-	- '.github/workflows/ios.yml'
+      - 'ios/**'
+      - '.github/workflows/ios.yml'
   release:
     types:
       - published
@@ -74,7 +74,7 @@ jobs:
         with:
           timeZone: 8
           format: 'YYYYMMDD'
-		  
+
       - name: Create package
         run: |
           SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-ios-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz

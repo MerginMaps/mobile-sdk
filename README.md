@@ -1,3 +1,6 @@
+[![Build macOS](https://github.com/lutraconsulting/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/mac.yml)
+
+
 # input-sdk
 
 SDK for building [Input](https://github.com/lutraconsulting/input) for mobile devices
@@ -34,9 +37,16 @@ Download prebuild [ios-SDK](https://www.dropbox.com/sh/mkkx6v2kixy1yzo/AAA0ZL7u9
 
 # MacOS
 
-Download prebuild [mac-SDK](https://www.dropbox.com/sh/dfrvx3iuu4tssg4/AABcFHrA6WF1eb_C5v1d6oJAa?dl=0)
+Download prebuild mac SDKs from the GitHub Artifacts
 
-[MacOS notes](mac/mac.md)
+## Manual Build
+1. you need to have Qt and QGIS-DEPS package (see QGIS-Mac-Packager repo) installed
+2. copy and modify config.conf.default to config.conf with your setup
+3. run `distribute.sh -mqgis`
+
+## CI
+
+the release is automatically created from each build on master. See tagged releases which have the SDK as artefact
 
 # License & Acknowledgement
 

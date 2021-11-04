@@ -14,7 +14,6 @@ jobs:
     runs-on: macos-10.15
     if: github.repository == 'lutraconsulting/input-sdk'
     env:
-      SDK_VERSION: ${{ github.run_number }}
       QGIS_DEPS_VERSION: 0.9
       QGIS_DEPS_PATCH_VERSION: 0
       QT_VERSION: 5.15.2
@@ -101,7 +100,6 @@ jobs:
       - name: Export config.conf
         run: |
           touch ./mac/config.conf
-          echo -e "export SDK_VERSION=${{ env.SDK_VERSION }}" >> ./mac/config.conf
           echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./mac/config.conf
           echo -e "export DEPS_VER=${{ env.QGIS_DEPS_VERSION }}"  >> ./mac/config.conf
           echo -e "export QGIS_DEPS=/opt/QGIS/qgis-deps-${{ env.QGIS_DEPS_VERSION }}/stage"  >> ./mac/config.conf		  
@@ -138,7 +136,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: mac-${{ github.run_number }}
+          tag: mac-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}
