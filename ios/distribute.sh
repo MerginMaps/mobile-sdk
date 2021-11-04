@@ -22,10 +22,6 @@ if [ "X$ROOT_OUT_PATH" == "X" ]; then
   error "you need ROOT_OUT_PATH argument in config.conf"
 fi
 
-if [ "X$SDK_VERSION" == "X" ]; then
-  error "you need SDK_VERSION argument in config.conf"
-fi
-
 if [ "X$QT_VERSION" == "X" ]; then
   error "you need QT_VERSION argument in config.conf"
 fi

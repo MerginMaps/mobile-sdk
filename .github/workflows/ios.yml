@@ -1,9 +1,10 @@
-name: Build Ios
+name: Build ios
 
 on:
   push:
     paths:
     - 'ios/**'
+	- '.github/workflows/ios.yml'
   release:
     types:
       - published
@@ -56,23 +57,30 @@ jobs:
       - name: Export config.conf
         run: |
           touch ./ios/config.conf
-          echo "export SDK_VERSION=${{ env.SDK_VERSION }}" >> ./ios/config.conf
-          echo "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./ios/config.conf
-          echo "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./ios/config.conf
-          echo "export IOS_MIN_SDK_VERSION=${{ env.IOS_MIN_SDK_VERSION }}"  >> ./ios/config.conf
-          echo "export QT_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}"  >> ./ios/config.conf
-          echo 'export ARCHES=("${{ env.ARCHES }}")'  >> ./ios/config.conf		  
+          echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./ios/config.conf
+          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./ios/config.conf
+          echo -e "export IOS_MIN_SDK_VERSION=${{ env.IOS_MIN_SDK_VERSION }}"  >> ./ios/config.conf
+          echo -e "export QT_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}"  >> ./ios/config.conf
+          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./ios/config.conf			  
           cat ./ios/config.conf
 
       - name: Build Sdk
         run: |
           ./ios/distribute.sh -mqgis
 
+      - name: Get TimeStamp
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 8
+          format: 'YYYYMMDD'
+		  
       - name: Create package
         run: |
-          SDK_TAR=input-sdk-ios-${{ env.SDK_VERSION }}.tar.gz
+          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-ios-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          ./ios/create_package.bash
+          cd ${{ env.ROOT_OUT_PATH }}/stage
+          tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
@@ -83,7 +91,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ github.run_number }}
+          tag: ios-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}
