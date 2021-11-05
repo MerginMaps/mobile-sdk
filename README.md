@@ -1,5 +1,5 @@
 [![Build macOS](https://github.com/lutraconsulting/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/mac.yml)
-
+[![Build iOS](https://github.com/lutraconsulting/input-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/ios.yml)
 
 # input-sdk
 

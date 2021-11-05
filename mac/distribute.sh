@@ -13,6 +13,7 @@ CORES=$(sysctl -n hw.ncpu)
 
 # Load configuration
 source `dirname $0`/config.conf
+source `dirname $0`/../versions.conf
 
 # Paths
 ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -110,6 +111,10 @@ function push_env() {
   export OLD_MAKE=$MAKE
   export OLD_LD=$LD
   export OLD_CMAKECMD=$CMAKECMD
+  export OLD_PATH=$PATH	
+  
+
+  PATH="$QT_BASE/bin:$PATH"
 
   CMAKECMD="cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH -DCMAKE_PREFIX_PATH=${QT_BASE}"
 
@@ -118,9 +123,10 @@ function push_env() {
   export LD="/usr/bin/ld"
   export MAKESMP="/usr/bin/make -j$CORES"
   export MAKE="/usr/bin/make"
-  export CFLAGS=$CFLAGS
-  export CXXFLAGS="$CXXFLAGS"
+  export CFLAGS="$CFLAGS -I$STAGE_PATH/include -L$STAGE_PATH/lib"
+  export CXXFLAGS="$CXXFLAGS -I$STAGE_PATH/include -L$STAGE_PATH/lib"
   export CMAKECMD=$CMAKECMD
+  export PATH=$OLD_PATH
 }
 
 function pop_env() {
@@ -501,16 +507,10 @@ function run_build() {
     else
       debug "Skipped $fn"
     fi
-  done
-}
-
-function run_postbuild() {
-  info "Run postbuild"
-  cd $BUILD_PATH
-  for module in $MODULES; do
+	
+	info "Run postbuild $module"
     fn=$(echo postbuild_$module)
     debug "Call $fn"
-    $fn
   done
 }
 
@@ -523,7 +523,6 @@ function run() {
     run_get_packages
     run_prebuild
     run_build
-    run_postbuild
   done
   info "All done !"
 }
