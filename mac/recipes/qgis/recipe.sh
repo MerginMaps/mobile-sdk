@@ -27,7 +27,7 @@ function prebuild_qgis() {
 
 function shouldbuild_qgis() {
   # If lib is newer than the sourcecode skip build
-  if [ ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/qgis_quick -nt $BUILD_qgis/.patched ]; then
+  if [ ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/qgis_core -nt $BUILD_qgis/.patched ]; then
     DO_BUILD=0
   fi
 }

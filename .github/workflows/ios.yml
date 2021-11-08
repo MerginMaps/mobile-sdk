@@ -80,7 +80,7 @@ jobs:
         run: |
           SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-ios-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd ${{ github.workspace }}/build/stage
+          cd "${{ github.workspace }}/build/stage"
           tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
