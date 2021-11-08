@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# version of your package in ../../version.conf
+
 # dependencies of this recipe
 DEPS_libpng=()
 

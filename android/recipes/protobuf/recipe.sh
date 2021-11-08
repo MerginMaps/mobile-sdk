@@ -1,16 +1,7 @@
 #!/bin/bash
 
-# version of your package
-VERSION_protobuf=3.11.4
-
 # dependencies of this recipe
 DEPS_protobuf=()
-
-# url of the package
-URL_protobuf=https://github.com/protocolbuffers/protobuf/releases/download/v${VERSION_protobuf}/protobuf-cpp-${VERSION_protobuf}.tar.gz
-
-# md5 of the package
-MD5_protobuf=44fa1fde51cc21c79d0e64caef2d2933
 
 # default build path
 BUILD_protobuf=$BUILD_PATH/protobuf/$(get_directory $URL_protobuf)

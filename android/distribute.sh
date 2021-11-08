@@ -21,6 +21,10 @@ source `dirname $0`/../versions.conf
 DEBUG=0
 MODULES=
 
+if [ "X$ROOT_OUT_PATH" == "X" ]; then
+  error "you need ROOT_OUT_PATH argument in config.conf"
+fi
+
 # Resolve Python path
 PYTHON="$(which python3)"
 if [ "X$PYTHON" == "X" ]; then
@@ -30,7 +34,6 @@ fi
 
 # Paths
 ROOT_PATH="$(dirname $($PYTHON -c 'from __future__ import print_function; import os,sys;print(os.path.realpath(sys.argv[1]))' $0))"
-ROOT_OUT_PATH="${ROOT_PATH}/../build-android"
 STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
 NATIVE_STAGE_PATH="${ROOT_OUT_PATH}/stage/native"
 RECIPES_PATH="$ROOT_PATH/recipes"

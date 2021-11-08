@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_libspatialite=4.3.0a
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_libspatialite=(sqlite3 proj iconv freexl geos)
-
-# url of the package
-URL_libspatialite=http://www.gaia-gis.it/gaia-sins/libspatialite-sources/libspatialite-${VERSION_libspatialite}.tar.gz
-
-# md5 of the package
-MD5_libspatialite=6b380b332c00da6f76f432b10a1a338c
 
 # default build path
 BUILD_libspatialite=$BUILD_PATH/libspatialite/$(get_directory $URL_libspatialite)

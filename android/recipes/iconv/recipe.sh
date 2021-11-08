@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_iconv=1.14
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_iconv=()
-
-# url of the package
-URL_iconv=http://ftpmirror.gnu.org/gnu/libiconv/libiconv-${VERSION_iconv}.tar.gz
-
-# md5 of the package
-MD5_iconv=e34509b1623cec449dfeb73d7ce9c6c6
 
 # default build path
 BUILD_iconv=$BUILD_PATH/iconv/$(get_directory $URL_iconv)

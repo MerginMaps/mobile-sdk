@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_webp=1.1.0
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_webp=()
-
-# url of the package
-URL_webp=https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${VERSION_webp}.tar.gz
-
-# md5 of the package
-MD5_webp=7e047f2cbaf584dff7a8a7e0f8572f18
 
 # default build path
 BUILD_webp=$BUILD_PATH/webp/$(get_directory $URL_webp)

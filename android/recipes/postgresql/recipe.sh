@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_postgresql=11.2
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_postgresql=(iconv openssl)
-
-# url of the package
-URL_postgresql=https://ftp.postgresql.org/pub/source/v${VERSION_postgresql}/postgresql-${VERSION_postgresql}.tar.bz2
-
-# md5 of the package
-MD5_postgresql=19d43be679cb0d55363feb8926af3a0f
 
 # default build path
 BUILD_postgresql=$BUILD_PATH/postgresql/$(get_directory $URL_postgresql)

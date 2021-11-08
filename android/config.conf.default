@@ -1,3 +1,5 @@
+export ROOT_OUT_PATH=<where you want build SDK>
+
 ### Currently suggested versions ####
 export ANDROIDNDKVER=r21
 export ANDROIDAPI=24 # == CMake's ANDROID_NATIVE_API_LEVEL == gradle's minSdkVersion == Dockerfile ANDROID_NDK_PLATFORM

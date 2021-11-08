@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_gdal=3.1.3
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp libpng)
-
-# url of the package
-URL_gdal=https://github.com/OSGeo/gdal/archive/v${VERSION_gdal}.tar.gz
-
-# md5 of the package
-MD5_gdal=6c4d8cca9e39ba17bc3e3ab630973e21
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)

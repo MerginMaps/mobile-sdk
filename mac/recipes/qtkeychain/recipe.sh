@@ -41,7 +41,7 @@ function build_qtkeychain() {
  try ${CMAKECMD} \
   -DQT4_BUILD=OFF \
   -DQCA_SUFFIX=qt5 \
-  -DBUILD_TESTS=OFF \
+  -DBUILD_TEST_APPLICATION=OFF \
   -DBUILD_TOOLS=OFF \
   -DWITH_nss_PLUGIN=OFF \
   -DWITH_pkcs11_PLUGIN=OFF \
