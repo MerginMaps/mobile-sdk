@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_libspatialindex=1.9.3
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_libspatialindex=()
-
-# url of the package
-URL_libspatialindex=https://github.com/libspatialindex/libspatialindex/archive/${VERSION_libspatialindex}.tar.gz
-
-# md5 of the package
-MD5_libspatialindex=b0cad679ee475cce370d8731d47b174a
 
 # default build path
 BUILD_libspatialindex=$BUILD_PATH/libspatialindex/$(get_directory $URL_libspatialindex)
@@ -38,7 +31,7 @@ function prebuild_libspatialindex() {
 
 function shouldbuild_libspatialindex() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/libspatialindex/build-$ARCH/bin/libspatialindex.a -nt $BUILD_libspatialindex/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libspatialindex.a -nt $BUILD_libspatialindex/.patched ]; then
     DO_BUILD=0
   fi
 }

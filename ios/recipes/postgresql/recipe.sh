@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_postgresql=10.1
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_postgresql=()
-
-# url of the package
-URL_postgresql=https://ftp.postgresql.org/pub/source/v${VERSION_postgresql}/postgresql-${VERSION_postgresql}.tar.bz2
-
-# md5 of the package
-MD5_postgresql=0a92328d9970bfb85dcecd011817238a
 
 # default build path
 BUILD_postgresql=$BUILD_PATH/postgresql/$(get_directory $URL_postgresql)
@@ -35,7 +28,7 @@ function prebuild_postgresql() {
 
 function shouldbuild_postgresql() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/postgresql/build-$ARCH/src/interfaces/libpq/libpq.a -nt $BUILD_postgresql/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libpq.a -nt $BUILD_postgresql/.patched ]; then
     DO_BUILD=0
   fi
 }

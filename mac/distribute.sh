@@ -113,6 +113,7 @@ function check_file_configuration() {
     info "Found: "
     cat $1 | grep /usr/local/lib
     error "File $1 contains /usr/local/lib string <-- CMake picked some homebrew libs!"
+	exit 1;
   fi
 
   targets=(
@@ -129,6 +130,7 @@ function check_file_configuration() {
       info "Found: "
       cat $1 | grep /usr/local/opt/$i/lib
       error "File $1 contains /usr/local/$i/lib string <-- CMake picked some homebrew libs!"
+	  exit 1;
     fi
   done
 }

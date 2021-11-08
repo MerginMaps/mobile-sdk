@@ -1,18 +1,8 @@
 #!/bin/bash
-
-# Reading/Writing of QR Codes
-
-# version of your package
-VERSION_zxing=1.1.1
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_zxing=()
-
-# url of the package
-URL_zxing=https://github.com/nu-book/zxing-cpp/archive/v${VERSION_zxing}.tar.gz
-
-# md5 of the package
-MD5_zxing=4b1cc29387c0318405f9042d7c657159
 
 # default build path
 BUILD_zxing=$BUILD_PATH/zxing/$(get_directory $URL_zxing)

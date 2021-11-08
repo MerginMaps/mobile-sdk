@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_libzip=1-5-2
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_libzip=()
-
-# url of the package
-URL_libzip=https://github.com/nih-at/libzip/archive/rel-${VERSION_libzip}.zip
-
-# md5 of the package
-MD5_libzip=e5d917a79134eba8f982f7a32435adc4
 
 # default build path
 BUILD_libzip=$BUILD_PATH/libzip/$(get_directory $URL_libzip)
@@ -38,7 +31,7 @@ function prebuild_libzip() {
 
 function shouldbuild_libzip() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/libzip/build-$ARCH/lib/libzip.a -nt $BUILD_libzip/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libzip.a -nt $BUILD_libzip/.patched ]; then
     DO_BUILD=0
   fi
 }

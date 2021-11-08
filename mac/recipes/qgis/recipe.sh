@@ -67,6 +67,8 @@ function build_qgis() {
     -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     -DFORCE_STATIC_LIBS=TRUE function \
     -DUSE_OPENCL=OFF \
+    -DPOSTGRES_INCLUDE_DIR=$STAGE_PATH/include \
+    -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.a \
     $BUILD_qgis
   
   check_file_configuration CMakeCache.txt

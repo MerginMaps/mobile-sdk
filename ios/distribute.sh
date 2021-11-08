@@ -17,6 +17,7 @@ if [ "X$IOS_CONFIG" == "X" ]; then
 else
     source `dirname $0`/$IOS_CONFIG
 fi
+source `dirname $0`/../versions.conf
 
 if [ "X$ROOT_OUT_PATH" == "X" ]; then
   error "you need ROOT_OUT_PATH argument in config.conf"
