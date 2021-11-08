@@ -3,7 +3,7 @@
 # version of your package in ../../version.conf
 
 # dependencies of this recipe
-DEPS_exiv2=(zlib expat)
+DEPS_exiv2=(expat)
 
 # default build path
 BUILD_exiv2=$BUILD_PATH/exiv2/$(get_directory $URL_exiv2)

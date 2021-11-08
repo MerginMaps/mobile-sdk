@@ -17,7 +17,7 @@ jobs:
     env:
       QT_VERSION: 5.14.2
       ARCHES: 'mac'
-      CACHE_VERSION: 2
+      CACHE_VERSION: 3
 
     steps:
       - uses: actions/checkout@v2
@@ -44,13 +44,13 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-ios
+          key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-mac
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: ${{ env.QT_VERSION }}
-          target: ios
+          target: desktop
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 

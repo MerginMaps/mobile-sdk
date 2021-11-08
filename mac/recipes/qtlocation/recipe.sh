@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_qtlocation=$QT_VERSION
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_qtlocation=()
-
-# url of the package
-URL_qtlocation=https://github.com/qt/qtlocation/archive/v${VERSION_qtlocation}.tar.gz
-
-# md5 of the package
-MD5_qtlocation=c5068213cf3b8fa6a2ee54a4d82cbecc
 
 # default build path
 BUILD_qtlocation=$BUILD_PATH/qtlocation/$(get_directory $URL_qtlocation)
