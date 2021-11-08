@@ -72,5 +72,8 @@ function build_openssl() {
 
 # function called after all the compile have been done
 function postbuild_openssl() {
-  true
+    if [ ! -f ${STAGE_PATH}/lib/libssl.so ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

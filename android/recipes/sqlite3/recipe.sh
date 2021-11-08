@@ -36,7 +36,7 @@ function prebuild_sqlite3() {
 
 function shouldbuild_sqlite3() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libsqlite3.so -nt $BUILD_sqlite3/.patched ]; then
+  if [ $STAGE_PATH/lib/libsqlite3.a -nt $BUILD_sqlite3/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -55,7 +55,10 @@ function build_sqlite3() {
   try $BUILD_sqlite3/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
-    --build=x86_64
+    --build=x86_64 \
+    --disable-shared \
+    --enable-static
+
   try $MAKESMP install
 
   pop_arm
@@ -63,5 +66,8 @@ function build_sqlite3() {
 
 # function called after all the compile have been done
 function postbuild_sqlite3() {
-	true
+    if [ ! -f $STAGE_PATH/lib/libsqlite3.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

@@ -41,7 +41,7 @@ function prebuild_postgresql() {
 
 function shouldbuild_postgresql() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libpq.so -nt $BUILD_postgresql/.patched ]; then
+  if [ $STAGE_PATH/lib/libpq.a -nt $BUILD_postgresql/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -58,7 +58,8 @@ function build_postgresql() {
     --host=arm-linux-androideabi \
     --build=x86_64 \
     --without-readline \
-    --with-openssl
+    --with-openssl \
+    --disable-shared
 
   try $MAKESMP -C src/interfaces/libpq
 
@@ -74,5 +75,8 @@ function build_postgresql() {
 
 # function called after all the compile have been done
 function postbuild_postgresql() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libpq.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

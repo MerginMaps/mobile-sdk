@@ -31,7 +31,7 @@ function prebuild_libzip() {
 
 function shouldbuild_libzip() {
   # If lib is newer than the sourcecode skip build
-  if [ -f $STAGE_PATH/lib/libzip.so ]; then
+  if [ -f $STAGE_PATH/lib/libzip.a ]; then
     DO_BUILD=0
   fi
 }
@@ -45,6 +45,12 @@ function build_libzip() {
   # configure
   try $CMAKECMD \
   -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+  -DBUILD_TESTS=OFF \
+  -DBUILD_SHARED_LIBS=OFF \
+  -DBUILD_TOOLS=OFF \
+  -DBUILD_REGRESS=OFF \
+  -DBUILD_EXAMPLES=OFF \
+  -DBUILD_DOC=OFF \
   $BUILD_libzip
 
   # try $MAKESMP
@@ -55,5 +61,8 @@ function build_libzip() {
 
 # function called after all the compile have been done
 function postbuild_libzip() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libzip.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

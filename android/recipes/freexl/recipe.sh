@@ -36,7 +36,7 @@ function prebuild_freexl() {
 }
 
 function shouldbuild_freexl() {
-  if [ -f $STAGE_PATH/lib/libfreexl.so ]; then
+  if [ -f $STAGE_PATH/lib/libfreexl.a ]; then
     DO_BUILD=0
   fi
 }
@@ -51,7 +51,9 @@ function build_freexl() {
   try $BUILD_freexl/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
-    --build=x86_64
+    --build=x86_64 \
+    --disable-shared
+
   try $MAKESMP install
 
   pop_arm
@@ -59,5 +61,8 @@ function build_freexl() {
 
 # function called after all the compile have been done
 function postbuild_freexl() {
-  true
+    if [ ! -f ${STAGE_PATH}/lib/libfreexl.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

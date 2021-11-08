@@ -143,7 +143,7 @@ jobs:
 
       - name: Create package
         run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-ios-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-lnx-android-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
           cd ${{ github.workspace }}/build/stage
           tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./

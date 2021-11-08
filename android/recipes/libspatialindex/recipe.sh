@@ -35,7 +35,7 @@ function prebuild_libspatialindex() {
 
 function shouldbuild_libspatialindex() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libspatialindex.so -nt $BUILD_libspatialindex/.patched ]; then
+  if [ $STAGE_PATH/lib/libspatialindex.a -nt $BUILD_libspatialindex/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -49,6 +49,7 @@ function build_libspatialindex() {
 
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+    -DBUILD_SHARED_LIBS=OFF \
     $BUILD_libspatialindex
 
   try $MAKESMP
@@ -58,5 +59,8 @@ function build_libspatialindex() {
 
 # function called after all the compile have been done
 function postbuild_libspatialindex() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libspatialindex.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

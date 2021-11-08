@@ -34,7 +34,7 @@ function prebuild_geodiff() {
 
 function shouldbuild_geodiff() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libgeodiff.so -nt $BUILD_geodiff/.patched ]; then
+  if [ $STAGE_PATH/lib/libgeodiff.a -nt $BUILD_geodiff/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -44,12 +44,11 @@ function build_geodiff() {
   try mkdir -p $BUILD_PATH/geodiff/build-$ARCH
   try cd $BUILD_PATH/geodiff/build-$ARCH
 
-  # we use CMAKE < 3.12 on the docker, so
+  # we use CMAKE < 3.12 on the ubuntu-20.04, so
   # FindSQLite3 is not yet part of the package
   # and also transitional
   try mkdir -p $BUILD_geodiff/geodiff/cmake/
   try cp $RECIPE_geodiff/FindSQLite3.cmake $BUILD_geodiff/geodiff/cmake/
-
 
   push_arm
 
@@ -58,11 +57,11 @@ function build_geodiff() {
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DENABLE_TESTS=OFF \
     -DBUILD_TOOLS=OFF \
-    -DBUILD_STATIC=OFF \
-    -DBUILD_SHARED=ON \
+    -DBUILD_STATIC=ON \
+    -DBUILD_SHARED=OFF \
     -DWITH_POSTGRESQL=OFF \
     -DSQLITE3_INCLUDE_DIR=$STAGE_PATH/include \
-    -DSQLITE3_LIBRARY=$STAGE_PATH/lib/libsqlite3.so \
+    -DSQLITE3_LIBRARY=$STAGE_PATH/lib/libsqlite3.a \
     $BUILD_geodiff/geodiff
 
   try $MAKESMP
@@ -72,5 +71,8 @@ function build_geodiff() {
 
 # function called after all the compile have been done
 function postbuild_geodiff() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libgeodiff.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

@@ -36,7 +36,7 @@ function prebuild_geos() {
 
 function shouldbuild_geos() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/geos/build-$ARCH/lib/libgeos.so -nt $BUILD_geos/.patched ]; then
+  if [ $BUILD_PATH/geos/build-$ARCH/lib/libgeos.a -nt $BUILD_geos/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -46,11 +46,13 @@ function build_geos() {
   try mkdir -p $BUILD_PATH/geos/build-$ARCH
   try cd $BUILD_PATH/geos/build-$ARCH
   push_arm
-#    -DANDROID_STL=gnustl_shared \
+
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DDISABLE_GEOS_INLINE=ON \
+    -DBUILD_SHARED_LIBS=FALSE \
     $BUILD_geos
+
   echo '#define GEOS_SVN_REVISION 0' > $BUILD_PATH/geos/build-$ARCH/geos_svn_revision.h
   try $MAKESMP
   try $MAKESMP install
@@ -59,5 +61,8 @@ function build_geos() {
 
 # function called after all the compile have been done
 function postbuild_geos() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libgeos.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

@@ -39,7 +39,7 @@ function prebuild_iconv() {
 
 function shouldbuild_iconv() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/iconv/build-$ARCH/libcharset/lib/.libs/libcharset.so -nt $BUILD_iconv/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libcharset.a -nt $BUILD_iconv/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -54,7 +54,9 @@ function build_iconv() {
   try $BUILD_iconv/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
-    --build=x86_64
+    --build=x86_64 \
+    --disable-shared
+  
   try $MAKESMP
   try make install
 
@@ -63,5 +65,8 @@ function build_iconv() {
 
 # function called after all the compile have been done
 function postbuild_iconv() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libcharset.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

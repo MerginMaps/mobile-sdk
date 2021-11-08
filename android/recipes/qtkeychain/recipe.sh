@@ -35,7 +35,7 @@ function prebuild_qtkeychain() {
 }
 
 function shouldbuild_qtkeychain() {
- if [ -f $STAGE_PATH/lib/libqt5keychain_$ARCH.so ]; then
+ if [ -f $STAGE_PATH/lib/libqt5keychain_$ARCH.a ]; then
   DO_BUILD=0
  fi
 }
@@ -56,6 +56,7 @@ function build_qtkeychain() {
   -DBUILD_TOOLS=OFF \
   -DWITH_nss_PLUGIN=OFF \
   -DWITH_pkcs11_PLUGIN=OFF \
+  -DQTKEYCHAIN_STATIC=TRUE \
   $BUILD_qtkeychain
 
   try $MAKESMP VERBOSE=1 install
@@ -65,5 +66,8 @@ function build_qtkeychain() {
 
 # function called after all the compile have been done
 function postbuild_qtkeychain() {
-	true
+    if [ ! -f $STAGE_PATH/lib/libqt5keychain_$ARCH.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

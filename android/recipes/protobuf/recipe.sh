@@ -32,7 +32,7 @@ function prebuild_protobuf() {
 }
 
 function shouldbuild_protobuf() {
-  if [ -f ${STAGE_PATH}/lib/libprotobuf.so ]; then
+  if [ -f ${STAGE_PATH}/lib/libprotobuf.a ]; then
     DO_BUILD=0
   fi
 }
@@ -68,7 +68,7 @@ function build_android_protobuf() {
   try $CMAKECMD \
     -Dprotobuf_BUILD_TESTS=OFF \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
-    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_SHARED_LIBS=OFF \
     $BUILD_protobuf/cmake
 
   try $MAKESMP
@@ -84,5 +84,8 @@ function build_protobuf() {
 
 # function called after all the compile have been done
 function postbuild_protobuf() {
-  true
+    if [ ! -f ${STAGE_PATH}/lib/libprotobuf.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

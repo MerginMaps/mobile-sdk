@@ -36,7 +36,7 @@ function prebuild_gdal() {
 
 function shouldbuild_gdal() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libgdal.so -nt $BUILD_gdal/.patched ]; then
+  if [ $STAGE_PATH/lib/libgdal.a -nt $BUILD_gdal/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -48,6 +48,13 @@ function build_gdal() {
 
   push_arm
 
+  GDAL_FLAGS="--disable-shared"
+  if [ $DEBUG -eq 1 ]; then
+    info "Building DEBUG version of GDAL!!"
+    GDAL_FLAGS="$GDAL_FLAGS --enable-debug"
+  fi
+  export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
+  
   try ./configure \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64 \
@@ -55,7 +62,19 @@ function build_gdal() {
     --with-sqlite3=$STAGE_PATH \
     --with-geos=$STAGE_PATH/bin/geos-config \
     --with-pg=no \
-    --with-expat=$STAGE_PATH
+    --with-expat=$STAGE_PATH \
+    --with-rename-internal-libtiff-symbols=yes \
+    --with-rename-internal-libgeotiff-symbols=yes \
+    --with-rename-internal-shapelib-symbols=yes \
+    --with-poppler=no \
+    --with-podofo=no \
+    --with-pdfium=no \
+    --disable-driver-mrf \
+    --with-jpeg=no \
+    --with-proj=$STAGE_PATH \
+    --with-png=no \
+    $GDAL_FLAGS
+
   try $MAKESMP
   try $MAKESMP install
 
@@ -64,5 +83,8 @@ function build_gdal() {
 
 # function called after all the compile have been done
 function postbuild_gdal() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libgdal.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

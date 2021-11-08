@@ -1,19 +1,10 @@
 #!/bin/bash
 
-# version of your package
-VERSION_libpng=1.6.37
-
 # dependencies of this recipe
 DEPS_libpng=()
 
-# url of the package
-URL_libpng=https://sourceforge.net/projects/libpng/files/libpng16/${VERSION_libpng}/libpng-${VERSION_libpng}.tar.xz/download
-
 # filename because sourceforge likes to be special
 FILENAME_libpng=libpng-${VERSION_libpng}.tar.xz
-
-# md5 of the package
-MD5_libpng=015e8e15db1eecde5f2eb9eb5b6e59e9
 
 # default build path
 BUILD_libpng=$BUILD_PATH/libpng/$(get_directory $FILENAME_libpng)
@@ -34,7 +25,7 @@ function prebuild_libpng() {
 
 function shouldbuild_libpng() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libpng.so -nt $BUILD_libpng/.patched ]; then
+  if [ $STAGE_PATH/lib/libpng.a -nt $BUILD_libpng/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -49,6 +40,7 @@ function build_libpng() {
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DHAVE_LD_VERSION_SCRIPT=OFF \
+    -DBUILD_SHARED_LIBS=OFF \
     $BUILD_libpng
 
   # try $MAKESMP
@@ -60,5 +52,8 @@ function build_libpng() {
 
 # function called after all the compile have been done
 function postbuild_libpng() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libpng.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

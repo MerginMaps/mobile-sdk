@@ -37,7 +37,7 @@ function prebuild_expat() {
 
 function shouldbuild_expat() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/expat/build-$ARCH/.libs/libexpat.so -nt $BUILD_expat/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libexpat.a -nt $BUILD_expat/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -52,7 +52,9 @@ function build_expat() {
   try $BUILD_expat/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
-    --build=x86_64
+    --build=x86_64 \
+    --disable-shared
+
   try $MAKESMP install
 
   pop_arm
@@ -60,5 +62,8 @@ function build_expat() {
 
 # function called after all the compile have been done
 function postbuild_expat() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libexpat.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

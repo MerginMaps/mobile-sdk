@@ -45,7 +45,9 @@ function build_webp() {
   push_arm
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+    -DBUILD_SHARED_LIBS=OFF \
     $BUILD_webp
+
   try $MAKESMP
   try $MAKESMP install
   pop_arm
@@ -53,5 +55,8 @@ function build_webp() {
 
 # function called after all the compile have been done
 function postbuild_webp() {
-  true
+    if [ ! -f $STAGE_PATH/lib/libwebp.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

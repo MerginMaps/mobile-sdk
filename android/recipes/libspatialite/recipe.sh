@@ -37,7 +37,7 @@ function prebuild_libspatialite() {
 
 function shouldbuild_libspatialite() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/libspatialite/build-$ARCH/src/.libs/libspatialite.so -nt $BUILD_libspatialite/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libspatialite.a -nt $BUILD_libspatialite/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -59,7 +59,8 @@ function build_libspatialite() {
     --target=android \
     --enable-examples=no \
     --enable-proj=yes \
-    --enable-static=no \
+    --enable-static=yes \
+    --disable-shared \
     --with-geosconfig=$STAGE_PATH/bin/geos-config \
     --enable-libxml2=no \
     --disable-dependency-tracking \
@@ -72,5 +73,8 @@ function build_libspatialite() {
 
 # function called after all the compile have been done
 function postbuild_libspatialite() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libspatialite.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }
