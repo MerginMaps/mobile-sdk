@@ -3,7 +3,7 @@
 # version of your package in ../../version.conf
 
 # dependencies of this recipe
-DEPS_exiv2=()
+DEPS_exiv2=(zlib expat)
 
 # default build path
 BUILD_exiv2=$BUILD_PATH/exiv2/$(get_directory $URL_exiv2)
@@ -47,7 +47,9 @@ function build_exiv2() {
     -DEXIV2_ENABLE_NLS=OFF \
     -DIconv_IS_BUILT_IN=OFF \
     $BUILD_exiv2
-
+  
+  check_file_configuration CMakeCache.txt
+  
   try $MAKESMP install
 
   pop_env

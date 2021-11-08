@@ -58,6 +58,8 @@ function build_proj() {
     -DBUILD_PROJ=OFF \
     -DBUILD_PROJINFO=OFF \
     $BUILD_proj
+  check_file_configuration CMakeCache.txt
+  
   try $MAKESMP install
 
   pop_env

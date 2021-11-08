@@ -2,6 +2,7 @@
 export QT_VER="5.15.2"
 export DEPS_VER="0.9"
 export ROOT_OUT_PATH=/opt/INPUT/input-sdk-mac-$SDK_VERSION
+export MACOSX_DEPLOYMENT_TARGET=10.13.0
 
 export QT_BASE="/opt/Qt/$QT_VER/clang_64"
 export QGIS_DEPS="/opt/QGIS/qgis-deps-$DEPS_VER/stage"

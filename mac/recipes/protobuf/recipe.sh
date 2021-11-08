@@ -24,7 +24,9 @@ function prebuild_protobuf() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_protobuf"
   try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_protobuf"
-
+  
+  patch_configure_file configure
+  
   touch .patched
 }
 

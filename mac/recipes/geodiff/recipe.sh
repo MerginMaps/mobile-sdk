@@ -48,7 +48,9 @@ function build_geodiff() {
     -DSQLite3_INCLUDE_DIR:PATH=${STAGE_PATH}/include \
     -DSQLite3_LIBRARY=${STAGE_PATH}/lib/libsqlite3.a \
     $BUILD_geodiff/geodiff
-
+  
+  check_file_configuration CMakeCache.txt
+  
   try $MAKESMP
   try $MAKESMP install
   pop_env

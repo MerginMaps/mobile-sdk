@@ -50,7 +50,8 @@ function build_libspatialindex() {
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DBUILD_SHARED_LIBS=OFF \
     $BUILD_libspatialindex
-
+  check_file_configuration CMakeCache.txt
+  
   try $MAKESMP
   try $MAKESMP install
 

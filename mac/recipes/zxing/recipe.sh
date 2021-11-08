@@ -44,7 +44,9 @@ function build_zxing() {
     -DBUILD_SHARED_LIBS=OFF \
     -DBUILD_UNIT_TESTS=OFF \
     $BUILD_zxing
-
+  
+  check_file_configuration CMakeCache.txt
+  
   try $MAKESMP
   try $MAKE install
 

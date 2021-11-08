@@ -50,6 +50,7 @@ function build_libzip() {
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_DOC=OFF \
   $BUILD_libzip
+  check_file_configuration CMakeCache.txt
   
   try $MAKESMP install
 

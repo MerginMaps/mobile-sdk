@@ -23,6 +23,7 @@ function prebuild_postgresql() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_postgresql/conftools
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_postgresql/conftools
+  
   touch .patched
 }
 
@@ -40,6 +41,7 @@ function build_postgresql() {
 
   push_env
 
+  patch_configure_file $BUILD_postgresql/configure
   USE_DEV_URANDOM=1 \
   try $BUILD_postgresql/configure --prefix=$STAGE_PATH --without-readline --disable-shared
   try $MAKESMP -C src/interfaces/libpq

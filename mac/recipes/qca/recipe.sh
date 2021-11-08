@@ -54,6 +54,8 @@ function build_qca() {
   -DBUILD_SHARED_LIBS=OFF \
   $BUILD_qca
  
+ check_file_configuration CMakeCache.txt
+ 
  try $MAKESMP install
 
  pop_env

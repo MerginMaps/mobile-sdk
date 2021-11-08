@@ -19,7 +19,9 @@ function prebuild_qgis() {
   if [ -f .patched ]; then
     return
   fi
-
+  
+  try patch -p1 < $RECIPE_qgis/patches/crssync.patch
+  
   touch .patched
 }
 
@@ -62,9 +64,13 @@ function build_qgis() {
     -DWITH_3D=FALSE \
     -DWITH_QGIS_PROCESS=OFF \
     -DQGIS_MACAPP_BUNDLE=-1 \
-    -DFORCE_STATIC_LIBS=TRUE \
+    -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
+    -DFORCE_STATIC_LIBS=TRUE function \
+    -DUSE_OPENCL=OFF \
     $BUILD_qgis
-
+  
+  check_file_configuration CMakeCache.txt
+  
   try $MAKESMP install
 
   try cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/

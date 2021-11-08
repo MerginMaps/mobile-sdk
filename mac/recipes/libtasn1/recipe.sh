@@ -42,7 +42,9 @@ function build_libtasn1() {
   
   try cd $BUILD_libtasn1
   try $MAKE autoreconf
-
+ 
+  patch_configure_file configure
+  
   try mkdir -p $BUILD_PATH/libtasn1/build-$ARCH
   try cd $BUILD_PATH/libtasn1/build-$ARCH
 

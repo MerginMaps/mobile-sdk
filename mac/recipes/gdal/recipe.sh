@@ -3,7 +3,7 @@
 # version of your package in ../../version.conf
 
 # dependencies of this recipe
-DEPS_gdal=(geos postgresql expat)
+DEPS_gdal=(geos postgresql expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -23,7 +23,9 @@ function prebuild_gdal() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_gdal"
   try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_gdal"
-
+  
+  patch_configure_file configure
+  
   touch .patched
 }
 
@@ -59,6 +61,10 @@ function build_gdal() {
     --with-poppler=no \
     --with-podofo=no \
     --with-pdfium=no \
+    --with-curl=no \
+    --with-libxml2=no \
+    --with-zstd=no \
+    --with-pcre=no \
     --disable-driver-mrf \
     --with-jpeg=no \
     --with-proj=$STAGE_PATH \

@@ -47,8 +47,12 @@ function build_qtkeychain() {
   -DWITH_pkcs11_PLUGIN=OFF \
   -DQTKEYCHAIN_STATIC=TRUE \
   $BUILD_qtkeychain
+ 
+ check_file_configuration CMakeCache.txt
+ 
  try $MAKESMP install
-
+ 
+ 
  pop_env
 }
 

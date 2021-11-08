@@ -23,7 +23,9 @@ function prebuild_sqlite3() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_sqlite3
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_sqlite3
-
+  
+  patch_configure_file configure
+  
   touch .patched
 }
 

@@ -44,7 +44,8 @@ function build_geos() {
     -DBUILD_TESTING=OFF \
     -DBUILD_SHARED_LIBS=FALSE \
     $BUILD_geos
-
+  check_file_configuration CMakeCache.txt
+  
   try $MAKESMP
   try $MAKESMP install
 

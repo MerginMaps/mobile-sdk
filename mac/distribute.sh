@@ -49,7 +49,7 @@ else
   WHEAD="wget --spider -q -S"
 fi
 
-SED="sed -i ''"
+SED="/usr/bin/sed -i ''"
 
 AUTORECONF=$(which autoreconf)
 if [ "X$AUTORECONF" == "X" ]; then
@@ -97,6 +97,42 @@ function get_directory() {
   echo $directory
 }
 
+function patch_configure_file() {
+    try ${SED} 's;/usr/local/lib/ ;;g' $1
+    try ${SED} 's; /usr/local/lib/;;g' $1
+    try ${SED} 's;/usr/local/lib/;;g' $1
+    try ${SED} 's; /usr/local/lib;;g' $1
+    try ${SED} 's;/usr/local/lib ;;g' $1
+    try ${SED} 's;/usr/local/lib;;g' $1
+}
+
+function check_file_configuration() {
+  # "Checking $1 for /usr/local/lib"
+  if grep -q /usr/local/lib $1
+  then
+    info "Found: "
+    cat $1 | grep /usr/local/lib
+    error "File $1 contains /usr/local/lib string <-- CMake picked some homebrew libs!"
+  fi
+
+  targets=(
+    openssl
+    openssl@1.1
+    gettext
+    libunistring
+    xz
+  )
+  for i in ${targets[*]}
+  do
+    if grep -q /usr/local/opt/$i/lib $1
+    then
+      info "Found: "
+      cat $1 | grep /usr/local/opt/$i/lib
+      error "File $1 contains /usr/local/$i/lib string <-- CMake picked some homebrew libs!"
+    fi
+  done
+}
+
 function push_env() {
   info "Entering in ${ARCH} environment"
 
@@ -123,8 +159,9 @@ function push_env() {
   export LD="/usr/bin/ld"
   export MAKESMP="/usr/bin/make -j$CORES"
   export MAKE="/usr/bin/make"
-  export CFLAGS="$CFLAGS -I$STAGE_PATH/include -L$STAGE_PATH/lib"
-  export CXXFLAGS="$CXXFLAGS -I$STAGE_PATH/include -L$STAGE_PATH/lib"
+  export CFLAGS="$CFLAGS -I$STAGE_PATH/include"
+  export CXXFLAGS="$CXXFLAGS -I$STAGE_PATH/include"
+  export LDFLAGS="$LDFLAGS -L$STAGE_PATH/lib"
   export CMAKECMD=$CMAKECMD
   export PATH=$OLD_PATH
 }
