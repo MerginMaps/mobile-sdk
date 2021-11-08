@@ -5,6 +5,12 @@
 # dependencies of this recipe
 DEPS_protobuf=()
 
+# default build path
+BUILD_protobuf=$BUILD_PATH/protobuf/$(get_directory $URL_protobuf)
+
+# default recipe path
+RECIPE_protobuf=$RECIPES_PATH/protobuf
+
 # function called for preparing source code if needed
 # (you can apply patch etc here.)
 function prebuild_protobuf() {

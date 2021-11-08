@@ -1,6 +1,6 @@
 ### Currently suggested versions ####
 export ANDROIDNDKVER=r21
-export ANDROIDAPI=23 # == CMake's ANDROID_NATIVE_API_LEVEL == gradle's minSdkVersion == Dockerfile ANDROID_NDK_PLATFORM
+export ANDROIDAPI=24 # == CMake's ANDROID_NATIVE_API_LEVEL == gradle's minSdkVersion == Dockerfile ANDROID_NDK_PLATFORM
 
 #### PATHS ####
 export ANDROIDSDK="/path/to/android-sdk"

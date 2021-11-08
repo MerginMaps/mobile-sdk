@@ -61,16 +61,16 @@ function build_qgis() {
     -DGDAL_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
     -DGDAL_INCLUDE_DIR=$STAGE_PATH/include \
     -DGDAL_LIBRARY=$STAGE_PATH/lib/libgdal.a \
-    -DGDAL_VERSION=3.1.3 \
+    -DGDAL_VERSION=$VERSION_gdal \
     -DGEOS_CONFIG=$STAGE_PATH/bin/geos-config \
     -DGEOS_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
     -DGEOS_INCLUDE_DIR=$STAGE_PATH/include \
     -DGEOS_LIBRARY=$STAGE_PATH/lib/libgeos_c.a \
     -DGEOS_LIB_NAME_WITH_PREFIX=-lgeos_c \
-    -DGEOS_VERSION=3.9.1 \
-    -DQCA_INCLUDE_DIR=$STAGE_PATH/include/QtCrypto \
+    -DGEOS_VERSION=$VERSION_geos \
+    -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt5/QtCrypto \
     -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5.a \
-    -DQCA_VERSION_STR=2.1.0 \
+    -DQCA_VERSION_STR=$VERSION_qca \
     -DPROJ_INCLUDE_DIR=$STAGE_PATH/include \
     -DPROJ_LIBRARY=$STAGE_PATH/lib/libproj.a \
     -DLIBTASN1_INCLUDE_DIR=$STAGE_PATH/include \
@@ -107,6 +107,8 @@ function build_qgis() {
     -DPoly2Tri_LIBRARY=$QT_PATH/lib/libpoly2tri.a \
     -DENABLE_QT5=ON \
     -DENABLE_TESTS=OFF \
+    -DEXIV2_INCLUDE_DIR=$STAGE_PATH/include \
+    -DEXIV2_LIBRARY=$STAGE_PATH/lib/libexiv2.a \
     -DEXPAT_INCLUDE_DIR=$STAGE_PATH/include \
     -DEXPAT_LIBRARY=$STAGE_PATH/lib/libexpat.a \
     -DWITH_INTERNAL_QWTPOLAR=OFF \
@@ -127,6 +129,7 @@ function build_qgis() {
     -DProtobuf_LIBRARY=$STAGE_PATH/lib/libprotobuf.a \
     -DProtobuf_LITE_LIBRARY=$STAGE_PATH/lib/libprotobuf-lite.a \
     -DProtobuf_PROTOC_LIBRARY=$STAGE_PATH/lib/libprotoc.a \
+    -DWITH_AUTH=ON \
     -DQGIS_MACAPP_BUNDLE=-1 \
     $BUILD_qgis
 

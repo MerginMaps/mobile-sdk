@@ -15,6 +15,7 @@ fi
 
 # Load configuration
 source `dirname $0`/config.conf
+source `dirname $0`/../versions.conf
 
 # Modules
 DEBUG=0
@@ -755,16 +756,11 @@ function run_build() {
     else
       debug "Skipped $fn"
     fi
-  done
-}
-
-function run_postbuild() {
-  info "Run postbuild"
-  cd $BUILD_PATH
-  for module in $MODULES; do
+	
+	# run postbuild
+	info "Run postbuild $module"
     fn=$(echo postbuild_$module)
     debug "Call $fn"
-    $fn
   done
 }
 
@@ -779,7 +775,6 @@ function run() {
     run_get_packages
     run_prebuild
     run_build
-    run_postbuild
   done
   info "All done !"
 }

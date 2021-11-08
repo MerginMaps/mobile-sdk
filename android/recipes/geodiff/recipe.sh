@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # version of your package
-VERSION_geodiff=0.8.6
+VERSION_geodiff=1.0.4
 
 # dependencies of this recipe
 DEPS_geodiff=(sqlite3)
 
 # url of the package
 # custom commit with fix to cmake policy
-URL_geodiff=https://github.com/lutraconsulting/geodiff/archive/c4b1d25999885be7d35b7accc98c85c8a6115bbb.tar.gz
+URL_geodiff=https://github.com/lutraconsulting/geodiff/archive/${VERSION_geodiff}.tar.gz
 
 # md5 of the package
-MD5_geodiff=f40de96e462fcb7b42e2390e93c5bbb7
+MD5_geodiff=58c499df6dc61ed99942f4df1f6c9f7f
 
 # default build path
 BUILD_geodiff=$BUILD_PATH/geodiff/$(get_directory $URL_geodiff)
@@ -34,7 +34,7 @@ function prebuild_geodiff() {
 
 function shouldbuild_geodiff() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/geodiff/build-$ARCH/libgeodiff.so -nt $BUILD_geodiff/.patched ]; then
+  if [ $STAGE_PATH/lib/libgeodiff.so -nt $BUILD_geodiff/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -58,7 +58,8 @@ function build_geodiff() {
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DENABLE_TESTS=OFF \
     -DBUILD_TOOLS=OFF \
-    -DWITH_INTERNAL_SQLITE3=OFF \
+    -DBUILD_STATIC=OFF \
+    -DBUILD_SHARED=ON \
     -DWITH_POSTGRESQL=OFF \
     -DSQLITE3_INCLUDE_DIR=$STAGE_PATH/include \
     -DSQLITE3_LIBRARY=$STAGE_PATH/lib/libsqlite3.so \

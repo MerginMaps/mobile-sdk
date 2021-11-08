@@ -5,6 +5,12 @@
 # dependencies of this recipe
 DEPS_qtlocation=()
 
+# default build path
+BUILD_qtlocation=$BUILD_PATH/qtlocation/$(get_directory $URL_qtlocation)
+
+# default recipe path
+RECIPE_qtlocation=$RECIPES_PATH/qtlocation
+
 # function called for preparing source code if needed
 # (you can apply patch etc here.)
 function prebuild_qtlocation() {

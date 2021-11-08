@@ -1,0 +1,163 @@
+name: Build android
+
+on:
+  push:
+    paths:
+    - 'android/**'
+    - '.github/workflows/android.yml'
+    - 'versions.conf'
+
+  release:
+    types:
+      - published
+
+jobs:
+  android_build:
+    runs-on: ubuntu-20.04
+    env:
+      QT_VERSION: '5.14.2'
+      ARCHES: "armeabi-v7a arm64-v8a"
+      CACHE_VERSION: 1
+  # apparently we cannot cache /opt directory as it fails to restore
+  # so we copy the deps in the home directory
+      DEPS_CACHE_DIR: /Users/runner/work/deps-cache
+      NDK_VERSION: r21
+      SDK_PLATFORM: android-29
+      SDK_BUILD_TOOLS: 28.0.3
+
+    steps:
+      - uses: actions/checkout@v2
+          
+      - name: Prepare build cache for branch/tag
+        # use a fork of actions/cache@v2 to upload cache even when the build or test failed
+        uses: pat-s/always-upload-cache@v2.1.5
+        with:
+          path: ${{ github.workspace }}/build
+          # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
+          key: cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
+            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
+
+      - name: Install Build Dependencies
+        run: |
+          dpkg --add-architecture i386 && apt-get -qq update && apt-get -qq dist-upgrade && apt-get install -qq -y --no-install-recommends \
+          git \
+          openssh-client \
+          ca-certificates \
+          locales \
+          sudo \
+          curl \
+          make \
+          openjdk-8-jdk \
+          ant \
+          libarchive-tools \
+          p7zip-full \
+          libsm6 \
+          libice6 \
+          libxext6 \
+          libxrender1 \
+          libfontconfig1 \
+          libdbus-1-3 \
+          xz-utils \
+          libc6:i386 \
+          libncurses5:i386 \
+          libstdc++6:i386 \
+          libz1:i386 \
+          libxkbcommon-x11-0 \
+          file \
+          zip \
+          openjdk-8-jre && apt-get -qq clean
+
+          apt-get install -qq -y --no-install-recommends \
+          bzip2 \
+          unzip \
+          gcc \
+          g++ \
+          autoconf \
+          gzip \
+          libtool \
+          cmake \
+          automake \
+          patch \
+          python3 \
+          python3-six \
+          python3-distutils \
+          zip \
+          pkg-config \
+          ninja-build \
+          rsync \
+          flex \
+          bison && apt-get -qq clean
+
+      # Qt caching
+      - name: Cache Qt
+        id: cache-qt
+        uses: pat-s/always-upload-cache@v2.1.5
+        with:
+          path: ${{ env.DEPS_CACHE_DIR }}/Qt/${{ env.QT_VERSION }}
+          key: mac-qt-v4-${{ env.QT_VERSION }}
+
+      - name: Restore Qt
+        if: steps.cache-qt.outputs.cache-hit == 'true'
+        run: |
+          sudo mkdir -p /opt
+          sudo mkdir -p /opt/Qt
+          sudo cp -r ${DEPS_CACHE_DIR}/Qt/${QT_VERSION} /opt/Qt/${QT_VERSION}
+
+      - name: Download Qt
+        if: steps.cache-qt.outputs.cache-hit != 'true'
+        run: |
+          wget https://www.dropbox.com/s/w7y9i0heh56cdrb/qt-${QT_VERSION}-android.tar.gz?dl=0
+          mkdir -p ${DEPS_CACHE_DIR}
+          mkdir -p ${DEPS_CACHE_DIR}/Qt
+
+      - name: Install Qt
+        env:
+          QT_ALREADY_CACHED: ${{ steps.cache-qt.outputs.cache-hit }}
+        run: |
+          [[ ${QT_ALREADY_CACHED} != "true" ]] && cp -r /opt/Qt/${QT_VERSION} ${DEPS_CACHE_DIR}/Qt/${QT_VERSION} || true
+          /opt/Qt/${QT_VERSION}/android/bin/qmake --version
+
+      - name: Export config.conf
+        run: |
+          touch ./ios/config.conf
+          echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./ios/config.conf
+          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./ios/config.conf
+          echo -e "export IOS_MIN_SDK_VERSION=${{ env.IOS_MIN_SDK_VERSION }}"  >> ./ios/config.conf
+          echo -e "export QT_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}"  >> ./ios/config.conf
+          echo -e "export MACOSX_DEPLOYMENT_TARGET=${{ env.IOS_MIN_SDK_VERSION }}"  >> ./ios/config.conf
+          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./ios/config.conf			  
+          cat ./ios/config.conf
+		
+      - name: Build Sdk
+        run: |
+          ./ios/distribute.sh -mqgis
+
+      - name: Get TimeStamp
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 8
+          format: 'YYYYMMDD'
+
+      - name: Create package
+        run: |
+          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-ios-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+          echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
+          cd ${{ github.workspace }}/build/stage
+          tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./
+
+      - name: Upload Sdk in Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/${{ env.SDK_TAR }}
+
+      - name: Create Release
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ios-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          allowUpdates: true
+          artifacts: ${{ env.SDK_TAR }}
+          token: ${{ secrets.GITHUB_TOKEN }}

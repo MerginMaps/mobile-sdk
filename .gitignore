@@ -5,6 +5,7 @@ android/.deps
 android/.optional-deps
 android/config.conf
 
+build/
 build-ios/
 ios/dist
 ios/.packages
