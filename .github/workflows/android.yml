@@ -33,9 +33,9 @@ jobs:
       - name: Prepare ENV
         run: |
           if [ "${{ matrix.matrix_arch }}" = "armeabi-v7a" ]; then 
-              QT_INSTALL_ARCH="android_armv7"
+              QT_INSTALL_ARCH="armv7"
           else
-              QT_INSTALL_ARCH="android_x86" 
+              QT_INSTALL_ARCH="x86" 
           fi
           echo "QT_INSTALL_ARCH=${QT_INSTALL_ARCH}" >> $GITHUB_ENV
 
@@ -61,7 +61,7 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-android-${{ matrix.matrix_arch }}
+          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-android-${{ matrix.matrix_arch }}
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -75,6 +75,9 @@ jobs:
       - name: Test QT Install
         run: |
           echo "QT_ANDROID: ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"
+          ls ${{ github.workspace }}
+          ls ${{ github.workspace }}/Qt
+          ls ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
           ls ${{ env.Qt5_DIR }}
           ls ${{ env.Qt5_DIR }}/Qt/${{ env.QT_VERSION }}
 
