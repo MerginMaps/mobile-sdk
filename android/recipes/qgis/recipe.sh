@@ -11,9 +11,19 @@ BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
 # default recipe path
 RECIPE_qgis=$RECIPES_PATH/qgis
 
-# function called for preparing source code if needed
-# (you can apply patch etc here.)
 function prebuild_qgis() {
+    cd $BUILD_qgis
+    # check marker
+    if [ -f .patched ]; then
+      return
+    fi
+  
+    try patch -p1 < $RECIPE_qgis/patches/crssync.patch
+  
+    touch .patched
+}
+
+function shouldbuild_qgis() {
     if [ ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/qgis_core -nt $BUILD_qgis/.patched ]; then
       DO_BUILD=0
     fi

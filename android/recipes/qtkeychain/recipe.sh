@@ -20,9 +20,6 @@ function prebuild_qtkeychain() {
     return
   fi
 
-  # try patch --verbose --forward -p1 < $RECIPE_qtkeychain/patches/cxx11.patch
-  # try patch --verbose --forward -p1 < $RECIPE_qtkeychain/patches/java.patch
-
   touch .patched
 }
 

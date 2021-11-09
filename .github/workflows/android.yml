@@ -90,10 +90,6 @@ jobs:
       - name: Install Android Tools
         run: |
           sdkmanager --licenses && sdkmanager --verbose "platforms;${SDK_PLATFORM}" "build-tools;${SDK_BUILD_TOOLS}" tools platform-tools
-          echo "NDK: ${{ steps.setup-ndk.outputs.ndk-path }}"
-          ls ${{ steps.setup-ndk.outputs.ndk-path }}
-          echo "SDK: ${ANDROID_HOME}"
-          ls ${ANDROID_HOME}
 
       # Build SDK
       - name: Export config.conf
@@ -104,10 +100,17 @@ jobs:
           echo -e "export ANDROIDSDK=${ANDROID_HOME}"  >> ./android/config.conf
           echo -e "export ANDROIDNDK=${{ steps.setup-ndk.outputs.ndk-path }}"  >> ./android/config.conf
           echo -e "export ANDROIDNDKVER=${{ env.NDK_VERSION }}"  >> ./android/config.conf
-          echo -e "export QT_ANDROID_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}"  >> ./android/config.conf
+          echo -e "export QT_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"  >> ./android/config.conf
           echo -e "export ANDROIDAPI=${{ env.ANDROIDAPI }}"  >> ./android/config.conf
           echo -e "export ARCHES=("\""${{ matrix.matrix_arch }}"\"")"  >> ./android/config.conf			  
           cat ./android/config.conf
+
+          echo "NDK: ${{ steps.setup-ndk.outputs.ndk-path }}"
+          ls ${{ steps.setup-ndk.outputs.ndk-path }}
+          echo "SDK: ${ANDROID_HOME}"
+          ls ${ANDROID_HOME}
+          echo "QT_ANDROID: ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"
+          ls ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android
 
       - name: Build Sdk
         run: |

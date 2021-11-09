@@ -155,7 +155,6 @@ function push_native() {
   unset TOOLCHAIN_PREFIX
   unset TOOLCHAIN_BASEDIR
   unset QT_ARCH_PREFIX
-  unset QT_ANDROID
   unset ANDROID_SYSTEM
   unset ANDROID_CMAKE_LINKER_FLAGS
   export PATH=$OLD_PATH
@@ -215,7 +214,6 @@ function push_arm() {
       echo "Error: Please report issue to enable support for arch (${ARCH})."
       exit 1
   fi
-  export QT_ANDROID=${QT_ANDROID_BASE}/android
 
   export CFLAGS="-DANDROID -fomit-frame-pointer --sysroot $NDKPLATFORM -I$STAGE_PATH/include"
   export CFLAGS="$CFLAGS -Wno-unused-command-line-argument"
@@ -256,9 +254,9 @@ function push_arm() {
   ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-llog"
 
   # for libQt5AndroidExtras_arm64-v8a.so and similar
-  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$QT_ANDROID/lib"
+  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$QT_BASE/lib"
 
-  export PATH="$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/bin/:$ANDROIDSDK/tools:$ANDROIDNDK:$QT_ANDROID/bin:$PATH"
+  export PATH="$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/bin/:$ANDROIDSDK/tools:$ANDROIDNDK:$QT_BASE/bin:$PATH"
 
   # search compiler in the path, to fail now instead of later.
   CC=$(which ${TOOLCHAIN_FULL_PREFIX}-clang)
@@ -293,7 +291,8 @@ function push_arm() {
   # official toolchain adds -g by default!
   # see https://github.com/android/ndk/issues/243
   CMAKECMD="$CMAKECMD -DCMAKE_TOOLCHAIN_FILE=$ANDROIDNDK/build/cmake/android.toolchain.cmake"
-  export CMAKECMD="$CMAKECMD -DCMAKE_FIND_ROOT_PATH:PATH=$ANDROID_NDK;$QT_ANDROID;$BUILD_PATH;$STAGE_PATH"
+  export CMAKECMD="$CMAKECMD -DCMAKE_FIND_ROOT_PATH:PATH=$ANDROID_NDK;$QT_BASE;$BUILD_PATH;$STAGE_PATH"
+  export CMAKECMD="$CMAKECMD -DCMAKE_PREFIX_PATH=${QT_BASE}"
   export CMAKECMD="$CMAKECMD -DANDROID_ABI=$ARCH -DANDROID_NDK=$ANDROID_NDK -DANDROID_NATIVE_API_LEVEL=$ANDROIDAPI -DANDROID=ON -DANDROID_STL=c++_shared"
 
   # export environment for Qt
