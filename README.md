@@ -41,7 +41,7 @@ Download prebuild iOS SDKs from the GitHub Artifacts
 Download prebuild mac SDKs from the GitHub Artifacts
 
 ## Manual Build
-1. you need to have Qt and QGIS-DEPS package (see QGIS-Mac-Packager repo) installed
+1. you need to have Qt installed
 2. copy and modify config.conf.default to config.conf with your setup
 3. run `distribute.sh -mqgis`
 

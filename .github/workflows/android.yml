@@ -34,10 +34,10 @@ jobs:
         with:
           path: ${{ github.workspace }}/build
           # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ matrix.arch }}-${{ github.ref }}-${{ github.sha }}
+          key: cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ matrix.matrix_arch }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ matrix.arch }}-${{ github.ref }}-
-            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ matrix.arch }}-refs/heads/master-
+            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ matrix.matrix_arch }}-${{ github.ref }}-
+            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ matrix.matrix_arch }}-refs/heads/master-
 
       - name: Install Build Dependencies
         run: |
@@ -50,14 +50,14 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-android-${{ matrix.arch }}
+          key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-android-${{ matrix.matrix_arch }}
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: ${{ env.QT_VERSION }}
           target: android
-          arch: ${{ matrix.arch }}
+          arch: ${{ matrix.matrix_arch }}
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
@@ -91,7 +91,7 @@ jobs:
           echo -e "export ANDROIDNDKVER=${{ env.NDK_VERSION }}"  >> ./android/config.conf
           echo -e "export QT_ANDROID_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}"  >> ./android/config.conf
           echo -e "export ANDROIDAPI=${{ env.ANDROIDAPI }}"  >> ./android/config.conf
-          echo -e "export ARCHES=("\""${{ matrix.arch }}"\"")"  >> ./android/config.conf			  
+          echo -e "export ARCHES=("\""${{ matrix.matrix_arch }}"\"")"  >> ./android/config.conf			  
           cat ./android/config.conf
 
       - name: Build Sdk
