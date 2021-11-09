@@ -72,6 +72,13 @@ jobs:
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
+      - name: Test QT Install
+        run: |
+          ls ${ANDROID_HOME}
+          echo "QT_ANDROID: ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"
+          ls ${{ env.Qt5_DIR }}
+          ls ${{ env.Qt5_DIR }}/Qt/${{ env.QT_VERSION }}
+
        # Android SDK & NDK
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
@@ -108,10 +115,6 @@ jobs:
           echo "NDK: ${{ steps.setup-ndk.outputs.ndk-path }}"
           ls ${{ steps.setup-ndk.outputs.ndk-path }}
           echo "SDK: ${ANDROID_HOME}"
-          ls ${ANDROID_HOME}
-          echo "QT_ANDROID: ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"
-          ls ${{ env.Qt5_DIR }}
-          ls ${{ env.Qt5_DIR }}/Qt/${{ env.QT_VERSION }}
 
       - name: Build Sdk
         run: |
