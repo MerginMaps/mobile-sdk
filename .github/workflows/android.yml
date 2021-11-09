@@ -53,8 +53,6 @@ jobs:
           brew install bison flex automake shtool gtk-doc
           echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
-		  
-		  android_x86, android_armv7
 
       - name: Cache Qt
         id: cache-qt
