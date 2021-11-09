@@ -1,0 +1,20 @@
+--- a/configure.orig
++++ b/configure
+@@ -18081,7 +18081,7 @@ done
+ 
+   CPPFLAGS="$CPPFLAGS_SAVE"
+   # Ensure we can link against libgeos_c
+-  LIBS_SAVE="$LIBS"
++  LIBS_SAVE="$LIBS -lgeos"
+   LIBS="$GEOS_LDFLAGS"
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing GEOSCoveredBy" >&5
+ $as_echo_n "checking for library containing GEOSCoveredBy... " >&6; }
+@@ -18112,7 +18112,7 @@ for ac_lib in '' geos_c; do
+     ac_res="none required"
+   else
+     ac_res=-l$ac_lib
+-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
++    LIBS="-l$ac_lib -lgeos  $ac_func_search_save_LIBS"
+   fi
+   if ac_fn_c_try_link "$LINENO"; then :
+   ac_cv_search_GEOSCoveredBy=$ac_res

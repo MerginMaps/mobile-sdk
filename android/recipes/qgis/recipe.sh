@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_qgis=3.19
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_qgis=(gdal qca libspatialindex libspatialite expat postgresql libzip qtkeychain exiv2 geodiff protobuf zxing)
-
-# url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/1d17bf5bd35d7872f53c8e1c8b0a1e371616bf07.tar.gz
-
-# md5 of the package
-MD5_qgis=594cbf6bf2464d36a670f98fe23a6caa
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -18,10 +11,22 @@ BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
 # default recipe path
 RECIPE_qgis=$RECIPES_PATH/qgis
 
-# function called for preparing source code if needed
-# (you can apply patch etc here.)
 function prebuild_qgis() {
-  true
+    cd $BUILD_qgis
+    # check marker
+    if [ -f .patched ]; then
+      return
+    fi
+  
+    try patch -p1 < $RECIPE_qgis/patches/crssync.patch
+  
+    touch .patched
+}
+
+function shouldbuild_qgis() {
+    if [ ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/qgis_core -nt $BUILD_qgis/.patched ]; then
+      DO_BUILD=0
+    fi
 }
 
 # function called to build the source code
@@ -39,6 +44,7 @@ function build_qgis() {
     -DWITH_ANALYSIS=OFF \
     -DDISABLE_DEPRECATED=ON \
     -DWITH_QTWEBKIT=OFF \
+    -DFORCE_STATIC_LIBS=TRUE \
     -DQT_LRELEASE_EXECUTABLE=`which lrelease` \
     -DFLEX_EXECUTABLE=`which flex` \
     -DBISON_EXECUTABLE=`which bison` \
@@ -46,20 +52,20 @@ function build_qgis() {
     -DGDAL_CONFIG_PREFER_FWTOOLS_PAT=/bin_safe \
     -DGDAL_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
     -DGDAL_INCLUDE_DIR=$STAGE_PATH/include \
-    -DGDAL_LIBRARY=$STAGE_PATH/lib/libgdal.so \
+    -DGDAL_LIBRARY=$STAGE_PATH/lib/libgdal.a \
     -DGEOS_CONFIG=$STAGE_PATH/bin/geos-config \
     -DGEOS_CONFIG_PREFER_PATH=$STAGE_PATH/bin \
     -DGEOS_INCLUDE_DIR=$STAGE_PATH/include \
-    -DGEOS_LIBRARY=$STAGE_PATH/lib/libgeos_c.so \
+    -DGEOS_LIBRARY=$STAGE_PATH/lib/libgeos_c.a \
     -DGEOS_LIB_NAME_WITH_PREFIX=-lgeos_c \
     -DICONV_INCLUDE_DIR=$STAGE_PATH/include \
-    -DICONV_LIBRARY=$STAGE_PATH/lib/libiconv.so \
+    -DICONV_LIBRARY=$STAGE_PATH/lib/libiconv.a \
     -DSQLITE3_INCLUDE_DIR=$STAGE_PATH/include \
-    -DSQLITE3_LIBRARY=$STAGE_PATH/lib/libsqlite3.so \
+    -DSQLITE3_LIBRARY=$STAGE_PATH/lib/libsqlite3.a \
     -DPOSTGRES_CONFIG= \
     -DPOSTGRES_CONFIG_PREFER_PATH= \
     -DPOSTGRES_INCLUDE_DIR=$STAGE_PATH/include \
-    -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.so \
+    -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.a \
     -DPYTHON_EXECUTABLE=`which python3` \
     -DWITH_BINDINGS=OFF \
     -DWITH_GRASS=OFF \
@@ -67,18 +73,18 @@ function build_qgis() {
     -DWITH_QTMOBILITY=OFF \
     -DWITH_QUICK=OFF \
     -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt5/QtCrypto \
-    -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5_$ARCH.so \
+    -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5_$ARCH.a \
     -DQTKEYCHAIN_INCLUDE_DIR=$STAGE_PATH/include/qt5keychain \
-    -DQTKEYCHAIN_LIBRARY=$STAGE_PATH/lib/libqt5keychain_$ARCH.so \
+    -DQTKEYCHAIN_LIBRARY=$STAGE_PATH/lib/libqt5keychain_$ARCH.a \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DENABLE_QT5=ON \
     -DENABLE_TESTS=OFF \
     -DEXPAT_INCLUDE_DIR=$STAGE_PATH/include \
-    -DEXPAT_LIBRARY=$STAGE_PATH/lib/libexpat.so \
+    -DEXPAT_LIBRARY=$STAGE_PATH/lib/libexpat.a \
     -DWITH_INTERNAL_QWTPOLAR=OFF \
     -DWITH_QWTPOLAR=OFF \
     -DWITH_GUI=OFF \
-    -DSPATIALINDEX_LIBRARY=$STAGE_PATH/lib/libspatialindex.so \
+    -DSPATIALINDEX_LIBRARY=$STAGE_PATH/lib/libspatialindex.a \
     -DWITH_APIDOC=OFF \
     -DWITH_ASTYLE=OFF \
     -DWITH_QUICK=OFF \
@@ -87,9 +93,9 @@ function build_qgis() {
     -DWITH_QGIS_PROCESS=OFF \
     -DProtobuf_PROTOC_EXECUTABLE:FILEPATH=$NATIVE_STAGE_PATH/bin/protoc \
     -DProtobuf_INCLUDE_DIRS:PATH=$STAGE_PATH/include \
-    -DProtobuf_LIBRARY=$STAGE_PATH/lib/libprotobuf.so \
-    -DProtobuf_LITE_LIBRARY=$STAGE_PATH/lib/libprotobuf-lite.so \
-    -DProtobuf_PROTOC_LIBRARY=$STAGE_PATH/lib/libprotoc.so \
+    -DProtobuf_LIBRARY=$STAGE_PATH/lib/libprotobuf.a \
+    -DProtobuf_LITE_LIBRARY=$STAGE_PATH/lib/libprotobuf-lite.a \
+    -DProtobuf_PROTOC_LIBRARY=$STAGE_PATH/lib/libprotoc.a \
     -DWITH_QSPATIALITE=OFF \
     $BUILD_qgis
 
@@ -103,5 +109,5 @@ function build_qgis() {
 
 # function called after all the compile have been done
 function postbuild_qgis() {
-  true
+  :
 }

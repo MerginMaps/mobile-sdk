@@ -1,18 +1,9 @@
 #!/bin/bash
 
-# Reading/Writing of QR Codes
-
-# version of your package
-VERSION_zxing=1.1.1
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_zxing=()
-
-# url of the package
-URL_zxing=https://github.com/nu-book/zxing-cpp/archive/v${VERSION_zxing}.tar.gz
-
-# md5 of the package
-MD5_zxing=4b1cc29387c0318405f9042d7c657159
 
 # default build path
 BUILD_zxing=$BUILD_PATH/zxing/$(get_directory $URL_zxing)
@@ -33,7 +24,7 @@ function prebuild_zxing() {
 
 function shouldbuild_zxing() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libZXing.so -nt $BUILD_zxing/.patched ]; then
+  if [ $STAGE_PATH/lib/libZXing.a -nt $BUILD_zxing/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -49,7 +40,7 @@ function build_zxing() {
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_BLACKBOX_TESTS=OFF \
-    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_SHARED_LIBS=OFF \
     -DBUILD_UNIT_TESTS=OFF \
     $BUILD_zxing
 
@@ -61,5 +52,8 @@ function build_zxing() {
 
 # function called after all the compile have been done
 function postbuild_zxing() {
-	true
+    if [ ! -f $STAGE_PATH/lib/libZXing.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

@@ -1,16 +1,10 @@
 #!/bin/bash
 
-# version of your package
-VERSION_geodiff=1.0.3
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
-DEPS_geodiff=()
+DEPS_geodiff=(sqlite3)
 
-# url of the package
-URL_geodiff=https://github.com/lutraconsulting/geodiff/archive/${VERSION_geodiff}.tar.gz
-
-# md5 of the package
-MD5_geodiff=824782942c66e710d0a003851e0bac99
 
 # default build path
 BUILD_geodiff=$BUILD_PATH/geodiff/$(get_directory $URL_geodiff)
@@ -33,7 +27,7 @@ function prebuild_geodiff() {
 
 function shouldbuild_geodiff() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libgeodiff.dylib -nt $BUILD_geodiff/.patched ]; then
+  if [ $STAGE_PATH/lib/libgeodiff.a -nt $BUILD_geodiff/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -48,11 +42,15 @@ function build_geodiff() {
   try $CMAKECMD \
     -DENABLE_TESTS=OFF \
     -DBUILD_TOOLS=OFF \
-    -DWITH_INTERNAL_SQLITE3:BOOL=FALSE \
-    -DSQLite3_INCLUDE_DIR:PATH=$QGIS_DEPS/include \
-    -DSQLite3_LIBRARY=$QGIS_DEPS/lib/libsqlite3.dylib \
+    -DBUILD_STATIC=ON \
+    -DBUILD_SHARED=OFF \
+    -DWITH_POSTGRESQL=OFF \
+    -DSQLite3_INCLUDE_DIR:PATH=${STAGE_PATH}/include \
+    -DSQLite3_LIBRARY=${STAGE_PATH}/lib/libsqlite3.a \
     $BUILD_geodiff/geodiff
-
+  
+  check_file_configuration CMakeCache.txt
+  
   try $MAKESMP
   try $MAKESMP install
   pop_env
@@ -60,5 +58,8 @@ function build_geodiff() {
 
 # function called after all the compile have been done
 function postbuild_geodiff() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libgeodiff.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

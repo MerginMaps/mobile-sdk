@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_libzip=1-5-2
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_libzip=()
-
-# url of the package
-URL_libzip=https://github.com/nih-at/libzip/archive/rel-${VERSION_libzip}.zip
-
-# md5 of the package
-MD5_libzip=e5d917a79134eba8f982f7a32435adc4
 
 # default build path
 BUILD_libzip=$BUILD_PATH/libzip/$(get_directory $URL_libzip)
@@ -31,7 +24,7 @@ function prebuild_libzip() {
 
 function shouldbuild_libzip() {
   # If lib is newer than the sourcecode skip build
-  if [ -f $STAGE_PATH/lib/libzip.so ]; then
+  if [ -f $STAGE_PATH/lib/libzip.a ]; then
     DO_BUILD=0
   fi
 }
@@ -45,6 +38,12 @@ function build_libzip() {
   # configure
   try $CMAKECMD \
   -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+  -DBUILD_TESTS=OFF \
+  -DBUILD_SHARED_LIBS=OFF \
+  -DBUILD_TOOLS=OFF \
+  -DBUILD_REGRESS=OFF \
+  -DBUILD_EXAMPLES=OFF \
+  -DBUILD_DOC=OFF \
   $BUILD_libzip
 
   # try $MAKESMP
@@ -55,5 +54,8 @@ function build_libzip() {
 
 # function called after all the compile have been done
 function postbuild_libzip() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libzip.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

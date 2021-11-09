@@ -1,17 +1,10 @@
 #!/bin/bash
 
-# version of your package
-VERSION_libspatialite=4.3.0a
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 # sqlite3 is already in iOS SDK dir
 DEPS_libspatialite=(proj iconv freexl geos)
-
-# url of the package
-URL_libspatialite=http://www.gaia-gis.it/gaia-sins/libspatialite-sources/libspatialite-${VERSION_libspatialite}.tar.gz
-
-# md5 of the package
-MD5_libspatialite=6b380b332c00da6f76f432b10a1a338c
 
 # default build path
 BUILD_libspatialite=$BUILD_PATH/libspatialite/$(get_directory $URL_libspatialite)
@@ -40,7 +33,7 @@ function prebuild_libspatialite() {
 
 function shouldbuild_libspatialite() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/libspatialite/build-$ARCH/src/.libs/libspatialite.a -nt $BUILD_libspatialite/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libspatialite.a -nt $BUILD_libspatialite/.patched ]; then
     DO_BUILD=0
   fi
 }

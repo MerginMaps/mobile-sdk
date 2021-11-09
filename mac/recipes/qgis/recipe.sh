@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_qgis=3.19
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
-DEPS_qgis=(geodiff zxing)
-
-# url of the package
-URL_qgis=https://github.com/qgis/QGIS/archive/1d17bf5bd35d7872f53c8e1c8b0a1e371616bf07.tar.gz
-
-# md5 of the package
-MD5_qgis=594cbf6bf2464d36a670f98fe23a6caa
+DEPS_qgis=(exiv2 protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff qtlocation zxing)
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -26,13 +19,15 @@ function prebuild_qgis() {
   if [ -f .patched ]; then
     return
   fi
-
+  
+  try patch -p1 < $RECIPE_qgis/patches/crssync.patch
+  
   touch .patched
 }
 
 function shouldbuild_qgis() {
   # If lib is newer than the sourcecode skip build
-  if [ ${STAGE_PATH}/QGIS.app/Contents/MacOS/lib/qgis_quick.framework/qgis_quick -nt $BUILD_qgis/.patched ]; then
+  if [ ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/qgis_core -nt $BUILD_qgis/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -45,7 +40,7 @@ function build_qgis() {
   push_env
 
   try ${CMAKECMD} \
-    -DQGIS_MAC_DEPS_DIR=$QGIS_DEPS \
+    -DQGIS_MAC_DEPS_DIR=$STAGE_PATH \
     -DWITH_BINDINGS=FALSE \
     -DWITH_DESKTOP=OFF \
     -DWITH_EPT=OFF \
@@ -69,8 +64,15 @@ function build_qgis() {
     -DWITH_3D=FALSE \
     -DWITH_QGIS_PROCESS=OFF \
     -DQGIS_MACAPP_BUNDLE=-1 \
+    -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
+    -DFORCE_STATIC_LIBS=TRUE function \
+    -DUSE_OPENCL=OFF \
+    -DPOSTGRES_INCLUDE_DIR=$STAGE_PATH/include \
+    -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.a \
     $BUILD_qgis
-
+  
+  check_file_configuration CMakeCache.txt
+  
   try $MAKESMP install
 
   try cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/

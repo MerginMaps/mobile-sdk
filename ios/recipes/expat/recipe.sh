@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_expat=2.0.1
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_expat=()
-
-# url of the package
-URL_expat=http://freefr.dl.sourceforge.net/project/expat/expat/$VERSION_expat/expat-${VERSION_expat}-RENAMED-VULNERABLE-PLEASE-USE-2.3.0-INSTEAD.tar.gz
-
-# md5 of the package
-MD5_expat=ee8b492592568805593f81f8cdf2a04c
 
 # default build path
 BUILD_expat=$BUILD_PATH/expat/$(get_directory $URL_expat)
@@ -40,7 +33,7 @@ function prebuild_expat() {
 
 function shouldbuild_expat() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/expat/build-$ARCH/.libs/libexpat.a -nt $BUILD_expat/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libexpat.a -nt $BUILD_expat/.patched ]; then
     DO_BUILD=0
   fi
 }

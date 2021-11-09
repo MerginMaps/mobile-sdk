@@ -1,13 +1,7 @@
 # Build instruction for iOS
 
-# How to release Qt for iOS 
-QT in SDK is just downloaded and extracted
-from dropbox archive. When updating QT version
-1. download QT for iSO from the official downloader
-2. compress the /opt/Qt/${QT_VERSION} folder and
-3. upload compressed file qt-${QT_VERSION}-ios.tar.gz to dropbox
 
-# How to release input-sdk for iOS 
+# Manual building for iOS 
 bump version in config.pri
 1. build locally ios/distribute.sh -mqgis
 2. compress with the `create_package.bash`
@@ -15,6 +9,9 @@ bump version in config.pri
 4. tag the repo
 5. update input to use new SDK version
 
+# Distribution
+
+use artefact from the iOS CI on github actions
 
 
 # Building instructions
@@ -60,7 +57,7 @@ cp config.conf.default config.conf
 ./distribute.sh -dqgis
 ```
 
-Now all libraries should be in stage/<architecture> folder for linking.
+Now all libraries should be in `stage/<architecture>` folder for linking.
 
 If you work with your local QGIS repository, you need to apply c++11 patch manually,
 but do not push that upstream!

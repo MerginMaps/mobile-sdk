@@ -17,13 +17,10 @@ if [ "X$IOS_CONFIG" == "X" ]; then
 else
     source `dirname $0`/$IOS_CONFIG
 fi
+source `dirname $0`/../versions.conf
 
 if [ "X$ROOT_OUT_PATH" == "X" ]; then
   error "you need ROOT_OUT_PATH argument in config.conf"
-fi
-
-if [ "X$SDK_VERSION" == "X" ]; then
-  error "you need SDK_VERSION argument in config.conf"
 fi
 
 if [ "X$QT_VERSION" == "X" ]; then

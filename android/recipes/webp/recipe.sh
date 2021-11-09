@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_webp=1.1.0
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_webp=()
-
-# url of the package
-URL_webp=https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${VERSION_webp}.tar.gz
-
-# md5 of the package
-MD5_webp=7e047f2cbaf584dff7a8a7e0f8572f18
 
 # default build path
 BUILD_webp=$BUILD_PATH/webp/$(get_directory $URL_webp)
@@ -45,7 +38,9 @@ function build_webp() {
   push_arm
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+    -DBUILD_SHARED_LIBS=OFF \
     $BUILD_webp
+
   try $MAKESMP
   try $MAKESMP install
   pop_arm
@@ -53,5 +48,8 @@ function build_webp() {
 
 # function called after all the compile have been done
 function postbuild_webp() {
-  true
+    if [ ! -f $STAGE_PATH/lib/libwebp.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

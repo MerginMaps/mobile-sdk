@@ -1,19 +1,9 @@
 #!/bin/bash
 
-# version of your package
-# VERSION_qtkeychain=0.8.0
-VERSION_qtkeychain=0.9.1
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_qtkeychain=()
-
-# url of the package
-URL_qtkeychain=https://github.com/frankosterfeld/qtkeychain/archive/v${VERSION_qtkeychain}.tar.gz
-# URL_qtkeychain=https://github.com/hasselmm/qtkeychain/archive/androidkeystore.tar.gz
-
-# md5 of the package
-# MD5_qtkeychain=8ac371cb68aad1582e7b8e7b0b4530cd
-MD5_qtkeychain=e6921de6f256259784f2a9edd1eeb8f5
 
 # default build path
 BUILD_qtkeychain=$BUILD_PATH/qtkeychain/$(get_directory $URL_qtkeychain)
@@ -37,7 +27,7 @@ function prebuild_qtkeychain() {
 
 function shouldbuild_qtkeychain() {
  # If lib is newer than the sourcecode skip build
- if [ $BUILD_qtkeychain/build-$ARCH/libqt5keychain.a -nt $BUILD_qtkeychain/.patched ]; then
+ if [ ${STAGE_PATH}/lib/libqt5keychain.a -nt $BUILD_qtkeychain/.patched ]; then
   DO_BUILD=0
  fi
 }
@@ -53,7 +43,7 @@ function build_qtkeychain() {
  try ${CMAKECMD} \
   -DQT4_BUILD=OFF \
   -DQCA_SUFFIX=qt5 \
-  -DBUILD_TESTS=OFF \
+  -DBUILD_TEST_APPLICATION=OFF \
   -DBUILD_TOOLS=OFF \
   -DWITH_nss_PLUGIN=OFF \
   -DWITH_pkcs11_PLUGIN=OFF \

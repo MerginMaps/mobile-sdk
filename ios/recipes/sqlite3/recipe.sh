@@ -1,19 +1,12 @@
 #!/bin/bash
 
-# version of your package
-VERSION_sqlite3=3300100
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_sqlite3=()
 
-# url of the package
-URL_sqlite3=https://www.dropbox.com/s/8x1ese8mx0sif3c/sqlite-autoconf-${VERSION_sqlite3}.tar.gz?dl=1
-
-# md5 of the package
-MD5_sqlite3=51252dc6bc9094ba11ab151ba650ff3c
-
 # default build path
-BUILD_sqlite3=$BUILD_PATH/sqlite3/sqlite-autoconf-${VERSION_sqlite3}
+BUILD_sqlite3=$BUILD_PATH/sqlite3/sqlite-autoconf-$URL_sqlite3_BASE
 
 # default recipe path
 RECIPE_sqlite3=$RECIPES_PATH/sqlite3
@@ -56,7 +49,7 @@ function build_sqlite3() {
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
     --disable-shared \
-    --enable-static \
+    --enable-static
 
   # manual install
   try $MAKESMP install-libLTLIBRARIES

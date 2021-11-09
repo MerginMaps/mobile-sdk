@@ -1,16 +1,7 @@
 #!/bin/bash
 
-# version of your package
-VERSION_protobuf=3.11.4
-
 # dependencies of this recipe
 DEPS_protobuf=()
-
-# url of the package
-URL_protobuf=https://github.com/protocolbuffers/protobuf/releases/download/v${VERSION_protobuf}/protobuf-cpp-${VERSION_protobuf}.tar.gz
-
-# md5 of the package
-MD5_protobuf=44fa1fde51cc21c79d0e64caef2d2933
 
 # default build path
 BUILD_protobuf=$BUILD_PATH/protobuf/$(get_directory $URL_protobuf)
@@ -32,7 +23,7 @@ function prebuild_protobuf() {
 }
 
 function shouldbuild_protobuf() {
-  if [ -f ${STAGE_PATH}/lib/libprotobuf.so ]; then
+  if [ -f ${STAGE_PATH}/lib/libprotobuf.a ]; then
     DO_BUILD=0
   fi
 }
@@ -68,7 +59,7 @@ function build_android_protobuf() {
   try $CMAKECMD \
     -Dprotobuf_BUILD_TESTS=OFF \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
-    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_SHARED_LIBS=OFF \
     $BUILD_protobuf/cmake
 
   try $MAKESMP
@@ -84,5 +75,8 @@ function build_protobuf() {
 
 # function called after all the compile have been done
 function postbuild_protobuf() {
-  true
+    if [ ! -f ${STAGE_PATH}/lib/libprotobuf.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

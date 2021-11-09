@@ -1,19 +1,9 @@
 #!/bin/bash
 
-# version of your package
-# NOTE: if changed, update also qgis's recipe
-VERSION_qca=2.1.0
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_qca=()
-
-# url of the package
-# URL_qca=http://delta.affinix.com/download/qca/2.0/qca-${VERSION_qca}.tar.gz
-# URL_qca=http://quickgit.kde.org/?p=qca.git&a=snapshot&h=4f966b0217c10b6fd3c12caf7d2467759fbec7f7&fmt=tgz
-URL_qca=https://github.com/KDE/qca/archive/v${VERSION_qca}.tar.gz
-
-# md5 of the package
-MD5_qca=b1b8ffad920c4cb3c286bcf34a83f76b
 
 # default build path
 BUILD_qca=$BUILD_PATH/qca/$(get_directory $URL_qca)
@@ -29,10 +19,7 @@ function prebuild_qca() {
   if [ -f .patched ]; then
     return
   fi
-
-  try patch --verbose --forward -p1 < $RECIPE_qca/patches/qca_qio.patch
-  try patch --verbose --forward -p1 < $RECIPE_qca/patches/qca_console.patch
-  try patch -p1 < $RECIPE_qca/patches/cxx11.patch
+ 
   try patch -p1 < $RECIPE_qca/patches/src.patch
 
   touch .patched
@@ -40,7 +27,7 @@ function prebuild_qca() {
 
 function shouldbuild_qca() {
  # If lib is newer than the sourcecode skip build
- if [ $BUILD_qca/build-$ARCH/lib/libqca-qt5.a -nt $BUILD_qca/.patched ]; then
+ if [ ${STAGE_PATH}/lib/libqca-qt5.a -nt $BUILD_qca/.patched ]; then
   DO_BUILD=0
  fi
 }
@@ -58,6 +45,7 @@ function build_qca() {
   -DQCA_SUFFIX=qt5 \
   -DBUILD_TESTS=OFF \
   -DBUILD_TOOLS=OFF \
+  -DBUILD_SHARED_LIBS=OFF \
   -DWITH_nss_PLUGIN=OFF \
   -DWITH_pkcs11_PLUGIN=OFF \
   -DWITH_gnupg_PLUGIN=OFF \

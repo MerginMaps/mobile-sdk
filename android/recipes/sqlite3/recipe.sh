@@ -1,19 +1,12 @@
 #!/bin/bash
 
-# version of your package
-VERSION_sqlite3=3300100
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_sqlite3=()
 
-# url of the package
-URL_sqlite3=https://www.dropbox.com/s/8x1ese8mx0sif3c/sqlite-autoconf-${VERSION_sqlite3}.tar.gz?dl=1
-
-# md5 of the package
-MD5_sqlite3=51252dc6bc9094ba11ab151ba650ff3c
-
 # default build path
-BUILD_sqlite3=$BUILD_PATH/sqlite3/sqlite-autoconf-${VERSION_sqlite3}
+BUILD_sqlite3=$BUILD_PATH/sqlite3/sqlite-autoconf-$URL_sqlite3_BASE
 
 # default recipe path
 RECIPE_sqlite3=$RECIPES_PATH/sqlite3
@@ -36,7 +29,7 @@ function prebuild_sqlite3() {
 
 function shouldbuild_sqlite3() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libsqlite3.so -nt $BUILD_sqlite3/.patched ]; then
+  if [ $STAGE_PATH/lib/libsqlite3.a -nt $BUILD_sqlite3/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -55,7 +48,10 @@ function build_sqlite3() {
   try $BUILD_sqlite3/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
-    --build=x86_64
+    --build=x86_64 \
+    --disable-shared \
+    --enable-static
+
   try $MAKESMP install
 
   pop_arm
@@ -63,5 +59,8 @@ function build_sqlite3() {
 
 # function called after all the compile have been done
 function postbuild_sqlite3() {
-	true
+    if [ ! -f $STAGE_PATH/lib/libsqlite3.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_proj=6.3.2
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_proj=(sqlite3 openssl)
-
-# url of the package
-URL_proj=https://github.com/OSGeo/PROJ/releases/download/$VERSION_proj/proj-$VERSION_proj.tar.gz
-
-# md5 of the package
-MD5_proj=2ca6366e12cd9d34d73b4602049ee480
 
 # default build path
 BUILD_proj=$BUILD_PATH/proj/$(get_directory $URL_proj)
@@ -33,7 +26,7 @@ function prebuild_proj() {
 
 function shouldbuild_proj() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libproj.so -nt $BUILD_proj/.patched ]; then
+  if [ $STAGE_PATH/lib/libproj.a -nt $BUILD_proj/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -49,6 +42,7 @@ function build_proj() {
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DPROJ_TESTS=OFF \
     -DEXE_SQLITE3=`which sqlite3` \
+    -DBUILD_LIBPROJ_SHARED=OFF \
     $BUILD_proj
 
   try $MAKESMP install
@@ -57,5 +51,8 @@ function build_proj() {
 
 # function called after all the compile have been done
 function postbuild_proj() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libproj.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

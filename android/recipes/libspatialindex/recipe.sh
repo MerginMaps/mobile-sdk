@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_libspatialindex=1.9.3
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_libspatialindex=()
-
-# url of the package
-URL_libspatialindex=https://github.com/libspatialindex/libspatialindex/archive/${VERSION_libspatialindex}.tar.gz
-
-# md5 of the package
-MD5_libspatialindex=b0cad679ee475cce370d8731d47b174a
 
 # default build path
 BUILD_libspatialindex=$BUILD_PATH/libspatialindex/$(get_directory $URL_libspatialindex)
@@ -28,14 +21,15 @@ function prebuild_libspatialindex() {
     return
   fi
 
-  try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_libspatialindex
-  try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_libspatialindex
+  
+  try patch -p1 < $RECIPE_libspatialindex/patches/spatialindex.patch
+  
   touch .patched
 }
 
 function shouldbuild_libspatialindex() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libspatialindex.so -nt $BUILD_libspatialindex/.patched ]; then
+  if [ $STAGE_PATH/lib/libspatialindex.a -nt $BUILD_libspatialindex/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -49,6 +43,7 @@ function build_libspatialindex() {
 
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+    -DBUILD_SHARED_LIBS=OFF \
     $BUILD_libspatialindex
 
   try $MAKESMP
@@ -58,5 +53,8 @@ function build_libspatialindex() {
 
 # function called after all the compile have been done
 function postbuild_libspatialindex() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libspatialindex.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

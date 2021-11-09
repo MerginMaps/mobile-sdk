@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_freexl=1.0.2
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_freexl=(iconv)
-
-# url of the package
-URL_freexl=http://www.gaia-gis.it/gaia-sins/freexl-sources/freexl-${VERSION_freexl}.tar.gz
-
-# md5 of the package
-MD5_freexl=9954640e5fed76a5d9deb9b02b0169a0
 
 # default build path
 BUILD_freexl=$BUILD_PATH/freexl/$(get_directory $URL_freexl)
@@ -36,7 +29,7 @@ function prebuild_freexl() {
 }
 
 function shouldbuild_freexl() {
-  if [ -f $STAGE_PATH/lib/libfreexl.so ]; then
+  if [ -f $STAGE_PATH/lib/libfreexl.a ]; then
     DO_BUILD=0
   fi
 }
@@ -51,7 +44,9 @@ function build_freexl() {
   try $BUILD_freexl/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
-    --build=x86_64
+    --build=x86_64 \
+    --disable-shared
+
   try $MAKESMP install
 
   pop_arm
@@ -59,5 +54,8 @@ function build_freexl() {
 
 # function called after all the compile have been done
 function postbuild_freexl() {
-  true
+    if [ ! -f ${STAGE_PATH}/lib/libfreexl.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

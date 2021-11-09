@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_geodiff=a21f693b289357162e3729463997ed9f0168d5d8 # 1.0.3 with fix for cmake
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_geodiff=( sqlite3 )
-
-# url of the package
-URL_geodiff=https://github.com/lutraconsulting/geodiff/archive/${VERSION_geodiff}.tar.gz
-
-# md5 of the package
-MD5_geodiff=58c499df6dc61ed99942f4df1f6c9f7f
 
 # default build path
 BUILD_geodiff=$BUILD_PATH/geodiff/$(get_directory $URL_geodiff)

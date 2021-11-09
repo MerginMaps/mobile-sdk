@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_libspatialite=4.3.0a
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_libspatialite=(sqlite3 proj iconv freexl geos)
-
-# url of the package
-URL_libspatialite=http://www.gaia-gis.it/gaia-sins/libspatialite-sources/libspatialite-${VERSION_libspatialite}.tar.gz
-
-# md5 of the package
-MD5_libspatialite=6b380b332c00da6f76f432b10a1a338c
 
 # default build path
 BUILD_libspatialite=$BUILD_PATH/libspatialite/$(get_directory $URL_libspatialite)
@@ -31,13 +24,14 @@ function prebuild_libspatialite() {
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_libspatialite
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_libspatialite
   try patch -p1 < $RECIPE_libspatialite/patches/spatialite.patch
-
+  try patch -p1 < $RECIPE_libspatialite/patches/configure.patch
+  
   touch .patched
 }
 
 function shouldbuild_libspatialite() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/libspatialite/build-$ARCH/src/.libs/libspatialite.so -nt $BUILD_libspatialite/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libspatialite.a -nt $BUILD_libspatialite/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -51,7 +45,9 @@ function build_libspatialite() {
   # Use Proj 6.0.0 compatibility headers.
   # Remove in libspatialite 5.0.0
   export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
-
+  # so the configure script can check that geos library is ok
+  # export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
+  
   try ./configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
@@ -59,11 +55,14 @@ function build_libspatialite() {
     --target=android \
     --enable-examples=no \
     --enable-proj=yes \
-    --enable-static=no \
+    --enable-static=yes \
+    --disable-shared \
     --with-geosconfig=$STAGE_PATH/bin/geos-config \
     --enable-libxml2=no \
-    --disable-dependency-tracking \
-    --enable-silent-rules
+    --enable-rttopo=no \
+    --enable-gcp=no \
+    --enable-minizip=no \
+    --disable-dependency-tracking
 
   try $MAKESMP
   try make install &> install.log
@@ -72,5 +71,8 @@ function build_libspatialite() {
 
 # function called after all the compile have been done
 function postbuild_libspatialite() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libspatialite.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }

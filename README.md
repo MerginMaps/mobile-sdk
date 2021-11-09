@@ -1,3 +1,7 @@
+[![Build macOS](https://github.com/lutraconsulting/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/mac.yml)
+[![Build iOS](https://github.com/lutraconsulting/input-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/ios.yml)
+[![Build android (on MacOS)](https://github.com/lutraconsulting/input-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/android.yml)
+
 # input-sdk
 
 SDK for building [Input](https://github.com/lutraconsulting/input) for mobile devices
@@ -14,13 +18,13 @@ how to do diff `diff -rupN file.orig file`
 
 # Android 
 
-Download latest SDK on Docker with `docker pull lutraconsulting/input-sdk`
-
-![Docker Pulls](https://img.shields.io/docker/pulls/lutraconsulting/input-sdk)
+Download prebuild android SDKs from the GitHub Artifacts
 
 [Android notes](android/android.md)
 
 # Windows
+
+!! WARNING: NOT MAINTAINED ATM !!!
 
 Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input-sdk-win-x86_64-7.zip?dl=0)
 
@@ -28,15 +32,22 @@ Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input
 
 # iOS
 
-Download prebuild [ios-SDK](https://www.dropbox.com/sh/mkkx6v2kixy1yzo/AAA0ZL7u9K-PUsjhgf4IQWB-a?dl=0)
+Download prebuild iOS SDKs from the GitHub Artifacts
 
 [iOS notes](ios/ios.md)
 
 # MacOS
 
-Download prebuild [mac-SDK](https://www.dropbox.com/sh/dfrvx3iuu4tssg4/AABcFHrA6WF1eb_C5v1d6oJAa?dl=0)
+Download prebuild mac SDKs from the GitHub Artifacts
 
-[MacOS notes](mac/mac.md)
+## Manual Build
+1. you need to have Qt installed
+2. copy and modify config.conf.default to config.conf with your setup
+3. run `distribute.sh -mqgis`
+
+## CI
+
+the release is automatically created from each build on master. See tagged releases which have the SDK as artefact
 
 # License & Acknowledgement
 

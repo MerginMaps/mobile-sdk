@@ -1,16 +1,9 @@
 #!/bin/bash
 
-# version of your package
-VERSION_exiv2=0.27.3
+# version of your package in ../../version.conf
 
 # dependencies of this recipe
 DEPS_exiv2=(expat iconv)
-
-# url of the package
-URL_exiv2=https://github.com/Exiv2/exiv2/archive/v${VERSION_exiv2}.tar.gz
-
-# md5 of the package
-MD5_exiv2=652fe107af5b9ba6891b3887a96ed8be
 
 # default build path
 BUILD_exiv2=$BUILD_PATH/exiv2/$(get_directory $URL_exiv2)
@@ -28,12 +21,14 @@ function prebuild_exiv2() {
     return
   fi
 
+  # try patch -p1 < $RECIPE_exiv2/patches/exiv2.patch
+
   touch .patched
 }
 
 function shouldbuild_exiv2() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libexiv2.so -nt $BUILD_exiv2/.patched ]; then
+  if [ $STAGE_PATH/lib/libexiv2.a -nt $BUILD_exiv2/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -44,6 +39,7 @@ function build_exiv2() {
   try cd $BUILD_PATH/exiv2/build-$ARCH
   push_arm
   try $CMAKECMD \
+    -DBUILD_SHARED_LIBS=OFF \
     -DEXIV2_BUILD_EXIV2_COMMAND=OFF \
     -DEXIV2_BUILD_SAMPLES=OFF \
     -DEXIV2_BUILD_UNIT_TESTS=OFF \
@@ -57,5 +53,8 @@ function build_exiv2() {
 
 # function called after all the compile have been done
 function postbuild_exiv2() {
-	true
+    if [ ! -f ${STAGE_PATH}/lib/libexiv2.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }
