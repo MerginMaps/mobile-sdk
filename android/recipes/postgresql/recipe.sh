@@ -26,7 +26,7 @@ function prebuild_postgresql() {
   try patch -p1 < $RECIPE_postgresql/patches/libpq.patch
   try patch -p2 < $RECIPE_postgresql/patches/stdlib.patch
   if [ $ANDROIDAPI -lt 26 ]; then
-  try patch -p1 < $RECIPE_postgresql/patches/langinfo.patch
+    try patch -p1 < $RECIPE_postgresql/patches/langinfo.patch
   fi
 
   touch .patched
@@ -43,8 +43,10 @@ function shouldbuild_postgresql() {
 function build_postgresql() {
   try mkdir -p $BUILD_PATH/postgresql/build-$ARCH
   try cd $BUILD_PATH/postgresql/build-$ARCH
+  
   push_arm
   CFLAGS="$CFLAGS -fno-builtin" \
+	  
   USE_DEV_URANDOM=1 \
   try $BUILD_postgresql/configure \
     --prefix=$STAGE_PATH \
@@ -61,7 +63,7 @@ function build_postgresql() {
   try cp -v $BUILD_postgresql/src/include/postgres_ext.h $STAGE_PATH/include
   try cp -v $BUILD_postgresql/src/interfaces/libpq/libpq-fe.h $STAGE_PATH/include
   try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/include/pg_config_ext.h $STAGE_PATH/include/
-  try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/interfaces/libpq/libpq.so $STAGE_PATH/lib/
+  try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/interfaces/libpq/libpq.a $STAGE_PATH/lib/
 
   pop_arm
 }

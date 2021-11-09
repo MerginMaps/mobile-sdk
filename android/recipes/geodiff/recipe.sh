@@ -39,8 +39,8 @@ function build_geodiff() {
   # we use CMAKE < 3.12 on the ubuntu-20.04, so
   # FindSQLite3 is not yet part of the package
   # and also transitional
-  try mkdir -p $BUILD_geodiff/geodiff/cmake/
-  try cp $RECIPE_geodiff/FindSQLite3.cmake $BUILD_geodiff/geodiff/cmake/
+  # try mkdir -p $BUILD_geodiff/geodiff/cmake/
+  # try cp $RECIPE_geodiff/FindSQLite3.cmake $BUILD_geodiff/geodiff/cmake/
 
   push_arm
 

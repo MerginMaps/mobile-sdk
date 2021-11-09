@@ -42,7 +42,7 @@ function build_libpng() {
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DHAVE_LD_VERSION_SCRIPT=OFF \
-    -DBUILD_SHARED_LIBS=OFF \
+    -DPNG_SHARED=OFF \
     $BUILD_libpng
 
   # try $MAKESMP

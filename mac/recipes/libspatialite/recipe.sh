@@ -47,7 +47,7 @@ function build_libspatialite() {
   # Remove in libspatialite 5.0.0
   export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
   # so the configure script can check that proj library contains pj_init_plus
-  export LDFLAGS="$LDFLAGS -lc++ -lgeos"
+  export LDFLAGS="$LDFLAGS -lc++"
   # so the configure script can check that geos library is ok
   export LDFLAGS="$LDFLAGS -lgeos"
   

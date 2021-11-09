@@ -44,6 +44,7 @@ function build_geos() {
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DDISABLE_GEOS_INLINE=ON \
     -DBUILD_SHARED_LIBS=FALSE \
+    -DBUILD_TESTING=OFF \
     $BUILD_geos
 
   echo '#define GEOS_SVN_REVISION 0' > $BUILD_PATH/geos/build-$ARCH/geos_svn_revision.h

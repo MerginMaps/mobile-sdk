@@ -37,7 +37,7 @@ function shouldbuild_gdal() {
 # function called to build the source code
 function build_gdal() {
   try rsync -a $BUILD_gdal/ $BUILD_PATH/gdal/build-$ARCH/
-  try cd $BUILD_PATH/gdal/build-$ARCH/gdal
+  try cd $BUILD_PATH/gdal/build-$ARCH
 
   push_arm
 

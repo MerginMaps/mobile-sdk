@@ -51,7 +51,7 @@ function build_sqlite3() {
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
     --disable-shared \
-    --enable-static \
+    --enable-static
 
   # manual install
   try $MAKESMP install-libLTLIBRARIES

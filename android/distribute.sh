@@ -41,6 +41,8 @@ BUILD_PATH="${ROOT_OUT_PATH}/build"
 LIBS_PATH="${ROOT_OUT_PATH}/build/libs"
 PACKAGES_PATH="${PACKAGES_PATH:-$ROOT_OUT_PATH/.packages}"
 
+mkdir -p $STAGE_PATH
+
 # Tools
 export LIBLINK_PATH="$BUILD_PATH/objects"
 export LIBLINK="$ROOT_PATH/src/tools/liblink"

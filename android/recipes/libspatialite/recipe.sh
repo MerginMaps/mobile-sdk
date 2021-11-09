@@ -24,7 +24,8 @@ function prebuild_libspatialite() {
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_libspatialite
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_libspatialite
   try patch -p1 < $RECIPE_libspatialite/patches/spatialite.patch
-
+  try patch -p1 < $RECIPE_libspatialite/patches/configure.patch
+  
   touch .patched
 }
 
@@ -44,7 +45,9 @@ function build_libspatialite() {
   # Use Proj 6.0.0 compatibility headers.
   # Remove in libspatialite 5.0.0
   export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
-
+  # so the configure script can check that geos library is ok
+  # export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
+  
   try ./configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
@@ -56,8 +59,10 @@ function build_libspatialite() {
     --disable-shared \
     --with-geosconfig=$STAGE_PATH/bin/geos-config \
     --enable-libxml2=no \
-    --disable-dependency-tracking \
-    --enable-silent-rules
+    --enable-rttopo=no \
+    --enable-gcp=no \
+    --enable-minizip=no \
+    --disable-dependency-tracking
 
   try $MAKESMP
   try make install &> install.log

@@ -6,7 +6,7 @@
 DEPS_sqlite3=()
 
 # default build path
-BUILD_sqlite3=$BUILD_PATH/sqlite3/$(get_directory $URL_sqlite3)
+BUILD_sqlite3=$BUILD_PATH/sqlite3/sqlite-autoconf-$URL_sqlite3_BASE
 
 # default recipe path
 RECIPE_sqlite3=$RECIPES_PATH/sqlite3
@@ -49,7 +49,7 @@ function build_sqlite3() {
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
     --disable-shared \
-    --enable-static \
+    --enable-static
 
   # manual install
   try $MAKESMP install-libLTLIBRARIES

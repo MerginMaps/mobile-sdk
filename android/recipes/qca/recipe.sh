@@ -27,7 +27,7 @@ function prebuild_qca() {
 }
 
 function shouldbuild_qca() {
- if [ -f $STAGE_PATH/lib/libqca-qt5_$ARCH.a ]; then
+ if [ -f $STAGE_PATH/lib/libqca-qt5.a ]; then
   DO_BUILD=0
  fi
 }
@@ -60,7 +60,7 @@ function build_qca() {
 
 # function called after all the compile have been done
 function postbuild_qca() {
-    if [ ! -f $STAGE_PATH/lib/libqca-qt5_$ARCH.a ]; then
+    if [ ! -f $STAGE_PATH/lib/libqca-qt5.a ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

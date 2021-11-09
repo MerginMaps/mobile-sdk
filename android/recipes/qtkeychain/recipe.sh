@@ -27,7 +27,7 @@ function prebuild_qtkeychain() {
 }
 
 function shouldbuild_qtkeychain() {
- if [ -f $STAGE_PATH/lib/libqt5keychain_$ARCH.a ]; then
+ if [ -f $STAGE_PATH/lib/libqt5keychain.a ]; then
   DO_BUILD=0
  fi
 }
@@ -58,7 +58,7 @@ function build_qtkeychain() {
 
 # function called after all the compile have been done
 function postbuild_qtkeychain() {
-    if [ ! -f $STAGE_PATH/lib/libqt5keychain_$ARCH.a ]; then
+    if [ ! -f $STAGE_PATH/lib/libqt5keychain.a ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi
