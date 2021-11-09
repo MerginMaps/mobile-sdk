@@ -18,13 +18,13 @@ how to do diff `diff -rupN file.orig file`
 
 # Android 
 
-Download latest SDK on Docker with `docker pull lutraconsulting/input-sdk`
-
-![Docker Pulls](https://img.shields.io/docker/pulls/lutraconsulting/input-sdk)
+Download prebuild android SDKs from the GitHub Artifacts
 
 [Android notes](android/android.md)
 
 # Windows
+
+!! WARNING: NOT MAINTAINED ATM !!!
 
 Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input-sdk-win-x86_64-7.zip?dl=0)
 
@@ -32,7 +32,7 @@ Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input
 
 # iOS
 
-Download prebuild [ios-SDK](https://www.dropbox.com/sh/mkkx6v2kixy1yzo/AAA0ZL7u9K-PUsjhgf4IQWB-a?dl=0)
+Download prebuild iOS SDKs from the GitHub Artifacts
 
 [iOS notes](ios/ios.md)
 
