@@ -110,6 +110,8 @@ jobs:
           echo "SDK: ${ANDROID_HOME}"
           ls ${ANDROID_HOME}
           echo "QT_ANDROID: ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"
+          ls ${{ github.workspace }}/Qt/
+          ls ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
           ls ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android
 
       - name: Build Sdk
