@@ -14,11 +14,6 @@ on:
 jobs:
   android_build:
     runs-on: macos-10.15
-    strategy:
-      matrix:
-        matrix_arch: [armeabi-v7a, arm64-v8a]
-      fail-fast: false
-
     env:
       QT_VERSION: '5.14.2'
       ANDROIDAPI: 24
@@ -26,18 +21,10 @@ jobs:
       SDK_PLATFORM: android-29
       SDK_BUILD_TOOLS: 28.0.3
       CACHE_VERSION: 1
+      ARCHES: "armeabi-v7a arm64-v8a"
 
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Prepare ENV
-        run: |
-          if [ "${{ matrix.matrix_arch }}" = "armeabi-v7a" ]; then 
-              QT_INSTALL_ARCH="armv7"
-          else
-              QT_INSTALL_ARCH="x86" 
-          fi
-          echo "QT_INSTALL_ARCH=${QT_INSTALL_ARCH}" >> $GITHUB_ENV
 
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
@@ -45,10 +32,10 @@ jobs:
         with:
           path: ${{ github.workspace }}/build
           # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ matrix.matrix_arch }}-${{ github.ref }}-${{ github.sha }}
+          key: cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ matrix.matrix_arch }}-${{ github.ref }}-
-            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ matrix.matrix_arch }}-refs/heads/master-
+            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
+            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
 
       - name: Install Build Dependencies
         run: |
@@ -61,25 +48,21 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-android-${{ matrix.matrix_arch }}
+          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-android
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: ${{ env.QT_VERSION }}
           target: android
-          arch: ${{ env.QT_INSTALL_ARCH }}
+          arch: android
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: Test QT Install
         run: |
           echo "QT_ANDROID: ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"
-          ls ${{ github.workspace }}
-          ls ${{ github.workspace }}/Qt
-          ls ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
-          ls ${{ env.Qt5_DIR }}
-          ls ${{ env.Qt5_DIR }}/Qt/${{ env.QT_VERSION }}
+          ls ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android/lib
 
        # Android SDK & NDK
       - uses: nttld/setup-ndk@v1
@@ -111,7 +94,7 @@ jobs:
           echo -e "export ANDROIDNDKVER=${{ env.NDK_VERSION }}"  >> ./android/config.conf
           echo -e "export QT_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"  >> ./android/config.conf
           echo -e "export ANDROIDAPI=${{ env.ANDROIDAPI }}"  >> ./android/config.conf
-          echo -e "export ARCHES=("\""${{ matrix.matrix_arch }}"\"")"  >> ./android/config.conf			  
+          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./android/config.conf			  
           cat ./android/config.conf
 
           echo "NDK: ${{ steps.setup-ndk.outputs.ndk-path }}"
