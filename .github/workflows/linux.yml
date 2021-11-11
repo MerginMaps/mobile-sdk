@@ -74,7 +74,7 @@ jobs:
 
       - name: Create package
         run: |
-          SDK_TAR=input-sdk-linux-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+          SDK_TAR=input-sdk-ubuntu-${{ env.UBUNTU_VERSION }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
           cd "${{ github.workspace }}/build/stage/${{ env.ARCH }}"
           tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
@@ -88,7 +88,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: linux-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: ubuntu-${{ env.UBUNTU_VERSION }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}
