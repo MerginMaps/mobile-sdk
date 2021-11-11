@@ -66,15 +66,6 @@ function build_qgis() {
   
   try $MAKESMP install
 
-  try cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/
-
-  # TODO
-  # the installed QGIS references frameworks from build/qgis/build-mac/output/lib, see input/.github/workflows/autotests.yml
-
-  # bundle QGIS's find packages too
-  try mkdir -p $STAGE_PATH/cmake/
-  try cp -Rf $BUILD_qgis/cmake/* $STAGE_PATH/cmake/
-
   pop_env
 }
 

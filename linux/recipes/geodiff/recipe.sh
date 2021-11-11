@@ -46,9 +46,7 @@ function build_geodiff() {
     -DBUILD_SHARED=OFF \
     -DWITH_POSTGRESQL=OFF \
     $BUILD_geodiff/geodiff
-  
-  check_file_configuration CMakeCache.txt
-  
+
   try $MAKESMP
   try $MAKESMP install
   pop_env
