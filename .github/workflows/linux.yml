@@ -11,11 +11,11 @@ on:
       - published
 
 jobs:
-  mac_os_build:
+  linux_build:
     runs-on: ubuntu-20.04
     if: github.repository == 'lutraconsulting/input-sdk'
     env:
-      ARCHES: 'linux-x86_64'
+      ARCH: 'linux-x86_64'
       CACHE_VERSION: 1
 
     steps:
@@ -46,7 +46,7 @@ jobs:
         run: |
           touch ./linux/config.conf
           echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./linux/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCH }}"\"")"  >> ./linux/config.conf		  
+          echo -e "export ARCHES=("\""${{ env.ARCH }}"\"")"  >> ./linux/config.conf
           cat ./linux/config.conf
 
       - name: Build Sdk
