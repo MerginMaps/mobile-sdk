@@ -17,6 +17,7 @@ jobs:
     env:
       ARCH: 'linux-x86_64'
       CACHE_VERSION: 1
+      UBUNTU_VERSION: 2004
 
     steps:
       - uses: actions/checkout@v2
@@ -27,10 +28,10 @@ jobs:
         with:
           path: ${{ github.workspace }}/build
           # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
+          key: cache-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
-            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
+            cache-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-
+            cache-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-refs/heads/master-
 
       - name: Install Build Dependencies
         run: |
@@ -73,7 +74,7 @@ jobs:
 
       - name: Create package
         run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-linux-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+          SDK_TAR=input-sdk-linux-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
           cd "${{ github.workspace }}/build/stage/${{ env.ARCH }}"
           tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
