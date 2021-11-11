@@ -106,7 +106,7 @@ function push_env() {
   
   CMAKECMD="cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH"
   
-  export MAKESMP="make -j$CORES"
+  export MAKESMP="make" # with more cores I have on CI: c++: fatal error: Killed signal terminated program cc1plus
   export MAKE="make"
   export CMAKECMD=$CMAKECMD
 }
