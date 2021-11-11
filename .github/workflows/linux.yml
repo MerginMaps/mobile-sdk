@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Sdk
         run: |
-          ./mac/distribute.sh -mqgis
+          ./linux/distribute.sh -mqgis
  
       - name: Get TimeStamp
         id: time
@@ -76,7 +76,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: mac-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: linux-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}
