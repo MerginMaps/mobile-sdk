@@ -39,9 +39,9 @@ jobs:
                                     qml-module-qtquick-controls2 qml-module-qtquick-window2 qml-module-qtquick-layouts \
                                     qml-module-qtquick-shapes qml-module-qtquick-controls qtquickcontrols2-5-dev \
                                     libqt5sensors5-dev qtmultimedia5-dev
-            sudo apt-get install qml-module-qt-labs-*
+            sudo apt-get install -y qml-module-qt-labs-*
             
-            apt-get install bison ca-certificates ccache cmake cmake-curses-gui dh-python expect flex flip gdal-bin \
+            sudo apt-get install -y bison ca-certificates ccache cmake cmake-curses-gui dh-python expect flex flip gdal-bin \
                             git graphviz libexiv2-dev libexpat1-dev libfcgi-dev libgdal-dev libgeos-dev \
                             libgsl-dev libpdal-dev libpq-dev libproj-dev libprotobuf-dev libqca-qt5-2-dev \
                             libqca-qt5-2-plugins libqscintilla2-qt5-dev libqt5opengl5-dev libqt5serialport5-dev \
