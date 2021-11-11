@@ -3,7 +3,7 @@
 # version of your package in ../../version.conf
 
 # dependencies of this recipe
-DEPS_qgis=(exiv2 protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff qtlocation zxing)
+DEPS_qgis=(geodiff zxing)
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -20,14 +20,12 @@ function prebuild_qgis() {
     return
   fi
   
-  try patch -p1 < $RECIPE_qgis/patches/crssync.patch
-  
   touch .patched
 }
 
 function shouldbuild_qgis() {
   # If lib is newer than the sourcecode skip build
-  if [ ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/qgis_core -nt $BUILD_qgis/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libqgis_core.a -nt $BUILD_qgis/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -40,7 +38,6 @@ function build_qgis() {
   push_env
 
   try ${CMAKECMD} \
-    -DQGIS_MAC_DEPS_DIR=$STAGE_PATH \
     -DWITH_BINDINGS=FALSE \
     -DWITH_DESKTOP=OFF \
     -DWITH_EPT=OFF \
@@ -63,15 +60,9 @@ function build_qgis() {
     -DWITH_QSPATIALITE=OFF \
     -DWITH_3D=FALSE \
     -DWITH_QGIS_PROCESS=OFF \
-    -DQGIS_MACAPP_BUNDLE=-1 \
-    -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     -DFORCE_STATIC_LIBS=TRUE \
     -DUSE_OPENCL=OFF \
-    -DPOSTGRES_INCLUDE_DIR=$STAGE_PATH/include \
-    -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.a \
     $BUILD_qgis
-  
-  check_file_configuration CMakeCache.txt
   
   try $MAKESMP install
 
@@ -89,5 +80,8 @@ function build_qgis() {
 
 # function called after all the compile have been done
 function postbuild_qgis() {
-  :
+    if [ ! -f ${STAGE_PATH}/lib/libqgis_core.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
 }
