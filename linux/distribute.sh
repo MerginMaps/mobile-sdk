@@ -7,8 +7,6 @@ else
   exit 1;
 fi
 
-CORES=$(sysctl -n hw.ncpu)
-
 # Load configuration
 source `dirname $0`/config.conf
 source `dirname $0`/../versions.conf
@@ -103,6 +101,8 @@ function push_env() {
   export OLD_MAKESMP=$MAKESMP
   export OLD_MAKE=$MAKE
   export OLD_CMAKECMD=$CMAKECMD
+  export OLD_CFLAGS=$CFLAGS
+  export OLD_CXXFLAGS=$CXXFLAGS
   
   CMAKECMD="cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH"
   
@@ -116,6 +116,8 @@ function pop_env() {
   export MAKESMP=$OLD_MAKESMP
   export MAKE=$OLD_MAKE
   export CMAKECMD=$OLD_CMAKECMD
+  export CFLAGS=$OLD_CFLAGS
+  export CXXFLAGS=$OLD_CXXFLAGS
 }
 
 function usage() {

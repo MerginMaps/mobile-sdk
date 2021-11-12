@@ -36,6 +36,10 @@ function build_qgis() {
   try cd $BUILD_PATH/qgis/build-$ARCH
 
   push_env
+  
+  # Fix: fatal error: libpq-fe.h: No such file or directory
+  export CFLAGS="$CFLAGS -I$(pg_config --includedir)"
+  export CXXFLAGS="$CXXFLAGS -I$(pg_config --includedir)"
 
   try ${CMAKECMD} \
     -DWITH_BINDINGS=FALSE \
