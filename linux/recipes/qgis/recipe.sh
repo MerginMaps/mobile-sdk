@@ -38,6 +38,7 @@ function build_qgis() {
   push_env
   
   # Fix: fatal error: libpq-fe.h: No such file or directory
+  pg_config --includedir
   export CFLAGS="$CFLAGS -I$(pg_config --includedir)"
   export CXXFLAGS="$CXXFLAGS -I$(pg_config --includedir)"
 
@@ -68,6 +69,7 @@ function build_qgis() {
     -DUSE_OPENCL=OFF \
     $BUILD_qgis
   
+  try $MAKESMP VERBOSE=1
   try $MAKESMP install
 
   pop_env
