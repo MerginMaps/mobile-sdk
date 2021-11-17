@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# version of your package in ../../version.conf
+# version of your package in ../../../versions.conf
 
 # dependencies of this recipe
 DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp libpng)
