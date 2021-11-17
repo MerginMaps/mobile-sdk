@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# version of your package in ../../version.conf
+# version of your package in ../../../versions.conf
 
 # dependencies of this recipe
 DEPS_qgis=(gdal qca libspatialindex libspatialite expat postgresql libzip qtkeychain exiv2 geodiff protobuf zxing)

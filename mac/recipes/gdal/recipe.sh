@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# version of your package in ../../version.conf
+# version of your package in ../../../versions.conf
 
 # dependencies of this recipe
 DEPS_gdal=(geos postgresql expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3)

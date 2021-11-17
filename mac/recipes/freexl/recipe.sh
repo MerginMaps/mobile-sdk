@@ -1,7 +1,7 @@
 #!/bin/bash
 # a library to extract valid data from within an Excel (.xls) spreadsheet
  
-# versions of your package in ../../version.conf
+# version of your package in ../../../versions.conf
 
 # dependencies of this recipe
 DEPS_freexl=()

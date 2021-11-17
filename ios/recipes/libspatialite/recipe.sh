@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# version of your package in ../../version.conf
+# version of your package in ../../../versions.conf
 
 # dependencies of this recipe
 # sqlite3 is already in iOS SDK dir
