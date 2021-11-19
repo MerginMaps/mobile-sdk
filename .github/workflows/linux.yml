@@ -16,7 +16,7 @@ jobs:
     if: github.repository == 'lutraconsulting/input-sdk'
     env:
       ARCH: 'linux-x86_64'
-      CACHE_VERSION: 4
+      CACHE_VERSION: 5
       UBUNTU_VERSION: 2004
       QT_VERSION: '5.14.2'
 
