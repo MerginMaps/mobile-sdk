@@ -27,7 +27,7 @@ function prebuild_qca() {
 }
 
 function shouldbuild_qca() {
- if [ -f $STAGE_PATH/lib/libqca-qt5.a ]; then
+ if [ -f $STAGE_PATH/lib/libqca-qt5.so ]; then
   DO_BUILD=0
  fi
 }
@@ -50,7 +50,7 @@ function build_qca() {
   -DWITH_pkcs11_PLUGIN=OFF \
   -DWITH_gcrypt_PLUGIN=OFF \
   -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE \
-  -DBUILD_SHARED_LIBS=OFF \
+  -DBUILD_SHARED_LIBS=ON \
   $BUILD_qca
 
  try $MAKESMP install
@@ -60,7 +60,7 @@ function build_qca() {
 
 # function called after all the compile have been done
 function postbuild_qca() {
-    if [ ! -f $STAGE_PATH/lib/libqca-qt5.a ]; then
+    if [ ! -f $STAGE_PATH/lib/libqca-qt5.so ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi
