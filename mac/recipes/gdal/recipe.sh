@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(geos postgresql expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3)
+DEPS_gdal=(geos postgresql expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3 webp)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -23,9 +23,9 @@ function prebuild_gdal() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_gdal"
   try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_gdal"
-  
+
   patch_configure_file configure
-  
+
   touch .patched
 }
 
@@ -55,10 +55,13 @@ function build_gdal() {
     --with-geos=$STAGE_PATH/bin/geos-config \
     --with-pg=no \
     --with-expat=$STAGE_PATH \
-    --with-rename-internal-libtiff-symbols=yes \
-    --with-rename-internal-libgeotiff-symbols=yes \
-    --with-rename-internal-shapelib-symbols=yes \
+    --with-libtiff=internal \
+    --with-geotiff=internal \
     --with-poppler=no \
+    --with-odbc=no \
+    --with-openjpeg=no \
+    --with-gif=no \
+    --with-webp=$STAGE_PATH \
     --with-podofo=no \
     --with-pdfium=no \
     --with-curl=no \
