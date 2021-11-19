@@ -16,7 +16,7 @@ jobs:
     if: github.repository == 'lutraconsulting/input-sdk'
     env:
       ARCH: 'linux-x86_64'
-      CACHE_VERSION: 3
+      CACHE_VERSION: 4
       UBUNTU_VERSION: 2004
       QT_VERSION: '5.14.2'
 
@@ -38,12 +38,11 @@ jobs:
         run: |
             sudo apt-get install -y bison ca-certificates ccache cmake cmake-curses-gui dh-python expect flex flip gdal-bin \
                             git graphviz libexiv2-dev libexpat1-dev libfcgi-dev libgdal-dev libgeos-dev \
-                            libgsl-dev libpq-dev libproj-dev libprotobuf-dev libqt5serialport5-dev \
-                            libqt5sql5-sqlite libqt5svg5-dev libqt5webkit5-dev libqt5xmlpatterns5-dev \
+                            libgsl-dev libpq-dev libproj-dev libprotobuf-dev \
                             libspatialindex-dev libspatialite-dev libsqlite3-dev libsqlite3-mod-spatialite libyaml-tiny-perl \
                             libzip-dev libzstd-dev lighttpd locales ninja-build \
                             pkg-config poppler-utils protobuf-compiler python3-all-dev \
-                            qttools5-dev-tools spawn-fcgi xauth xfonts-100dpi xfonts-75dpi xfonts-base xfonts-scalable xvfb
+                            spawn-fcgi xauth xfonts-100dpi xfonts-75dpi xfonts-base xfonts-scalable xvfb
 
       - name: Cache Qt
         id: cache-qt

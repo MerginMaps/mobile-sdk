@@ -3,9 +3,9 @@ name: Build android (on MacOS)
 on:
   push:
     paths:
-    - 'android/**'
-    - '.github/workflows/android.yml'
-    - 'versions.conf'
+      - 'android/**'
+      - '.github/workflows/android.yml'
+      - 'versions.conf'
 
   release:
     types:
