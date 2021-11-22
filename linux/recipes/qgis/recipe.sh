@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_qgis=(geodiff zxing)
+DEPS_qgis=(geodiff zxing qca qtkeychain)
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -36,11 +36,6 @@ function build_qgis() {
   try cd $BUILD_PATH/qgis/build-$ARCH
 
   push_env
-  
-  # Fix: fatal error: libpq-fe.h: No such file or directory
-  pg_config --includedir
-  export CFLAGS="$CFLAGS -I$(pg_config --includedir)"
-  export CXXFLAGS="$CXXFLAGS -I$(pg_config --includedir)"
 
   try ${CMAKECMD} \
     -DWITH_BINDINGS=FALSE \

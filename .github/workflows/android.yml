@@ -3,9 +3,9 @@ name: Build android (on MacOS)
 on:
   push:
     paths:
-    - 'android/**'
-    - '.github/workflows/android.yml'
-    - 'versions.conf'
+      - 'android/**'
+      - '.github/workflows/android.yml'
+      - 'versions.conf'
 
   release:
     types:
@@ -58,11 +58,6 @@ jobs:
           arch: android
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
-
-      - name: Test QT Install
-        run: |
-          echo "QT_ANDROID: ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"
-          ls ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android/lib
 
        # Android SDK & NDK
       - uses: nttld/setup-ndk@v1
