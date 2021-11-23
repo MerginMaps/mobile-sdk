@@ -52,10 +52,11 @@ function build_qca() {
   -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE \
   -DLIBRARY_TYPE=STATIC \
   -DBUILD_SHARED_LIBS=OFF \
+  -DCMAKE_CXX_VISIBILITY_PRESET=hidden \
   $BUILD_qca
- 
+
  check_file_configuration CMakeCache.txt
- 
+
  try $MAKESMP install
 
  pop_env

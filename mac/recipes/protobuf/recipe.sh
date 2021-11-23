@@ -24,9 +24,9 @@ function prebuild_protobuf() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_protobuf"
   try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_protobuf"
-  
+
   patch_configure_file configure
-  
+
   touch .patched
 }
 
@@ -41,8 +41,12 @@ function build_protobuf() {
     try cd $BUILD_PATH/protobuf/build-$ARCH
     push_env
 
-    export CXXFLAGS="$CXXFLAGS -DNDEBUG"
+    export CXXFLAGS="$CXXFLAGS -DNDEBUG -fvisibility-inlines-hidden -fvisibility=hidden"
     export CPPFLAGS="$CXXFLAGS"
+    export CFLAGS="$CFLAGS -DNDEBUG -fvisibility-inlines-hidden -fvisibility=hidden"
+
+    $BUILD_protobuf/autogen.sh
+    patch_configure_file $BUILD_protobuf/configure
 
     try $BUILD_protobuf/configure \
       --prefix=$STAGE_PATH \

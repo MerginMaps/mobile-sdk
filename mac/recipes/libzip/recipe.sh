@@ -49,9 +49,10 @@ function build_libzip() {
     -DBUILD_REGRESS=OFF \
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_DOC=OFF \
+    -DENABLE_MBEDTLS=OFF \
   $BUILD_libzip
   check_file_configuration CMakeCache.txt
-  
+
   try $MAKESMP install
 
   pop_env
