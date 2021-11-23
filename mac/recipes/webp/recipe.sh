@@ -39,6 +39,7 @@ function build_webp() {
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DBUILD_SHARED_LIBS=OFF \
+    -DWEBP_BUILD_GIF2WEBP=OFF \
     $BUILD_webp
 
   try $MAKESMP
