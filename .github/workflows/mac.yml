@@ -2,7 +2,7 @@ name: Build macOS
 
 on:
   push:
-    paths:	
+    paths:
       - 'mac/**'
       - '.github/workflows/mac.yml'
       - 'versions.conf'
@@ -17,7 +17,7 @@ jobs:
     env:
       QT_VERSION: 5.14.2
       ARCHES: 'mac'
-      CACHE_VERSION: 6
+      CACHE_VERSION: 7
 
     steps:
       - uses: actions/checkout@v2
@@ -60,13 +60,13 @@ jobs:
           echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./mac/config.conf
           echo -e "export QT_BASE="/opt/Qt/${{ env.QT_BASE }}/clang_64""  >> ./mac/config.conf
           echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./mac/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./mac/config.conf		  
+          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./mac/config.conf
           cat ./mac/config.conf
 
       - name: Build Sdk
         run: |
           ./mac/distribute.sh -mqgis
- 
+
       - name: Get TimeStamp
         id: time
         uses: nanzm/get-time-action@v1.1
