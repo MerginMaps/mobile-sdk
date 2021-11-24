@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_qgis=(gdal qca libspatialindex libspatialite expat postgresql libzip qtkeychain exiv2 geodiff protobuf zxing)
+DEPS_qgis=(libtasn1 gdal qca libspatialindex libspatialite expat postgresql libzip qtkeychain exiv2 geodiff protobuf zxing)
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -17,14 +17,14 @@ function prebuild_qgis() {
     if [ -f .patched ]; then
       return
     fi
-  
+
     try patch -p1 < $RECIPE_qgis/patches/crssync.patch
-  
+
     touch .patched
 }
 
 function shouldbuild_qgis() {
-    if [ ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/qgis_core -nt $BUILD_qgis/.patched ]; then
+    if [ ${STAGE_PATH}/lib/libqgis_core.a -nt $BUILD_qgis/.patched ]; then
       DO_BUILD=0
     fi
 }
@@ -72,6 +72,8 @@ function build_qgis() {
     -DWITH_GEOREFERENCER=OFF \
     -DWITH_QTMOBILITY=OFF \
     -DWITH_QUICK=OFF \
+    -DLIBTASN1_INCLUDE_DIR=$STAGE_PATH/include \
+    -DLIBTASN1_LIBRARY=$STAGE_PATH/lib/libtasn1.a \
     -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt5/QtCrypto \
     -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5_$ARCH.a \
     -DQTKEYCHAIN_INCLUDE_DIR=$STAGE_PATH/include/qt5keychain \
@@ -109,5 +111,8 @@ function build_qgis() {
 
 # function called after all the compile have been done
 function postbuild_qgis() {
-  :
+  if [ ! -f ${STAGE_PATH}/lib/libqgis_core.a ]; then
+      error "Library was not successfully build for ${ARCH}"
+      exit 1;
+  fi
 }

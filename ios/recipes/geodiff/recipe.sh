@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_geodiff=( sqlite3 )
+DEPS_geodiff=(sqlite3)
 
 # default build path
 BUILD_geodiff=$BUILD_PATH/geodiff/$(get_directory $URL_geodiff)
@@ -39,6 +39,7 @@ function build_geodiff() {
   push_arm
 
   try $CMAKECMD \
+    -DCMAKE_MODULE_PATH:PATH=$BUILD_geodiff/geodiff/cmake \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DENABLE_TESTS=OFF \
     -DBUILD_TOOLS=OFF \

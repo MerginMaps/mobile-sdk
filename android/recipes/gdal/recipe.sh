@@ -47,7 +47,7 @@ function build_gdal() {
     GDAL_FLAGS="$GDAL_FLAGS --enable-debug"
   fi
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
-  
+
   try ./configure \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64 \
@@ -60,6 +60,7 @@ function build_gdal() {
     --with-rename-internal-libgeotiff-symbols=yes \
     --with-rename-internal-shapelib-symbols=yes \
     --with-poppler=no \
+    --with-libxml2=no \
     --with-podofo=no \
     --with-pdfium=no \
     --disable-driver-mrf \

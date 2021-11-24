@@ -46,6 +46,7 @@ function build_qtkeychain() {
   -DWITH_nss_PLUGIN=OFF \
   -DWITH_pkcs11_PLUGIN=OFF \
   -DQTKEYCHAIN_STATIC=TRUE \
+  -DANDROID=TRUE \
   $BUILD_qtkeychain
 
   try $MAKESMP VERBOSE=1 install
