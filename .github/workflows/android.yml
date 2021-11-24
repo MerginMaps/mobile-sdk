@@ -102,7 +102,7 @@ jobs:
           ls ${{ steps.setup-ndk.outputs.ndk-path }}
           echo "SDK: ${ANDROID_HOME}"
 
-      - name: Build Sdk
+      - name: Build Sdk 
         run: |
           ./android/distribute.sh -mqgis
 
@@ -129,7 +129,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ runner.os }}-android-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: android-${{ runner.os }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}
