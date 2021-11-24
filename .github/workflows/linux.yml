@@ -27,7 +27,6 @@ jobs:
         run: |
           CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
           echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
-          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
 
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
@@ -42,6 +41,7 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
+            echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
             sudo apt-get install -y bison ca-certificates ccache cmake cmake-curses-gui dh-python expect flex flip gdal-bin \
                             git graphviz libexiv2-dev libexpat1-dev libfcgi-dev libgdal-dev libgeos-dev \
                             libgsl-dev libpq-dev libproj-dev libprotobuf-dev \

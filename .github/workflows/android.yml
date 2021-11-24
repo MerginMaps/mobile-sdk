@@ -30,7 +30,6 @@ jobs:
         run: |
           CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
           echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
-          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
 
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
@@ -45,6 +44,7 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
+          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
           brew install bison flex automake shtool gtk-doc
           echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
