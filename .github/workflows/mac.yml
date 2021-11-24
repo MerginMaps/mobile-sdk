@@ -17,10 +17,16 @@ jobs:
     env:
       QT_VERSION: 5.14.2
       ARCHES: 'mac'
-      CACHE_VERSION: 7
+      CACHE_VERSION: 1
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Check deps versions change
+        run: |
+          CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
+          echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
 
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
@@ -28,10 +34,10 @@ jobs:
         with:
           path: ${{ github.workspace }}/build
           # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
+          key: cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
-            cache-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
+            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
+            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
 
       - name: Install Build Dependencies
         run: |

@@ -2,7 +2,7 @@ name: Build Linux
 
 on:
   push:
-    paths:	
+    paths:
       - 'linux/**'
       - '.github/workflows/linux.yml'
       - 'versions.conf'
@@ -16,12 +16,18 @@ jobs:
     if: github.repository == 'lutraconsulting/input-sdk'
     env:
       ARCH: 'linux-x86_64'
-      CACHE_VERSION: 6
+      CACHE_VERSION: 1
       UBUNTU_VERSION: 2004
       QT_VERSION: '5.14.2'
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Check deps versions change
+        run: |
+          CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
+          echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
 
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
@@ -29,10 +35,10 @@ jobs:
         with:
           path: ${{ github.workspace }}/build
           # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-${{ github.sha }}
+          key: cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            cache-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-
-            cache-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-refs/heads/master-
+            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-
+            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-refs/heads/master-
 
       - name: Install Build Dependencies
         run: |
@@ -68,7 +74,7 @@ jobs:
       - name: Build Sdk
         run: |
           ./linux/distribute.sh -mqgis
- 
+
       - name: Get TimeStamp
         id: time
         uses: nanzm/get-time-action@v1.1
