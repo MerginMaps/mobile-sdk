@@ -102,7 +102,7 @@ jobs:
           ls ${{ steps.setup-ndk.outputs.ndk-path }}
           echo "SDK: ${ANDROID_HOME}"
 
-      - name: Build Sdk 
+      - name: Build Sdk
         run: |
           ./android/distribute.sh -mqgis
 
@@ -115,7 +115,7 @@ jobs:
 
       - name: Create package
         run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-${{ runner.os }}-android-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-android-${{ runner.os }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
           cd ${{ github.workspace }}/build/stage
           tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./
