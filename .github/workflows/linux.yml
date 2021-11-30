@@ -25,7 +25,7 @@ jobs:
 
       - name: Check deps versions change
         run: |
-          CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
+          CHECKSUM=$( md5sum versions.conf | cut -d ' ' -f1 )
           echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
       - name: Prepare build cache for branch/tag
