@@ -18,7 +18,7 @@ jobs:
       QT_VERSION: '5.14.2'
       ANDROIDAPI: 24
       NDK_VERSION: r21
-      SDK_PLATFORM: android-29
+      SDK_PLATFORM: android-30
       SDK_BUILD_TOOLS: 28.0.3
       CACHE_VERSION: 1
       ARCHES: "armeabi-v7a arm64-v8a"
@@ -102,7 +102,7 @@ jobs:
           ls ${{ steps.setup-ndk.outputs.ndk-path }}
           echo "SDK: ${ANDROID_HOME}"
 
-      - name: Build Sdk 
+      - name: Build Sdk
         run: |
           ./android/distribute.sh -mqgis
 
@@ -115,7 +115,7 @@ jobs:
 
       - name: Create package
         run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-${{ runner.os }}-android-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-android-${{ runner.os }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
           cd ${{ github.workspace }}/build/stage
           tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./
