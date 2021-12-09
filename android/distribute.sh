@@ -221,9 +221,6 @@ function push_arm() {
   export CFLAGS="$CFLAGS -isystem $ANDROIDNDK/sysroot/usr/include -isystem $ANDROIDNDK/sysroot/usr/include/$TOOLCHAIN_SHORT_PREFIX "
   export CFLAGS="$CFLAGS -D__ANDROID_API__=$ANDROIDAPI"
 
-  export CXXFLAGS="$CFLAGS"
-  export CPPFLAGS="$CFLAGS"
-
   export LDFLAGS="-lm -L$STAGE_PATH/lib"
   export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
   export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_PREFIX/$ANDROIDAPI"
@@ -237,8 +234,13 @@ function push_arm() {
       # https://github.com/android/ndk/issues/379
       # https://github.com/lutraconsulting/input/issues/641
       export LDFLAGS="$LDFLAGS -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libunwind.a"
+
+      export CFLAGS="$CFLAGS -fPIC"
   fi
-  
+
+  export CXXFLAGS="$CFLAGS"
+  export CPPFLAGS="$CFLAGS"
+
   export ANDROID_CMAKE_LINKER_FLAGS=""
   # for libGLESv2.so and similar
   ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$QT_ARCH_PREFIX/usr/lib"
@@ -271,7 +273,7 @@ function push_arm() {
 
   export CC="$TOOLCHAIN_FULL_PREFIX-clang $CFLAGS"
   export CXX="$TOOLCHAIN_FULL_PREFIX-clang++ $CXXFLAGS"
-  export AR="$TOOLCHAIN_SHORT_PREFIX-ar" 
+  export AR="$TOOLCHAIN_SHORT_PREFIX-ar"
   export RANLIB="$TOOLCHAIN_SHORT_PREFIX-ranlib"
   export LD="$TOOLCHAIN_SHORT_PREFIX-ld"
   export STRIP="$TOOLCHAIN_SHORT_PREFIX-strip --strip-unneeded"
@@ -320,7 +322,7 @@ function pop_arm() {
 
 function usage() {
   echo "Android dependencies of InputApp - distribute.sh"
-  echo 
+  echo
   echo "Usage:   ./distribute.sh [options]"
   echo
   echo "  -h                     Show this help"
@@ -760,7 +762,7 @@ function run_build() {
     else
       debug "Skipped $fn"
     fi
-	
+
 	# run postbuild
 	info "Run postbuild $module"
     fn=$(echo postbuild_$module)
