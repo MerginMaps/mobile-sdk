@@ -85,8 +85,8 @@ function build_gdal() {
     --with-png=no \
     $GDAL_FLAGS
 
-  try $MAKESMP lib-target
-  try $MAKESMP install-lib
+  try $MAKESMP
+  try $MAKESMP install
 
   pop_arm
 }
