@@ -78,9 +78,8 @@ function build_gdal() {
     --with-curl=no \
     --with-libxml2=no \
     --with-zstd=no \
-    --with-pcre=no \
-    --with-rename-internal-libjpeg-symbols=yes \    
-    --with-jpeg=yes \
+    --with-pcre=no \  
+    --with-jpeg=internal \
     --with-proj=$STAGE_PATH \
     --with-png=no \
     $GDAL_FLAGS
