@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp libpng)
+DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -73,6 +73,7 @@ function build_gdal() {
     --with-pdfium=no \
     --with-proj=$STAGE_PATH \
     --with-png=no \
+    --disable-driver-mrf \
     $GDAL_FLAGS
 
   try $MAKESMP lib-target

@@ -81,6 +81,7 @@ function build_gdal() {
     --with-podofo=no \
     --with-pdfium=no \
     --with-proj=$STAGE_PATH \
+    --disable-driver-mrf \
     --with-png=no \
     $GDAL_FLAGS
 
