@@ -23,10 +23,8 @@ function prebuild_gdal() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
-  try patch -p1 < $RECIPE_gdal/patches/configure.patch
   
-  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab
-  # to released 3.4.1
+  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
   
   touch .patched
@@ -51,15 +49,10 @@ function build_gdal() {
     info "Building DEBUG version of GDAL!!"
     GDAL_FLAGS="$GDAL_FLAGS --enable-debug"
   fi
-  # configure: error: 64-bit file I/O missing. Build will not support files larger than 4 GB.  
-  if [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
-      GDAL_FLAGS="$GDAL_FLAGS --with-unix-stdio-64=no"
-  fi
   
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
   
-  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab
-  # to released 3.4.1
+  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   export CPPFLAGS="${CPPFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   
@@ -74,12 +67,10 @@ function build_gdal() {
     --with-rename-internal-libtiff-symbols=yes \
     --with-rename-internal-libgeotiff-symbols=yes \
     --with-rename-internal-shapelib-symbols=yes \
-    --with-rename-internal-libjpeg-symbols=yes \
     --with-poppler=no \
     --with-libxml2=no \
     --with-podofo=no \
     --with-pdfium=no \
-    --with-jpeg=internal \
     --with-proj=$STAGE_PATH \
     --with-png=no \
     $GDAL_FLAGS

@@ -17,7 +17,7 @@ jobs:
     env:
       QT_VERSION: 5.14.2
       ARCHES: 'mac'
-      CACHE_VERSION: 2
+      CACHE_VERSION: 3
 
     steps:
       - uses: actions/checkout@v2
