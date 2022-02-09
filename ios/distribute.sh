@@ -79,6 +79,14 @@ DO_CLEAN_BUILD=0
 DO_SET_X=0
 DEBUG=0
 
+function fold_push() {
+   echo "::group::${1}"
+}
+
+function fold_pop() {
+   echo "::endgroup::"
+}
+
 function try () {
     "$@" || exit -1
 }
@@ -498,7 +506,8 @@ function run_get_packages() {
       continue
     fi
     debug "Download package for $module"
-
+    fold_push "download ${module}"
+    
     url="URL_$module"
     url=${!url}
     md5="MD5_$module"
@@ -618,6 +627,7 @@ function run_get_packages() {
         fi
         ;;
     esac
+    fold_pop
   done
 }
 
@@ -639,6 +649,7 @@ function run_build() {
   cd $BUILD_PATH
 
   for module in $MODULES; do
+    fold_push "building ${module}"
     fn="build_$module"
     shouldbuildfn="shouldbuild_$module"
     MARKER_FN="$BUILD_PATH/.mark-$module"
@@ -667,6 +678,7 @@ function run_build() {
     else
       debug "Skipped $fn"
     fi
+    fold_pop
   done
 }
 
