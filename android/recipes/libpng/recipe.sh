@@ -23,6 +23,8 @@ function prebuild_libpng() {
   if [ -f .patched ]; then
     return
   fi
+  
+  touch .patched
 }
 
 function shouldbuild_libpng() {

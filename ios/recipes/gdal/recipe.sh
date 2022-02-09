@@ -23,7 +23,12 @@ function prebuild_gdal() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_gdal"
   try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_gdal"
-
+  try patch -p1 < $RECIPE_gdal/patches/configure.patch
+  
+  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab
+  # to released 3.4.1
+  try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
+  
   touch .patched
 }
 
@@ -55,11 +60,15 @@ function build_gdal() {
   # incompatible with Qt's required lib
   # we can use /opt/Qt/5.13.1/ios//lib/libqtlibpng*, but there are no png.h headers in Qt's installation
 
+  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab
+  # to released 3.4.1
   # at runtime: Wrong JPEG library version: library is 62, caller expects 80
   # (GDAL tries to build internal JPEG library incompatible with Qt's internal JPEG lib)
   # /opt/Qt/5.13.1/ios//plugins/imageformats/libqjpeg.a ... maybe use Qt's one?
   # with-mrf=no \ # depends on jpeg
-
+  export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
+  export CPPFLAGS="${CPPFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
+  
   try ./configure \
     --prefix=$STAGE_PATH \
     --host=${TOOLCHAIN_PREFIX} \
@@ -70,17 +79,17 @@ function build_gdal() {
     --with-rename-internal-libtiff-symbols=yes \
     --with-rename-internal-libgeotiff-symbols=yes \
     --with-rename-internal-shapelib-symbols=yes \
+    --with-rename-internal-libjpeg-symbols=yes \
     --with-poppler=no \
     --with-podofo=no \
     --with-pdfium=no \
-    --disable-driver-mrf \
-    --with-jpeg=no \
+    --with-jpeg=yes \
     --with-proj=$STAGE_PATH \
     --with-png=no \
     $GDAL_FLAGS
 
-  try $MAKESMP
-  try make install &> install.log
+  try $MAKESMP lib-target
+  try $MAKESMP install-lib
 
   pop_arm
 }
