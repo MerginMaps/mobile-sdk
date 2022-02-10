@@ -20,8 +20,6 @@ function prebuild_qgis() {
     return
   fi
   
-  try patch -p1 < $RECIPE_qgis/patches/crssync.patch
-  
   touch .patched
 }
 
