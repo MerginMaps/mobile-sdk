@@ -77,7 +77,7 @@ function build_qgis() {
     -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt5/QtCrypto \
     -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5_$ARCH.a \
     -DQTKEYCHAIN_INCLUDE_DIR=$STAGE_PATH/include/qt5keychain \
-    -DQTKEYCHAIN_LIBRARY=$STAGE_PATH/lib/libqt5keychain_$ARCH.a \
+    -DQTKEYCHAIN_LIBRARY=$STAGE_PATH/lib/libqt5keychain.a \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DENABLE_QT5=ON \
     -DENABLE_TESTS=OFF \
