@@ -64,7 +64,7 @@ function build_qgis() {
     -DUSE_OPENCL=OFF \
     $BUILD_qgis
   
-  try $MAKESMP VERBOSE=1
+  try $MAKESMP
   try $MAKESMP install
 
   pop_env

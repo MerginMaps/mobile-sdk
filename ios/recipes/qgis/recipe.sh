@@ -131,6 +131,7 @@ function build_qgis() {
     -DProtobuf_PROTOC_LIBRARY=$STAGE_PATH/lib/libprotoc.a \
     -DWITH_AUTH=ON \
     -DQGIS_MACAPP_BUNDLE=-1 \
+    -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     $BUILD_qgis
 
   try $MAKESMP install
