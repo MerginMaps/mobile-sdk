@@ -24,12 +24,10 @@ function prebuild_gdal() {
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
   
-  mv frmts/png/libpng/png.h frmts/png/libpng/png_orig.h
-  mv $RECIPE_gdal/patches/gdal_libpng_symbol_rename.h frmts/png/libpng/png.h
-  
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
-  
+  try patch -p1 < $RECIPE_gdal/patches/png_rename.patch
+   
   touch .patched
 }
 

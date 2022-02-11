@@ -26,9 +26,7 @@ function prebuild_gdal() {
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
-  
-  mv frmts/png/libpng/png.h frmts/png/libpng/png_orig.h
-  mv $RECIPE_gdal/patches/gdal_libpng_symbol_rename.h frmts/png/libpng/png.h
+  try patch -p1 < $RECIPE_gdal/patches/png_rename.patch
   
   patch_configure_file configure
 
