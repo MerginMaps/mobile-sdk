@@ -46,7 +46,8 @@ function build_libspatialite() {
   # Remove in libspatialite 5.0.0
   export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
   # so the configure script can check that geos library is ok
-  export CXX="$CXX -L$STAGE_PATH/lib -lgeos_c -lgeos"
+  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
+  export CC="$CC -lgeos_c -lgeos"
   
   try ./configure \
     --prefix=$STAGE_PATH \
@@ -65,7 +66,7 @@ function build_libspatialite() {
     --disable-dependency-tracking
 
   try $MAKESMP
-  try make install &> install.log
+  try $MAKESMP install
   pop_arm
 }
 
