@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(iconv geos postgresql expat webp)
+DEPS_gdal=(iconv geos postgresql expat webp proj)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -68,6 +68,10 @@ function build_gdal() {
   # with-mrf=no \ # depends on jpeg
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   export CPPFLAGS="${CPPFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
+  
+  # Undefined symbols for architecture arm64: "_png_do_expand_palette_rgb8_neon"
+  export CFLAGS="${CFLAGS} -DPNG_ARM_NEON_OPT=0"
+  export CPPFLAGS="${CPPFLAGS} -DPNG_ARM_NEON_OPT=0"
   
   try ./configure \
     --prefix=$STAGE_PATH \

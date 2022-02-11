@@ -35,7 +35,7 @@ function shouldbuild_webp() {
 function build_webp() {
   try mkdir -p $BUILD_PATH/webp/build-$ARCH
   try cd $BUILD_PATH/webp/build-$ARCH
-  push_env
+  push_arm
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DBUILD_SHARED_LIBS=OFF \
@@ -44,13 +44,22 @@ function build_webp() {
     -DCMAKE_DISABLE_FIND_PACKAGE_JPEG=TRUE \
     -DCMAKE_DISABLE_FIND_PACKAGE_PNG=TRUE \
     -DCMAKE_DISABLE_FIND_PACKAGE_TIFF=TRUE \
+    -DWEBP_BUILD_EXTRAS=FALSE \
+    -DWEBP_BUILD_ANIM_UTILS=FALSE \
+    -DWEBP_BUILD_CWEBP=FALSE \
+    -DWEBP_BUILD_DWEBP=FALSE \
+    -DWEBP_BUILD_GIF2WEBP=FALSE \
+    -DWEBP_BUILD_IMG2WEBP=FALSE \
+    -DWEBP_BUILD_VWEBP=FALSE \
+    -DWEBP_BUILD_WEBPINFO=FALSE \
+    -DWEBP_BUILD_WEBPMUX=FALSE \
     $BUILD_webp
 
   check_file_configuration CMakeCache.txt
 
   try $MAKESMP
   try $MAKESMP install
-  pop_env
+  pop_arm
 }
 
 # function called after all the compile have been done
