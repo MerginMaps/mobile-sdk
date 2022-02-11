@@ -28,6 +28,9 @@ function prebuild_gdal() {
   # to released 3.4.1
   try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
   
+  mv frmts/png/libpng/png.h frmts/png/libpng/png_orig.h
+  mv $RECIPE_gdal/patches/gdal_libpng_symbol_rename.h frmts/png/libpng/png.h
+  
   touch .patched
 }
 
@@ -82,7 +85,7 @@ function build_gdal() {
     --with-pdfium=no \
     --with-proj=$STAGE_PATH \
     --disable-driver-mrf \
-    --with-png=no \
+    --with-png=internal \
     $GDAL_FLAGS
 
   try $MAKESMP
