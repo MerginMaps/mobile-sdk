@@ -53,6 +53,9 @@ function build_gdal() {
   
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
   
+  # so the configure script can check that geos library is ok
+  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
+  
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   export CPPFLAGS="${CPPFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
