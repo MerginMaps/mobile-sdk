@@ -77,6 +77,7 @@ function build_gdal() {
     --with-pcre=no \
     --with-proj=$STAGE_PATH \
     --with-png=no \
+    --with-jpeg=internal \
     --disable-driver-mrf \
     $GDAL_FLAGS
 
