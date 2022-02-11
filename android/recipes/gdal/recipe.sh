@@ -57,6 +57,10 @@ function build_gdal() {
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   export CPPFLAGS="${CPPFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   
+  # Undefined symbols for architecture arm64: "_png_do_expand_palette_rgb8_neon"
+  export CFLAGS="${CFLAGS} -DPNG_ARM_NEON_OPT=0"
+  export CPPFLAGS="${CPPFLAGS} -DPNG_ARM_NEON_OPT=0"
+  
   try ./configure \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64 \
