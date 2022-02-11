@@ -46,7 +46,7 @@ function build_libspatialite() {
   # Remove in libspatialite 5.0.0
   export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
   # so the configure script can check that geos library is ok
-  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
+  export CFLAGS="$CFLAGS -lgeos"
   
   try ./configure \
     --prefix=$STAGE_PATH \
@@ -57,7 +57,6 @@ function build_libspatialite() {
     --enable-proj=yes \
     --enable-static=yes \
     --disable-shared \
-    --with-geosconfig=$STAGE_PATH/bin/geos-config \
     --enable-libxml2=no \
     --enable-rttopo=no \
     --enable-gcp=no \

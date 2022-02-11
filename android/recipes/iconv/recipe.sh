@@ -32,7 +32,7 @@ function prebuild_iconv() {
 
 function shouldbuild_iconv() {
   # If lib is newer than the sourcecode skip build
-  if [ ${STAGE_PATH}/lib/libcharset.a -nt $BUILD_iconv/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libiconv.a -nt $BUILD_iconv/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -58,7 +58,7 @@ function build_iconv() {
 
 # function called after all the compile have been done
 function postbuild_iconv() {
-    if [ ! -f ${STAGE_PATH}/lib/libcharset.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libiconv.a ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi
