@@ -23,8 +23,9 @@ function prebuild_libspatialite() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_libspatialite
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_libspatialite
-  try patch -p1 < $RECIPE_libspatialite/patches/spatialite.patch
+  
   try patch -p1 < $RECIPE_libspatialite/patches/configure.patch
+  try patch -p1 < $RECIPE_libspatialite/patches/spatialite.patch
   
   touch .patched
 }
@@ -47,10 +48,8 @@ function build_libspatialite() {
   export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
   # so the configure script can check that geos library is ok
   export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
-  export CC="$CC -lgeos_c -lgeos"
   
-  cat config.log
-  ./configure \
+  try ./configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64 \
@@ -65,7 +64,6 @@ function build_libspatialite() {
     --enable-gcp=no \
     --enable-minizip=no \
     --disable-dependency-tracking
-  cat config.log
   
   try $MAKESMP
   try $MAKESMP install
