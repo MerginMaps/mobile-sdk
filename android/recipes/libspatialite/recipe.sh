@@ -49,7 +49,8 @@ function build_libspatialite() {
   export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
   export CC="$CC -lgeos_c -lgeos"
   
-  try ./configure \
+  cat config.log
+  ./configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64 \
@@ -64,7 +65,8 @@ function build_libspatialite() {
     --enable-gcp=no \
     --enable-minizip=no \
     --disable-dependency-tracking
-
+  cat config.log
+  
   try $MAKESMP
   try $MAKESMP install
   pop_arm
