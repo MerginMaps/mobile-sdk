@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(iconv geos postgresql expat)
+DEPS_gdal=(iconv geos postgresql expat webp proj)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -27,6 +27,8 @@ function prebuild_gdal() {
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab
   # to released 3.4.1
   try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
+  try patch -p1 < $RECIPE_gdal/patches/png_rename.patch
+
   
   touch .patched
 }
@@ -67,6 +69,10 @@ function build_gdal() {
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   export CPPFLAGS="${CPPFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   
+  # Undefined symbols for architecture arm64: "_png_do_expand_palette_rgb8_neon"
+  export CFLAGS="${CFLAGS} -DPNG_ARM_NEON_OPT=0"
+  export CPPFLAGS="${CPPFLAGS} -DPNG_ARM_NEON_OPT=0"
+  
   try ./configure \
     --prefix=$STAGE_PATH \
     --host=${TOOLCHAIN_PREFIX} \
@@ -82,7 +88,7 @@ function build_gdal() {
     --with-pdfium=no \
     --with-proj=$STAGE_PATH \
     --disable-driver-mrf \
-    --with-png=no \
+    --with-png=internal \
     $GDAL_FLAGS
 
   try $MAKESMP

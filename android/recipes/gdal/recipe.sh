@@ -26,7 +26,8 @@ function prebuild_gdal() {
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
-  
+  try patch -p1 < $RECIPE_gdal/patches/png_rename.patch
+   
   touch .patched
 }
 
@@ -52,9 +53,16 @@ function build_gdal() {
   
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
   
+  # so the configure script can check that geos library is ok
+  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
+  
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   export CPPFLAGS="${CPPFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
+  
+  # Undefined symbols for architecture arm64: "_png_do_expand_palette_rgb8_neon"
+  export CFLAGS="${CFLAGS} -DPNG_ARM_NEON_OPT=0"
+  export CPPFLAGS="${CPPFLAGS} -DPNG_ARM_NEON_OPT=0"
   
   try ./configure \
     --host=$TOOLCHAIN_PREFIX \
@@ -72,7 +80,7 @@ function build_gdal() {
     --with-podofo=no \
     --with-pdfium=no \
     --with-proj=$STAGE_PATH \
-    --with-png=no \
+    --with-png=internal \
     --disable-driver-mrf \
     $GDAL_FLAGS
 

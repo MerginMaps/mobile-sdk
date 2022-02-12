@@ -26,6 +26,7 @@ function prebuild_gdal() {
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
+  try patch -p1 < $RECIPE_gdal/patches/png_rename.patch
   
   patch_configure_file configure
 
@@ -76,7 +77,7 @@ function build_gdal() {
     --with-zstd=no \
     --with-pcre=no \
     --with-proj=$STAGE_PATH \
-    --with-png=no \
+    --with-png=internal \
     --with-jpeg=internal \
     --disable-driver-mrf \
     $GDAL_FLAGS
@@ -85,6 +86,8 @@ function build_gdal() {
   try $MAKESMP
   try $MAKESMP install
 
+  $STAGE_PATH/bin/gdalinfo --formats
+ 
   pop_env
 }
 

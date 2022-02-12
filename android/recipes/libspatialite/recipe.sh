@@ -23,8 +23,9 @@ function prebuild_libspatialite() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_libspatialite
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_libspatialite
-  try patch -p1 < $RECIPE_libspatialite/patches/spatialite.patch
+  
   try patch -p1 < $RECIPE_libspatialite/patches/configure.patch
+  try patch -p1 < $RECIPE_libspatialite/patches/spatialite.patch
   
   touch .patched
 }
@@ -63,9 +64,9 @@ function build_libspatialite() {
     --enable-gcp=no \
     --enable-minizip=no \
     --disable-dependency-tracking
-
+  
   try $MAKESMP
-  try make install &> install.log
+  try $MAKESMP install
   pop_arm
 }
 
