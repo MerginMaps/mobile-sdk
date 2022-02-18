@@ -17,7 +17,7 @@ jobs:
     env:
       QT_VERSION: 5.14.2
       ARCHES: 'mac'
-      CACHE_VERSION: 7
+      CACHE_VERSION: 0
 
     steps:
       - uses: actions/checkout@v2
@@ -91,12 +91,20 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
+          if-no-files-found: error
 
+      - name: Upload supported formats in Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: supported_formats.log
+          path: ${{ github.workspace }}/build/stage/mac/supported_formats.log
+          if-no-files-found: error
+          
       - name: Create Release
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
           tag: mac-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
-          artifacts: ${{ env.SDK_TAR }}
+          artifacts: ${{ env.SDK_TAR }}, supported_formats.log
           token: ${{ secrets.GITHUB_TOKEN }}

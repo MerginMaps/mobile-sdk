@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(iconv geos postgresql expat webp proj)
+DEPS_gdal=(iconv geos postgresql expat webp proj curl)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -23,6 +23,8 @@ function prebuild_gdal() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_gdal"
   try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_gdal"
+  
+  try patch -p1 < $RECIPE_gdal/patches/configure.patch
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab
   # to released 3.4.1
@@ -48,6 +50,8 @@ function build_gdal() {
   push_arm
 
   export LDFLAGS="${LDFLAGS} -liconv"
+  export LDFLAGS="${LDFLAGS} -lgeos -framework Security -framework CoreFoundation -framework SystemConfiguration"
+    
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 
   GDAL_FLAGS="--disable-shared"
