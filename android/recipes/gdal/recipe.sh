@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp curl)
+DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp curl libspatialite)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -71,6 +71,7 @@ function build_gdal() {
     --build=x86_64 \
     --prefix=$STAGE_PATH \
     --with-sqlite3=$STAGE_PATH \
+    --with-spatialite=yes \
     --with-geos=$STAGE_PATH/bin/geos-config \
     --with-pg=no \
     --with-expat=$STAGE_PATH \

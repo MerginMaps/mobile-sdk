@@ -69,6 +69,7 @@ function build_gdal() {
     --with-expat=$STAGE_PATH \
     --with-libtiff=internal \
     --with-geotiff=internal \
+    --with-spatialite=yes \
     --with-poppler=no \
     --with-odbc=no \
     --with-openjpeg=no \
