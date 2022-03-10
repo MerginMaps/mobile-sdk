@@ -1,0 +1,47 @@
+--- a/configure	2022-02-18 10:31:24.000000000 +0100
++++ b/configure	2022-02-18 11:01:15.000000000 +0100
+@@ -36559,7 +36559,7 @@ if ${ac_cv_lib_curl_curl_global_init+:} 
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lcurl `$LIBCURL_CONFIG --libs` $LIBS"
++LIBS="-lcurl -lssl -lcrypto `$LIBCURL_CONFIG --libs` $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+
+@@ -37012,7 +37012,7 @@ done
+     if test "$ac_cv_header_sqlite3_h" = "yes"; then
+         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for spatialite.h in /usr/include or /usr/local/include" >&5
+ $as_echo_n "checking for spatialite.h in /usr/include or /usr/local/include... " >&6; }
+-        if test -f "/usr/include/spatialite.h" -o -f "/usr/local/include/spatialite.h"; then
++        if true; then
+             { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
+ $as_echo "found" >&6; }
+             { $as_echo "$as_me:${as_lineno-$LINENO}: checking for spatialite_init in -lspatialite" >&5
+@@ -37021,7 +37021,7 @@ if ${ac_cv_lib_spatialite_spatialite_ini
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lspatialite -lsqlite3 $LIBS"
++LIBS="-lspatialite -lsqlite3 -lgeos_c -lgeos -lfreexl $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+
+@@ -39073,7 +39073,7 @@ $as_echo "$as_me: WARNING: GEOS was foun
+
+       HAVE_GEOS="no"
+
+-      GEOS_LIBS="`${GEOS_CONFIG} --ldflags` -lgeos_c"
++      GEOS_LIBS="`${GEOS_CONFIG} --ldflags` -lgeos_c -lgeos"
+       GEOS_CFLAGS="`${GEOS_CONFIG} --cflags`"
+       GEOS_VERSION="`${GEOS_CONFIG} --version`"
+
+@@ -39088,7 +39088,7 @@ if ${ac_cv_lib_geos_c_GEOSversion+:} fal
+   $as_echo_n "(cached) " >&6
+ else
+   ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lgeos_c
++LIBS="-lgeos_c -lgeos
+        $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */

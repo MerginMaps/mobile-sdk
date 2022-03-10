@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp)
+DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp curl libspatialite)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -23,6 +23,8 @@ function prebuild_gdal() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
+  
+  try patch -p1 < $RECIPE_gdal/patches/configure.patch
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
@@ -53,8 +55,8 @@ function build_gdal() {
   
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
   
-  # so the configure script can check that geos library is ok
-  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
+  # so the configure script can check that static libraries linkage is ok
+  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos -lcurl -lssl -lcrypto"
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
@@ -69,6 +71,7 @@ function build_gdal() {
     --build=x86_64 \
     --prefix=$STAGE_PATH \
     --with-sqlite3=$STAGE_PATH \
+    --with-spatialite=yes \
     --with-geos=$STAGE_PATH/bin/geos-config \
     --with-pg=no \
     --with-expat=$STAGE_PATH \
