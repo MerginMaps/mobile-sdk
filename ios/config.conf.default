@@ -3,7 +3,7 @@ export QT_VERSION=5.14.2
 export ROOT_OUT_PATH=/opt/INPUT/input-sdk-ios-DEV
 
 ### SDK #####
-export IOS_MIN_SDK_VERSION="12.0"
+export IOS_MIN_SDK_VERSION="14.0"
 
 #### PATHS ####
 export QT_BASE="/opt/Qt/$QT_VERSION"

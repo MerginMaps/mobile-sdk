@@ -12,12 +12,12 @@ on:
 
 jobs:
   ios_build:
-    runs-on: macos-10.15
+    runs-on: macos-11
     env:
-      IOS_MIN_SDK_VERSION: '12.0'
+      IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
       QT_VERSION: '5.14.2'
       ARCHES: 'arm64'
-      CACHE_VERSION: 1
+      CACHE_VERSION: 0
 
     steps:
       - uses: actions/checkout@v2

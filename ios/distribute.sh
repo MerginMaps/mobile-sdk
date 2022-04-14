@@ -507,7 +507,7 @@ function run_get_packages() {
     fi
     debug "Download package for $module"
     fold_push "download ${module}"
-    
+
     url="URL_$module"
     url=${!url}
     md5="MD5_$module"
