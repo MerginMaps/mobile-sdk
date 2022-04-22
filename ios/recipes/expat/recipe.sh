@@ -24,10 +24,6 @@ function prebuild_expat() {
   try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_expat/conftools/"
   try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_expat/conftools/"
 
-  if [ "X${ARCH}" == "Xarm64" ]; then
-    try patch -p1 < $RECIPE_expat/patches/readfilemap.patch
-  fi
-
   touch .patched
 }
 
