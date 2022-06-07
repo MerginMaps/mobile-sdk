@@ -240,7 +240,7 @@ function push_arm() {
       # https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#Unwinding
       # https://github.com/android/ndk/issues/785
       # https://github.com/android/ndk/issues/379
-      # https://github.com/lutraconsulting/input/issues/641
+      # https://github.com/merginmaps/input/issues/641
       export LDFLAGS="$LDFLAGS -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libunwind.a"
 
       export CFLAGS="$CFLAGS -fPIC"

@@ -1,7 +1,7 @@
 @echo on
 
 set VERSION_geodiff=0.8.6
-set URL_geodiff=https://github.com/lutraconsulting/geodiff/archive/%VERSION_geodiff%.tar.gz
+set URL_geodiff=https://github.com/merginmaps/geodiff/archive/%VERSION_geodiff%.tar.gz
 set BUILD_geodiff=%BUILD_PATH%\geodiff
 set REPO_geodiff=%REPO_PATH%\geodiff
 if not exist %BUILD_geodiff% mkdir %BUILD_geodiff%

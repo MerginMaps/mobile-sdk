@@ -1,15 +1,15 @@
-[![Build macOS](https://github.com/lutraconsulting/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/mac.yml)
-[![Build iOS](https://github.com/lutraconsulting/input-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/ios.yml)
-[![Build android (on MacOS)](https://github.com/lutraconsulting/input-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/android.yml)
-[![Build Linux](https://github.com/lutraconsulting/input-sdk/actions/workflows/linux.yml/badge.svg)](https://github.com/lutraconsulting/input-sdk/actions/workflows/linux.yml)
+[![Build macOS](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml)
+[![Build iOS](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml)
+[![Build android (on MacOS)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml)
+[![Build Linux](https://github.com/merginmaps/input-sdk/actions/workflows/linux.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/linux.yml)
 
 # input-sdk
 
-SDK for building [Input](https://github.com/lutraconsulting/input) for mobile devices
+SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) for mobile devices
 
-Input makes surveying of geospatial data easy. You can design your survey project in QGIS with custom forms.
+Mergin Maps Input app makes surveying of geospatial data easy. You can design your survey project in QGIS with custom forms.
 
-Click here to download the app on your Android/iOS/Windows device [inputapp.io](http://inputapp.io)
+Click here to download the app on your Android or iOS devices [merginmaps.com](http://merginmaps.com)
 
 <div><img align="left" width="45" height="45" src="https://raw.githubusercontent.com/MerginMaps/docs/main/src/.vuepress/public/slack.svg"><a href="https://merginmaps.com/community/join">Join our community chat</a><br/>and ask questions!</div><br />
 
@@ -20,8 +20,6 @@ how to do diff `diff -rupN file.orig file`
 # Android 
 
 Download prebuild android SDKs from the GitHub Artifacts
-
-[Android notes](android/android.md)
 
 # Windows
 
