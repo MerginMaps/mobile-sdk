@@ -2,6 +2,7 @@
 [![Build iOS](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml)
 [![Build android (on MacOS)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml)
 [![Build Linux](https://github.com/merginmaps/input-sdk/actions/workflows/linux.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/linux.yml)
+[![Build win64](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml/badge.svg)](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml)
 
 # input-sdk
 
@@ -23,11 +24,10 @@ Download prebuild android SDKs from the GitHub Artifacts
 
 # Windows
 
-!! WARNING: NOT MAINTAINED ATM !!!
+Download prebuild win64 SDKs from the GitHub Artifacts
 
-Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input-sdk-win-x86_64-7.zip?dl=0)
-
-[Windows notes](win/win.md)
+- to find library on disk: `where -F -R \ xyz.Lib`
+- you need to install MSYS2 and flex, bison, automake and add them to PATH
 
 # iOS
 

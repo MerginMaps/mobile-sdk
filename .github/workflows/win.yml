@@ -30,7 +30,7 @@ jobs:
 
       - name: Check deps versions change
         run: |
-          CHECKSUM=`md5 -r versions.conf | cut -d\  -f1`
+          CHECKSUM=`md5sum -r versions.conf | cut -d\  -f1`
           echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
       - name: Prepare build cache for branch/tag
@@ -47,7 +47,8 @@ jobs:
       - name: Install Build Dependencies
         run: |
           echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-          brew install bison flex automake shtool gtk-doc
+          echo "C:\msys64\bin" >> $GITHUB_PATH
+          pacman --noconfirm -S --needed diffutils bison flex make dos2unix tar        
           echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
 

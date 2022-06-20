@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_postgresql=()
+DEPS_postgresql=(openssl)
 
 # default build path
 BUILD_postgresql=$BUILD_PATH/postgresql/$(get_directory $URL_postgresql)
@@ -29,7 +29,7 @@ function prebuild_postgresql() {
 
 function shouldbuild_postgresql() {
   # If lib is newer than the sourcecode skip build
-  if [ ${STAGE_PATH}/lib/libpq.a -nt $BUILD_postgresql/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libpq.lib -nt $BUILD_postgresql/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -52,14 +52,14 @@ function build_postgresql() {
   try cp -v $BUILD_postgresql/src/include/postgres_ext.h $STAGE_PATH/include
   try cp -v $BUILD_postgresql/src/interfaces/libpq/libpq-fe.h $STAGE_PATH/include
   try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/include/pg_config_ext.h $STAGE_PATH/include/
-  try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/interfaces/libpq/libpq.a $STAGE_PATH/lib/
+  try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/interfaces/libpq/libpq.lib $STAGE_PATH/lib/
 
   pop_env
 }
 
 # function called after all the compile have been done
 function postbuild_postgresql() {
-    if [ ! -f ${STAGE_PATH}/lib/libpq.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libpq.lib ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

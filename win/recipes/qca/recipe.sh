@@ -25,7 +25,7 @@ function prebuild_qca() {
 
 function shouldbuild_qca() {
  # If lib is newer than the sourcecode skip build
- if [ ${STAGE_PATH}/lib/libqca-qt5.a -nt $BUILD_qca/.patched ]; then
+ if [ ${STAGE_PATH}/lib/libqca-qt5.lib -nt $BUILD_qca/.patched ]; then
   DO_BUILD=0
  fi
 }
@@ -64,7 +64,7 @@ function build_qca() {
 
 # function called after all the compile have been done
 function postbuild_qca() {
-    if [ ! -f ${STAGE_PATH}/lib/libqca-qt5.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libqca-qt5.lib ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

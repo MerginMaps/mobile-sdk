@@ -31,7 +31,7 @@ function prebuild_protobuf() {
 }
 
 function shouldbuild_protobuf() {
-  if [ -f ${STAGE_PATH}/lib/libprotobuf.a ]; then
+  if [ -f ${STAGE_PATH}/lib/libprotobuf.lib ]; then
     DO_BUILD=0
   fi
 }
@@ -63,7 +63,7 @@ function build_protobuf() {
 
 # function called after all the compile have been done
 function postbuild_protobuf() {
-    if [ ! -f ${STAGE_PATH}/lib/libprotobuf.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libprotobuf.lib ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

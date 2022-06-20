@@ -26,7 +26,7 @@ function prebuild_zxing() {
 
 function shouldbuild_zxing() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libZXing.a -nt $BUILD_zxing/.patched ]; then
+  if [ $STAGE_PATH/lib/libZXing.lib -nt $BUILD_zxing/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -55,7 +55,7 @@ function build_zxing() {
 
 # function called after all the compile have been done
 function postbuild_zxing() {
-    if [ ! -f ${STAGE_PATH}/lib/libZXing.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libZXing.lib ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

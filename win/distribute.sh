@@ -8,6 +8,12 @@ else
   exit 1;
 fi
 
+PACMAN=$(which pacman)
+if [ "X$PACMAN" == "X" ]; then
+  echo "Error: you need MSYS2 (pacman) installed"
+  exit 1
+fi
+
 XCODE_DEVELOPER="$(xcode-select -print-path)"
 CORES=$(sysctl -n hw.ncpu)
 

@@ -31,7 +31,7 @@ function prebuild_proj() {
 
 function shouldbuild_proj() {
   # If lib is newer than the sourcecode skip build
-  if [ ${STAGE_PATH}/lib/libproj.a -nt $BUILD_proj/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libproj.lib -nt $BUILD_proj/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -67,7 +67,7 @@ function build_proj() {
 
 # function called after all the compile have been done
 function postbuild_proj() {
-    if [ ! -f ${STAGE_PATH}/lib/libproj.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libproj.lib ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

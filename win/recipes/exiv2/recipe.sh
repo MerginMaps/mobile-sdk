@@ -26,7 +26,7 @@ function prebuild_exiv2() {
 
 function shouldbuild_exiv2() {
   # If lib is newer than the sourcecode skip build
-  if [ ${STAGE_PATH}/lib/libexiv2.a -nt $BUILD_exiv2/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libexiv2.lib -nt $BUILD_exiv2/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -57,7 +57,7 @@ function build_exiv2() {
 
 # function called after all the compile have been done
 function postbuild_exiv2() {
-  if [ ! -f ${STAGE_PATH}/lib/libexiv2.a ]; then
+  if [ ! -f ${STAGE_PATH}/lib/libexiv2.lib ]; then
       error "Library was not successfully build for ${ARCH}"
       exit 1;
   fi

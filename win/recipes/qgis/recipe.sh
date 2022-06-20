@@ -61,22 +61,16 @@ function build_qgis() {
     -DWITH_QSPATIALITE=OFF \
     -DWITH_3D=FALSE \
     -DWITH_QGIS_PROCESS=OFF \
-    -DQGIS_MACAPP_BUNDLE=-1 \
     -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     -DFORCE_STATIC_LIBS=TRUE \
     -DUSE_OPENCL=OFF \
     -DPOSTGRES_INCLUDE_DIR=$STAGE_PATH/include \
-    -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.a \
+    -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.lib \
     $BUILD_qgis
   
   check_file_configuration CMakeCache.txt
   
   try $MAKESMP install
-
-  try cp $BUILD_PATH/qgis/build-$ARCH/src/core/qgis_core.h ${STAGE_PATH}/QGIS.app/Contents/Frameworks/qgis_core.framework/Headers/
-
-  # TODO
-  # the installed QGIS references frameworks from build/qgis/build-mac/output/lib, see input/.github/workflows/autotests.yml
 
   # bundle QGIS's find packages too
   try mkdir -p $STAGE_PATH/cmake/

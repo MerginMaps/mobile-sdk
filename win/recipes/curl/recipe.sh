@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_curl=()
+DEPS_curl=(openssl)
 
 # default build path
 BUILD_curl=$BUILD_PATH/curl/$(get_directory $URL_curl)
@@ -26,7 +26,7 @@ function prebuild_curl() {
 
 function shouldbuild_curl() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/curl/build-$ARCH/lib/libcurl.a -nt $BUILD_curl/.patched ]; then
+  if [ $BUILD_PATH/curl/build-$ARCH/lib/libcurl.lib -nt $BUILD_curl/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -52,9 +52,8 @@ function build_curl() {
     -DUSE_NGTCP2=OFF \
     -DUSE_NGHTTP2=OFF \
     -DCURL_ZLIB=OFF \
-    -DCURL_USE_OPENSSL=OFF \
-    -DCURL_USE_SECTRANSP=ON \
-    -DAPPLE=TRUE \
+    -DCURL_USE_OPENSSL=ON \
+    -DCURL_USE_SECTRANSP=OFF \
     $BUILD_curl
   
   check_file_configuration CMakeCache.txt
@@ -67,7 +66,7 @@ function build_curl() {
 
 # function called after all the compile have been done
 function postbuild_curl() {
-    if [ ! -f ${STAGE_PATH}/lib/libcurl.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libcurl.lib ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

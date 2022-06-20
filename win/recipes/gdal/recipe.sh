@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(geos postgresql expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3 webp curl)
+DEPS_gdal=(geos postgresql openssl expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3 webp curl)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)

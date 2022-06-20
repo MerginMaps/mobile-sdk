@@ -32,7 +32,7 @@ function prebuild_freexl() {
 
 function shouldbuild_freexl() {
   # If lib is newer than the sourcecode skip build
-  if [ ${STAGE_PATH}/lib/libfreexl.a -nt $BUILD_freexl/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libfreexl.lib -nt $BUILD_freexl/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -51,7 +51,7 @@ function build_freexl() {
 
 # function called after all the compile have been done
 function postbuild_freexl() {
-    if [ ! -f ${STAGE_PATH}/lib/libfreexl.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libfreexl.lib ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

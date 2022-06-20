@@ -26,7 +26,7 @@ function prebuild_webp() {
 
 function shouldbuild_webp() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libwebp.a -nt $BUILD_webp/.patched ]; then
+  if [ $STAGE_PATH/lib/libwebp.lib -nt $BUILD_webp/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -55,7 +55,7 @@ function build_webp() {
 
 # function called after all the compile have been done
 function postbuild_webp() {
-    if [ ! -f $STAGE_PATH/lib/libwebp.a ]; then
+    if [ ! -f $STAGE_PATH/lib/libwebp.lib ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

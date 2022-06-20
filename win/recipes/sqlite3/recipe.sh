@@ -31,7 +31,7 @@ function prebuild_sqlite3() {
 
 function shouldbuild_sqlite3() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libsqlite3.a -nt $BUILD_sqlite3/.patched ]; then
+  if [ $STAGE_PATH/lib/libsqlite3.lib -nt $BUILD_sqlite3/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -62,7 +62,7 @@ function build_sqlite3() {
 
 # function called after all the compile have been done
 function postbuild_sqlite3() {
-    if [ ! -f ${STAGE_PATH}/lib/libsqlite3.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libsqlite3.lib ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi
