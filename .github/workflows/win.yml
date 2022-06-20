@@ -1,0 +1,116 @@
+name: Build win64
+
+on:
+  push:
+    paths:
+      - 'win/**'
+      - '.github/workflows/win.yml'
+      - 'versions.conf'
+  release:
+    types:
+      - published
+ 
+concurrency:
+  group: ci-${{github.ref}}-windows
+  cancel-in-progress: true
+  
+jobs:
+  win64_build:
+    if: ( github.repository == 'MerginMaps/input-sdk' )
+    runs-on: windows-latest
+    
+    env:
+      QT_VERSION: 5.14.2
+      ARCHES: 'win64'
+      CACHE_VERSION: 0
+      MSVCVER: 'msvc2017_64'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check deps versions change
+        run: |
+          CHECKSUM=`md5 -r versions.conf | cut -d\  -f1`
+          echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+
+      - name: Prepare build cache for branch/tag
+        # use a fork of actions/cache@v2 to upload cache even when the build or test failed
+        uses: pat-s/always-upload-cache@v2.1.5
+        with:
+          path: ${{ github.workspace }}/build
+          # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
+          key: cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
+            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
+
+      - name: Install Build Dependencies
+        run: |
+          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
+          brew install bison flex automake shtool gtk-doc
+          echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
+          echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
+
+      - name: Cache Qt
+        id: cache-qt
+        uses: pat-s/always-upload-cache@v2.1.5
+        with:
+          path: ${{ github.workspace }}/Qt
+          key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-win64
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: ${{ env.QT_VERSION }}
+          target: desktop
+          dir: ${{ github.workspace }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+
+      - name: Export config.conf
+        run: |
+          touch ./win/config.conf
+          echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./win/config.conf
+          echo -e "export QT_BASE="/opt/Qt/${{ env.QT_BASE }}/${{ env.MSVCVER }}""  >> ./win/config.conf
+          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./win/config.conf
+          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./win/config.conf
+          cat ./win/config.conf
+
+      - name: Build Sdk
+        run: |
+          ./win/distribute.sh -mqgis
+
+      - name: Get TimeStamp
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 8
+          format: 'YYYYMMDD'
+
+      - name: Create package
+        run: |
+          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+          echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
+          cd "${{ github.workspace }}/build/stage/win64"
+          tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
+
+      - name: Upload Sdk in Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/${{ env.SDK_TAR }}
+          if-no-files-found: error
+
+      - name: Upload supported formats in Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: supported_formats.log
+          path: ${{ github.workspace }}/build/stage/win64/supported_formats.log
+          if-no-files-found: error
+          
+      - name: Create Release
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: ncipollo/release-action@v1
+        with:
+          tag: win64-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          allowUpdates: true
+          artifacts: ${{ env.SDK_TAR }}, supported_formats.log
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,28 +1,62 @@
 #!/bin/bash
 
-@echo on
+# Reading/Writing of QR Codes
 
-set VERSION_zxing=1.1.1
-set URL_zxing=https://github.com/nu-book/zxing-cpp/archive/v%VERSION_zxing%.tar.gz
-set BUILD_zxing=%BUILD_PATH%\zxing
-set REPO_zxing=%REPO_PATH%\zxing
-if not exist %BUILD_zxing% mkdir %BUILD_zxing%
+# version of your package in ../../../versions.conf
 
-IF NOT EXIST %REPO_zxing% (
-  cd %DOWNLOAD_PATH%
-  curl -fsSL --connect-timeout 60 -o zxing.tar.gz %URL_zxing%
+# dependencies of this recipe
+DEPS_zxing=()
 
-  7z x "zxing.tar.gz" -so | 7z x -aoa -si -ttar -o"src"
-  move src\zxing-%VERSION_zxing% %REPO_zxing%
-)
+# default build path
+BUILD_zxing=$BUILD_PATH/zxing/$(get_directory $URL_zxing)
 
-cd %BUILD_zxing%
-cmake -G %CMAKE_GENERATOR% ^
--DCMAKE_INSTALL_PREFIX:PATH=%STAGE_PATH% ^
--DBUILD_EXAMPLES=OFF ^
--DBUILD_BLACKBOX_TESTS=OFF ^
--DBUILD_UNIT_TESTS=OFF ^
--DBUILD_SHARED_LIBS=ON ^
-%REPO_zxing%\zxing
+# default recipe path
+RECIPE_zxing=$RECIPES_PATH/zxing
 
-cmake --build . --config Release --target install --parallel %NUMBER_OF_PROCESSORS%
+# function called for preparing source code if needed
+# (you can apply patch etc here.)
+function prebuild_zxing() {
+  cd $BUILD_zxing
+
+  # check marker
+  if [ -f .patched ]; then
+    return
+  fi
+}
+
+function shouldbuild_zxing() {
+  # If lib is newer than the sourcecode skip build
+  if [ $STAGE_PATH/lib/libZXing.a -nt $BUILD_zxing/.patched ]; then
+    DO_BUILD=0
+  fi
+}
+
+# function called to build the source code
+function build_zxing() {
+  try mkdir -p $BUILD_PATH/zxing/build-$ARCH
+  try cd $BUILD_PATH/zxing/build-$ARCH
+  push_env
+
+  # configure
+  try $CMAKECMD \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_BLACKBOX_TESTS=OFF \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DBUILD_UNIT_TESTS=OFF \
+    $BUILD_zxing
+  
+  check_file_configuration CMakeCache.txt
+  
+  try $MAKESMP
+  try $MAKE install
+
+  pop_env
+}
+
+# function called after all the compile have been done
+function postbuild_zxing() {
+    if [ ! -f ${STAGE_PATH}/lib/libZXing.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
+    fi
+}

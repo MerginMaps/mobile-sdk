@@ -1,0 +1,9 @@
+#### PATHS ####
+export QT_VER="5.14.2"
+export ROOT_OUT_PATH=<path>/input-sdk/build/win64
+
+export QT_BASE="/E/Qt/$QT_VER/msvc2017_64"
+export PATH="$QT_BASE/bin:$PATH"
+
+### BUILD ###
+export ARCHES=("win64")
