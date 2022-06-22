@@ -1,3 +1,4 @@
+[![Build win64](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml/badge.svg)](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml)
 [![Build macOS](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml)
 [![Build iOS](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml)
 [![Build android (on MacOS)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml)
@@ -23,11 +24,12 @@ Download prebuild android SDKs from the GitHub Artifacts
 
 # Windows
 
-!! WARNING: NOT MAINTAINED ATM !!!
+- install vcpkg and add to path
+- install Visual Studio 17 2022 Community/Enterprise
+- install Qt
 
-Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input-sdk-win-x86_64-7.zip?dl=0)
-
-[Windows notes](win/win.md)
+https://devblogs.microsoft.com/cppblog/registries-bring-your-own-libraries-to-vcpkg/
+https://vcpkg.io/en/docs/users/registries.html
 
 # iOS
 
