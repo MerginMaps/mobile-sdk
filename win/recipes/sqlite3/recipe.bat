@@ -1,19 +1,12 @@
-#!/bin/bash
+rem default build path
+set BUILD_sqlite3=$BUILD_PATH/sqlite3/$(get_directory $URL_sqlite3)
 
-# version of your package in ../../../versions.conf
-
-# dependencies of this recipe
-DEPS_sqlite3=()
-
-# default build path
-BUILD_sqlite3=$BUILD_PATH/sqlite3/$(get_directory $URL_sqlite3)
-
-# default recipe path
+rem default recipe path
 RECIPE_sqlite3=$RECIPES_PATH/sqlite3
 
-# function called for preparing source code if needed
-# (you can apply patch etc here.)
-function prebuild_sqlite3() {
+rem function called for preparing source code if needed
+:FUNCTION
+ prebuild_sqlite3() {
   cd $BUILD_sqlite3
 
   # check marker
@@ -23,9 +16,7 @@ function prebuild_sqlite3() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_sqlite3
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_sqlite3
-  
-  patch_configure_file configure
-  
+    
   touch .patched
 }
 

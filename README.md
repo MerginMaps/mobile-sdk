@@ -26,8 +26,16 @@ Download prebuild android SDKs from the GitHub Artifacts
 
 Download prebuild win64 SDKs from the GitHub Artifacts
 
+- you need to install python and visual studio
+- start cmd console
+- add Python 3.x to PATH (e.g. `set PATH=C:\Users\Peter\AppData\Local\Programs\Python\Python310;%PATH%`)
+- `"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" -arch=x86`
+- create `config.py`
+- run `python3 distribute.py win64`
+
+## tips
 - to find library on disk: `where -F -R \ xyz.Lib`
-- you need to install MSYS2 and flex, bison, automake and add them to PATH
+
 
 # iOS
 
