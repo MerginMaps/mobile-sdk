@@ -1,0 +1,20 @@
+{
+  "name": "geodiff",
+  "version": "1.0.6",
+  "port-version": 0,
+  "description": "Library for handling diffs for geospatial data",
+  "homepage": "https://github.com/MerginMaps/geodiff",
+  "license": "MIT",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ],
+  "features": {
+  }
+}

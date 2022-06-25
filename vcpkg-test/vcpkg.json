@@ -6,13 +6,77 @@
             "name": "sqlite3",
             "default-features": false,
             "features": [ "rtree", "json1", "fts3" ]
-        }
+        },
+        {
+            "name": "curl",
+            "default-features": false,
+            "features": [ "schannel" ]
+        },
+        {
+            "name": "exiv2",
+            "default-features": false,
+            "features": [ "xmp" ]
+        },
+        {
+            "name": "expat",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "geos",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "geodiff",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libiconv",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "freexl",
+            "default-features": false,
+            "features": []
+        }  
     ],
     "builtin-baseline": "17f96c51ab9ae6d27bdb5cdea3fe84ac71cc2de1",
     "overrides": [
         {
             "name": "sqlite3",
-            "version": "3.35.2"
-        }
+            "version": "3.37.2#1"
+        },
+        {
+            "name": "curl",
+            "version": "7.81.0"
+        },
+        {
+            "name": "exiv2",
+            "version": "0.27.5"
+        },
+        {
+            "name": "expat",
+            "version": "2.4.8"
+        },
+        {
+            "name": "geos",
+            "version": "3.9.1"
+        },
+        {
+            "name": "geodiff",
+            "version": "1.0.6"
+        },
+        {
+            "name": "libiconv",
+            "version": "1.17"
+        },
+        {
+            "name": "freexl",
+            "version": "1.0.6"
+        }        
     ]
 }
+
