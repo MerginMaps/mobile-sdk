@@ -78,7 +78,7 @@ jobs:
       - name: Run SDK Tests
         run: |
           ${{ github.workspace }}\build\${{ env.ARCH }}\Release\inputsdktest.exe
-      m
+      
       - name: Get TimeStamp
         id: time
         uses: nanzm/get-time-action@v1.1
