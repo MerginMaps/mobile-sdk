@@ -62,3 +62,4 @@ and https://github.com/rabits/dockerfiles
 - [distribute.sh](https://github.com/opengisch/OSGeo4A/blob/master/LICENSE-for-distribute-sh) MIT license, Copyright (c) 2010-2013 Kivy Team and other contributors
 - [Dockerfiles & recipes](https://github.com/opengisch/OSGeo4A) MIT license
 - [iOS toolchain](https://github.com/leetal/ios-cmake/blob/)
+- [vcpkg](https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt) MIT License

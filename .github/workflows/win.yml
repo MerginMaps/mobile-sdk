@@ -82,7 +82,6 @@ jobs:
               & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
               if ($LastExitCode -ne 0) { exit $LastExitCode }
           }
-          ${{ github.workspace }}/vcpkg-root
           $env:PATH="$env:GITHUB_WORKSPACE\vcpkg-root;$env:PATH"
           cd $env:GITHUB_WORKSPACE
           mkdir ${{ github.workspace }}\build\${{ env.ARCH }} -ea 0
