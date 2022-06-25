@@ -28,6 +28,7 @@ jobs:
       CMAKE_GENERATOR: "Visual Studio 17 2022"
       CMAKE_ARCH: "x64"
       DEPS_CHECKSUM: 0
+      VCPKG_SHA: "17f96c51ab9ae6d27bdb5cdea3fe84ac71cc2de1" # should be same as in vcpkg.json baseline
       
     steps:
       - uses: actions/checkout@v2
@@ -50,7 +51,24 @@ jobs:
             cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
             cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
 
-
+      - name: Clone vcpkg
+        shell: bash
+        run: |
+          mkdir -p "${{ github.workspace }}/vcpkg-root"
+          cd "${{ github.workspace }}/vcpkg-root"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git fetch --depth 1 origin $VCPKG_SHA
+          git checkout FETCH_HEAD
+          
+      - name: Cache vcpkg
+        id: cache-vcpkg-tool
+        uses: pat-s/always-upload-cache@v3.0.1
+        with:
+          path: |
+            ${{ github.workspace }}/vcpkg-root
+          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_SHA }}
+          
       - name: Cache Qt
         id: cache-qt
         uses: pat-s/always-upload-cache@v2.1.5
@@ -65,12 +83,7 @@ jobs:
           target: desktop
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
-        
-      # - name: set compiler environment
-      #  shell: cmd
-      #  run: |
-      #      CALL "C:\Program Files\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
-            
+                    
       - name: Build Sdk
         shell: pwsh
         run: |
@@ -81,12 +94,14 @@ jobs:
               & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
               if ($LastExitCode -ne 0) { exit $LastExitCode }
           }
+          ${{ github.workspace }}/vcpkg-root
+          $env:PATH="$env:GITHUB_WORKSPACE\vcpkg-root;$env:PATH"
           cd $env:GITHUB_WORKSPACE
           mkdir ${{ github.workspace }}\build\${{ env.ARCH }} -ea 0
           exec { 
             cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} `
             -S ${{ github.workspace }}\vcpkg-test `
-            "-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake" `
+            "-DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}\vcpkg-root\scripts\buildsystems\vcpkg.cmake" `
             -G "${{ env.CMAKE_GENERATOR }}" `
             -A ${{ env.CMAKE_ARCH }} `
             -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} `
