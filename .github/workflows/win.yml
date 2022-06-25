@@ -66,10 +66,10 @@ jobs:
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
         
-      - name: set compiler environment
-        shell: cmd
-        run: |
-            CALL "C:\Program Files\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
+      # - name: set compiler environment
+      #  shell: cmd
+      #  run: |
+      #      CALL "C:\Program Files\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
             
       - name: Build Sdk
         shell: pwsh
