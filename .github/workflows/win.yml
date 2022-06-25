@@ -33,6 +33,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - uses: actions/checkout@v2
+        with:
+          path: 'vcpkg-root'
+          repository: microsoft/vcpkg
+          ref: ${{ env.VCPKG_SHA }}
+        
       # TODO
       # - name: Check deps versions change
       #  shell: bash
@@ -50,24 +56,6 @@ jobs:
           restore-keys: |
             cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
             cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
-
-      - name: Clone vcpkg
-        shell: bash
-        run: |
-          mkdir -p "${{ github.workspace }}/vcpkg-root"
-          cd "${{ github.workspace }}/vcpkg-root"
-          git init
-          git remote add origin https://github.com/microsoft/vcpkg.git
-          git fetch --depth 1 origin $VCPKG_SHA
-          git checkout FETCH_HEAD
-          
-      - name: Cache vcpkg
-        id: cache-vcpkg-tool
-        uses: pat-s/always-upload-cache@v3.0.1
-        with:
-          path: |
-            ${{ github.workspace }}/vcpkg-root
-          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_SHA }}
           
       - name: Cache Qt
         id: cache-qt
@@ -130,13 +118,11 @@ jobs:
           format: 'YYYYMMDD'
 
       - name: Create package
-        shell: bash
-        run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
-          echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd "${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}"
-          tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
-
+        uses: vimtor/action-zip@v1
+        with:
+          files: ${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
+          dest: input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -149,5 +135,5 @@ jobs:
         with:
           tag: win64-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
-          artifacts: ${{ env.SDK_TAR }}
+          artifacts: ${{ github.workspace }}/input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           token: ${{ secrets.GITHUB_TOKEN }}
