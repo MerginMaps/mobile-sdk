@@ -24,6 +24,7 @@ jobs:
       CACHE_VERSION: 0
       ARCH: "win64"
       TRIPLET: "x64-windows"
+      VS_VERSION: "2022"
       CMAKE_GENERATOR: "Visual Studio 17 2022"
       CMAKE_ARCH: "x64"
       DEPS_CHECKSUM: 0
@@ -65,24 +66,49 @@ jobs:
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
         
-      - name: Build Sdk
+      - name: set compiler environment
+        shell: cmd
         run: |
-          dir ${{ github.workspace }}
-          
+            CALL "C:\Program Files\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
+            
+      - name: Build Sdk
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'continue'
+          function exec
+          {
+              param ( [ScriptBlock] $ScriptBlock )
+              & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
+              if ($LastExitCode -ne 0) { exit $LastExitCode }
+          }
+          cd $env:GITHUB_WORKSPACE
           mkdir ${{ github.workspace }}\build\${{ env.ARCH }}
-          cmake -B ${{ github.workspace }}\build\${{ env.ARCH }}^
-                -S ${{ github.workspace }}\input-sdk\vcpkg-test^
-                "-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake"^
-                -G "${{ env.CMAKE_GENERATOR }}" -A ${{ env.CMAKE_ARCH }}  -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }}^
-                "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}\input-sdk\vcpkg-overlay\triplets"^
-                "-DVCPKG_OVERLAY_PORTS=${{ github.workspace }}\input-sdk\vcpkg-overlay\ports" 
+          exec { 
+            cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} 
+            -S ${{ github.workspace }}\input-sdk\vcpkg-test "
+            -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake" 
+            -G "${{ env.CMAKE_GENERATOR }}"
+            -A ${{ env.CMAKE_ARCH }} 
+            -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} 
+            "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}\input-sdk\vcpkg-overlay\triplets" 
+            "-DVCPKG_OVERLAY_PORTS=${{ github.workspace }}\input-sdk\vcpkg-overlay\ports" 
+          }
+          exec { cmake --build ${{ github.workspace }}\build\${{ env.ARCH }}. --config Release }
           
-          cmake --build ${{ github.workspace }}\build\${{ env.ARCH }} --config Release --verbose
+         
       
       - name: Run SDK Tests
+        shell: pwsh
         run: |
-          ${{ github.workspace }}\build\${{ env.ARCH }}\Release\inputsdktest.exe
-      
+            $ErrorActionPreference = 'continue'
+            function exec
+            {
+                param ( [ScriptBlock] $ScriptBlock )
+                & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
+                if ($LastExitCode -ne 0) { exit $LastExitCode }
+            }
+            exec { ${{ github.workspace }}\build\${{ env.ARCH }}\Release\inputsdktest.exe }
+         
       - name: Get TimeStamp
         id: time
         uses: nanzm/get-time-action@v1.1
