@@ -26,15 +26,17 @@ jobs:
       TRIPLET: "x64-windows"
       CMAKE_GENERATOR: "Visual Studio 17 2022"
       CMAKE_ARCH: "x64"
+      DEPS_CHECKSUM: 0
       
     steps:
       - uses: actions/checkout@v2
       
-      - name: Check deps versions change
-        shell: bash
-        run: |
-          CHECKSUM=$( md5sum -r vcpkg-test/vcpkg.json | cut -d ' ' -f1 )
-          echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+      # TODO
+      # - name: Check deps versions change
+      #  shell: bash
+      #  run: |
+      #    CHECKSUM=$( md5sum -r vcpkg-test/vcpkg.json | cut -d ' ' -f1 )
+      #    echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
@@ -65,6 +67,8 @@ jobs:
         
       - name: Build Sdk
         run: |
+          dir ${{ github.workspace }}
+          
           mkdir ${{ github.workspace }}\build\${{ env.ARCH }}
           cmake -B ${{ github.workspace }}\build\${{ env.ARCH }}^
                 -S ${{ github.workspace }}\input-sdk\vcpkg-test^
