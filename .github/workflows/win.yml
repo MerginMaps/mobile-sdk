@@ -90,7 +90,7 @@ jobs:
             -G "${{ env.CMAKE_GENERATOR }}" `
             -A ${{ env.CMAKE_ARCH }} ` 
             -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} ` 
-            "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }\vcpkg-overlay\triplets" ` 
+            "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}\vcpkg-overlay\triplets" ` 
             "-DVCPKG_OVERLAY_PORTS=${{ github.workspace }}\vcpkg-overlay\ports" 
           }
           exec { cmake --build ${{ github.workspace }}\build\${{ env.ARCH }}. --config Release }
