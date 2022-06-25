@@ -82,21 +82,19 @@ jobs:
               if ($LastExitCode -ne 0) { exit $LastExitCode }
           }
           cd $env:GITHUB_WORKSPACE
-          mkdir ${{ github.workspace }}\build\${{ env.ARCH }}
+          mkdir ${{ github.workspace }}\build\${{ env.ARCH }} -ea 0
           exec { 
-            cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} ` 
+            cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} `
             -S ${{ github.workspace }}\vcpkg-test " `
-            -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake" ` 
+            -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake" `
             -G "${{ env.CMAKE_GENERATOR }}" `
-            -A ${{ env.CMAKE_ARCH }} ` 
-            -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} ` 
-            "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}\vcpkg-overlay\triplets" ` 
-            "-DVCPKG_OVERLAY_PORTS=${{ github.workspace }}\vcpkg-overlay\ports" 
+            -A ${{ env.CMAKE_ARCH }} `
+            -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} `
+            "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}\vcpkg-overlay\triplets" `
+            "-DVCPKG_OVERLAY_PORTS=${{ github.workspace }}\vcpkg-overlay\ports"
           }
           exec { cmake --build ${{ github.workspace }}\build\${{ env.ARCH }}. --config Release }
           
-         
-      
       - name: Run SDK Tests
         shell: pwsh
         run: |
