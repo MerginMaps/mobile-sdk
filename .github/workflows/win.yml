@@ -125,7 +125,7 @@ jobs:
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
         with:
-          path: ${{ github.workspace }}/${{ env.SDK_TAR }}
+          path: ${{ github.workspace }}/input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           if-no-files-found: error
           
       - name: Create Release
@@ -134,5 +134,5 @@ jobs:
         with:
           tag: win64-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
-          artifacts: ${{ github.workspace }}/input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          artifacts: input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           token: ${{ secrets.GITHUB_TOKEN }}
