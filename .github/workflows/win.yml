@@ -84,14 +84,14 @@ jobs:
           cd $env:GITHUB_WORKSPACE
           mkdir ${{ github.workspace }}\build\${{ env.ARCH }}
           exec { 
-            cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} 
-            -S ${{ github.workspace }}\input-sdk\vcpkg-test "
-            -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake" 
-            -G "${{ env.CMAKE_GENERATOR }}"
-            -A ${{ env.CMAKE_ARCH }} 
-            -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} 
-            "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}\input-sdk\vcpkg-overlay\triplets" 
-            "-DVCPKG_OVERLAY_PORTS=${{ github.workspace }}\input-sdk\vcpkg-overlay\ports" 
+            cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} ` 
+            -S ${{ github.workspace }}\vcpkg-test " `
+            -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake" ` 
+            -G "${{ env.CMAKE_GENERATOR }}" `
+            -A ${{ env.CMAKE_ARCH }} ` 
+            -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} ` 
+            "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }\vcpkg-overlay\triplets" ` 
+            "-DVCPKG_OVERLAY_PORTS=${{ github.workspace }}\vcpkg-overlay\ports" 
           }
           exec { cmake --build ${{ github.workspace }}\build\${{ env.ARCH }}. --config Release }
           
