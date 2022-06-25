@@ -1,9 +1,0 @@
-{
-  "registries": [
-    {
-      "kind": "git",
-      "repository": "https://github.com/MerginMaps/input-sdk/vcpkg-registry",
-      "packages": [ "sqlite3" ]
-    }
-  ]
-}

@@ -3,9 +3,9 @@ name: Build win64
 on:
   push:
     paths:
-      - 'vcpkg-registry/**'
+      - 'vcpkg-test/**'
+      - 'vcpkg-overlay/**'
       - '.github/workflows/win.yml'
-      - 'versions.conf'
   release:
     types:
       - published
@@ -17,22 +17,23 @@ concurrency:
 jobs:
   win64_build:
     if: ( github.repository == 'MerginMaps/input-sdk' )
-    runs-on: windows-latest
+    runs-on: windows-2022
     
     env:
       QT_VERSION: 5.14.2
-      ARCHES: 'win64'
       CACHE_VERSION: 0
-      MSVER: '2022'
-      MSVCVER: 'msvc2017_64'
-
+      ARCH: "win64"
+      TRIPLET: "x64-windows"
+      CMAKE_GENERATOR: "Visual Studio 17 2022"
+      CMAKE_ARCH: "x64"
+      
     steps:
       - uses: actions/checkout@v2
       - uses: msys2/setup-msys2@v2
       
       - name: Check deps versions change
         run: |
-          CHECKSUM=`md5sum -r versions.conf | cut -d\  -f1`
+          CHECKSUM=`md5sum -r 'vcpkg-test/vcpkg.json | cut -d\  -f1`
           echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
       - name: Prepare build cache for branch/tag
@@ -46,9 +47,6 @@ jobs:
             cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
             cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
 
-      - name: Install Build Dependencies
-        run: |
-          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
 
       - name: Cache Qt
         id: cache-qt
@@ -64,21 +62,23 @@ jobs:
           target: desktop
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
-
-      - name: Export config.conf
-        run: |
-          touch ./win/config.conf
-          echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./win/config.conf
-          echo -e "export QT_BASE="/opt/Qt/${{ env.QT_BASE }}/${{ env.MSVCVER }}""  >> ./win/config.conf
-          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./win/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./win/config.conf
-          cat ./win/config.conf
-
+        
       - name: Build Sdk
         run: |
-          "C:\Program Files\Microsoft Visual Studio\${{ env.MSVER }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x86
-          ./win/distribute.sh -mqgis
-
+          mkdir ${{ github.workspace }}\build\${{ env.ARCH }}
+          cmake -B ${{ github.workspace }}\build\${{ env.ARCH }}^
+                -S ${{ github.workspace }}\input-sdk\vcpkg-test^
+                "-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake"^
+                -G "${{ env.CMAKE_GENERATOR }}" -A ${{ env.CMAKE_ARCH }}  -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }}^
+                "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}\input-sdk\vcpkg-overlay\triplets"^
+                "-DVCPKG_OVERLAY_PORTS=${{ github.workspace }}\input-sdk\vcpkg-overlay\ports" 
+          
+          cmake --build ${{ github.workspace }}\build\${{ env.ARCH }} --config Release --verbose
+      
+      - name: Run SDK Tests
+        run: |
+          ${{ github.workspace }}\build\${{ env.ARCH }}\Release\inputsdktest.exe
+      
       - name: Get TimeStamp
         id: time
         uses: nanzm/get-time-action@v1.1
@@ -87,23 +87,17 @@ jobs:
           format: 'YYYYMMDD'
 
       - name: Create package
+        shell: bash
         run: |
           SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd "${{ github.workspace }}/build/stage/win64"
+          cd "${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}"
           tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
-          if-no-files-found: error
-
-      - name: Upload supported formats in Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: supported_formats.log
-          path: ${{ github.workspace }}/build/stage/win64/supported_formats.log
           if-no-files-found: error
           
       - name: Create Release
@@ -112,5 +106,5 @@ jobs:
         with:
           tag: win64-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
-          artifacts: ${{ env.SDK_TAR }}, supported_formats.log
+          artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}

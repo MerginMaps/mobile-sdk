@@ -24,12 +24,15 @@ Download prebuild android SDKs from the GitHub Artifacts
 
 # Windows
 
-- install vcpkg and add to path
-- install Visual Studio 17 2022 Community/Enterprise
-- install Qt
+- install cmake and add to PATH
+- install vcpkg and add to PATH
+- install Visual Studio 17 2022 Community/Enterprise and run `VsDevCmd` to setup environment
+- install Qt and add bin forlder to PATH
 
-https://devblogs.microsoft.com/cppblog/registries-bring-your-own-libraries-to-vcpkg/
-https://vcpkg.io/en/docs/users/registries.html
+## deleloping package
+- look at official implementation in `<official-github>/microsoft/vcpkg/ports`
+- `vcpkg remove [packagename]`
+- bump port version in `vcpkg-overlay/ports/<name>/vcpkg.json`
 
 # iOS
 

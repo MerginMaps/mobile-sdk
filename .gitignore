@@ -24,11 +24,8 @@ linux/.packages
 linux/.deps
 linux/.optional-deps
 
-win/config.conf
-win/.packages
-win/.deps
-win/.optional-deps
-
+vcpkg-test/build*
+*vcpkg_installed*
 build-*
 
 .idea
