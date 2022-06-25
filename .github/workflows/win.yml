@@ -85,8 +85,8 @@ jobs:
           mkdir ${{ github.workspace }}\build\${{ env.ARCH }} -ea 0
           exec { 
             cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} `
-            -S ${{ github.workspace }}\vcpkg-test " `
-            -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake" `
+            -S ${{ github.workspace }}\vcpkg-test `
+            "-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}\scripts\buildsystems\vcpkg.cmake" `
             -G "${{ env.CMAKE_GENERATOR }}" `
             -A ${{ env.CMAKE_ARCH }} `
             -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} `
