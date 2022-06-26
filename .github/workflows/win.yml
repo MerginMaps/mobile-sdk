@@ -28,6 +28,7 @@ jobs:
       CMAKE_GENERATOR: "Visual Studio 17 2022"
       CMAKE_ARCH: "x64"
       DEPS_CHECKSUM: 0
+      VCPKG_BASELINE: "c168ce4e765409509c9c482faa0468c4e1ab386b" # compatible with vcpkg.json baseline
       
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +37,24 @@ jobs:
         with:
           path: 'vcpkg-root'
           repository: microsoft/vcpkg
-        
+     
+      - name: checkout vcpkg
+        shell: bash
+        run: 
+          mkdir -p "${{ github.workspace }}/vcpkg-root"
+          cd "${{ github.workspace }}/vcpkg-root"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git fetch origin 
+          git checkout ${{ env.VCPKG_BASELINE }}
+          
+      - name: cache vcpkg
+        id: cache-vcpkg-tool
+        uses: pat-s/always-upload-cache@v3.0.1
+        with:
+          path: ${{ github.workspace }}/vcpkg-root
+          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}
+          
       # TODO
       # - name: Check deps versions change
       #  shell: bash
