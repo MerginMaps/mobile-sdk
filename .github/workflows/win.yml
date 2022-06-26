@@ -33,9 +33,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
           
-    - uses: friendlyanon/setup-vcpkg@v1
-      with: 
-        committish: ${{ env.VCPKG_BASELINE }}
+      - uses: friendlyanon/setup-vcpkg@v1
+        with: 
+          committish: ${{ env.VCPKG_BASELINE }}
           
       # TODO
       # - name: Check deps versions change
