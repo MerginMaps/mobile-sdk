@@ -32,28 +32,10 @@ jobs:
       
     steps:
       - uses: actions/checkout@v2
-      
-      - uses: actions/checkout@v2
-        with:
-          path: 'vcpkg-root'
-          repository: microsoft/vcpkg
-     
-      - name: checkout vcpkg
-        shell: bash
-        run: 
-          mkdir -p "${{ github.workspace }}/vcpkg-root"
-          cd "${{ github.workspace }}/vcpkg-root"
-          git init
-          git remote add origin https://github.com/microsoft/vcpkg.git
-          git fetch origin 
-          git checkout ${{ env.VCPKG_BASELINE }}
           
-      - name: cache vcpkg
-        id: cache-vcpkg-tool
-        uses: pat-s/always-upload-cache@v3.0.1
-        with:
-          path: ${{ github.workspace }}/vcpkg-root
-          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}
+    - uses: friendlyanon/setup-vcpkg@v1
+      with: 
+        committish: ${{ env.VCPKG_BASELINE }}
           
       # TODO
       # - name: Check deps versions change
@@ -103,13 +85,13 @@ jobs:
               & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
               if ($LastExitCode -ne 0) { exit $LastExitCode }
           }
-          $env:PATH="$env:GITHUB_WORKSPACE\vcpkg-root;$env:PATH"
+          $env:PATH="$env:VCPKG_ROOT;$env:PATH"
           cd $env:GITHUB_WORKSPACE
           mkdir ${{ github.workspace }}\build\${{ env.ARCH }} -ea 0
           exec { 
             cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} `
             -S ${{ github.workspace }}\vcpkg-test `
-            "-DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}\vcpkg-root\scripts\buildsystems\vcpkg.cmake" `
+            "-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\scripts\buildsystems\vcpkg.cmake" `
             -G "${{ env.CMAKE_GENERATOR }}" `
             -A ${{ env.CMAKE_ARCH }} `
             -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} `
