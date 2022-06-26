@@ -28,7 +28,6 @@ jobs:
       CMAKE_GENERATOR: "Visual Studio 17 2022"
       CMAKE_ARCH: "x64"
       DEPS_CHECKSUM: 0
-      VCPKG_SHA: "17f96c51ab9ae6d27bdb5cdea3fe84ac71cc2de1" # should be same as in vcpkg.json baseline
       
     steps:
       - uses: actions/checkout@v2
@@ -37,7 +36,6 @@ jobs:
         with:
           path: 'vcpkg-root'
           repository: microsoft/vcpkg
-          ref: ${{ env.VCPKG_SHA }}
         
       # TODO
       # - name: Check deps versions change
