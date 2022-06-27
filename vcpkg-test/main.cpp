@@ -1,8 +1,11 @@
 #include <iostream>
-#include <stdio.h>
+#include <stdio.h> 
+#include <stdarg.h>
 
 #include "geodiff.h"
 #include "sqlite3.h"
+#include "geos_c.h"
+#include "proj.h"
 
 int test_sqlite3()
 {   
@@ -21,11 +24,27 @@ int test_geodiff()
     return 0;
 }
 
+int test_geos()
+{   
+    printf("GEOS: %s\n", GEOSversion());
+    return 0;
+}
+
+int test_proj()
+{   
+    PJ_INFO info = proj_info();
+    printf("PROJ: %s\n", info.release);
+    return 0;
+}
+
 int main(int argc, char** argv){
 	std::cout << "Test Input-SDK" << std::endl;
     int res = 0;
+    
     res += test_sqlite3();
     res += test_geodiff();
+    res += test_geos();
+    res += test_proj();
     
 	return res;
 }

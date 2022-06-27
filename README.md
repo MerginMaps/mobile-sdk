@@ -24,15 +24,27 @@ Download prebuild android SDKs from the GitHub Artifacts
 
 # Windows
 
-- install cmake and add to PATH
-- install vcpkg and add to PATH
-- install Visual Studio 17 2022 Community/Enterprise and run `VsDevCmd` to setup environment
-- install Qt and add bin forlder to PATH
+- install cmake, vcpkg, Visual Studio and Qt and add to PATH
+```
+set ROOT_DIR=C:\Users\Peter\repo
+set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
+set SOURCE_DIR=%ROOT_DIR%\input-sdk
+set VCPKG_ROOT=%ROOT_DIR%\vcpkg
+set QT_ROOT=C:\Qt\5.14.2\msvc2017_64
+set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
+```
 
-## deleloping package
-- look at official implementation in `<official-github>/microsoft/vcpkg/ports`
-- `vcpkg remove [packagename]`
-- bump port version in `vcpkg-overlay/ports/<name>/vcpkg.json`
+- run CMake to build deps and test project
+```
+cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" -G "Visual Studio 17 2022" -A x64  -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets -DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports 
+cmake --build %BUILD_DIR% --config Release --verbose
+```
+
+- run tests 
+```
+%BUILD_DIR%\Release\inputsdktest.exe
+```
 
 # iOS
 
