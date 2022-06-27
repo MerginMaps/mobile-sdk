@@ -46,7 +46,57 @@
             "name": "proj",
             "default-features": false,
             "features": []
-        }  
+        },
+        {
+            "name": "proj4",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libspatialindex",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libspatialite",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "protobuf",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libpq",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libwebp",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "gdal",
+            "default-features": false,
+            "features": ["libspatialite", "tools"]
+        },
+        {
+            "name": "qgis",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "qtkeychain",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "qca",
+            "default-features": false,
+            "features": []
+        }
     ],
     "builtin-baseline": "c168ce4e765409509c9c482faa0468c4e1ab386b",
     "overrides": [
@@ -85,7 +135,51 @@
         {
             "name": "proj",
             "version": "6.3.2"
-        }       
+        },
+        {
+            "name": "proj4",
+            "version": "6.3.2"
+        },
+        {
+            "name": "libspatialindex",
+            "version": "1.9.3"
+        },
+        {
+            "name": "libspatialite",
+            "version-string": "4.3.0a#7"
+        },
+        {
+            "name": "protobuf",
+            "version-string": "3.11.4-1"
+        },
+        {
+            "name": "libpq",
+            "version": "12.2#20"
+        },
+        {
+            "name": "nu-book-zxing-cpp",
+            "version": "1.1.1"
+        },
+        {
+            "name": "libwebp",
+            "version": "1.2.2"
+        },
+        {
+            "name": "gdal",
+            "version": "3.1.3"
+        },
+        {
+            "name": "qgis",
+            "version": "3.22.6"
+        },
+        {
+            "name": "qtkeychain",
+            "version": "0.13.2#1"
+        },
+        {
+            "name": "qca",
+            "version": "2.3.1"
+        }
     ]
 }
 

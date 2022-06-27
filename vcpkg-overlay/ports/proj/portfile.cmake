@@ -4,10 +4,6 @@ vcpkg_from_github(
     REF 6.3.2
     SHA512 05443c3b25d51ae6dedaf5343b8bda4024f3b6f8bed34a8d684d5948c5a7a388afc0c73abc248a270e6ed141d6826f4c9e9e84675c8d6f25c635b8aca558286a
     HEAD_REF master
-    #PATCHES
-        #fix-win-output-name.patch
-        # fix-proj4-targets-cmake.patch
-        # tools-cmake.patch
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
@@ -64,5 +60,4 @@ if(NOT DEFINED VCPKG_BUILD_TYPE AND VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET
     vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig/proj.pc" " -lproj" " -lproj_d")
 endif()
 
-file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 file(INSTALL "${SOURCE_PATH}/COPYING" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)

@@ -6,6 +6,9 @@
 #include "sqlite3.h"
 #include "geos_c.h"
 #include "proj.h"
+#include "gdal.h"
+#include <QtGlobal>
+#include "qgis.h"
 
 int test_sqlite3()
 {   
@@ -37,6 +40,24 @@ int test_proj()
     return 0;
 }
 
+int test_gdal()
+{   
+    printf("GDAL: %s\n", GDALVersionInfo("RELEASE_NAME"));
+    return 0;
+}
+
+int test_qt()
+{
+    printf("QT: %s\n", qVersion());
+    return 0;
+}
+
+int test_qgis()
+{
+    printf("QGIS: %s\n", Qgis::versionInt());
+    return 0;
+}
+
 int main(int argc, char** argv){
 	std::cout << "Test Input-SDK" << std::endl;
     int res = 0;
@@ -44,7 +65,10 @@ int main(int argc, char** argv){
     res += test_sqlite3();
     res += test_geodiff();
     res += test_geos();
+    res += test_gdal();
     res += test_proj();
+    res += test_qt();
+    res += test_qgis();
     
 	return res;
 }

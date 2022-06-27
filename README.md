@@ -24,13 +24,13 @@ Download prebuild android SDKs from the GitHub Artifacts
 
 # Windows
 
-- install cmake, vcpkg, Visual Studio and Qt and add to PATH
+- install cmake, vcpkg, Visual Studio and Qt5_DIR and add to PATH
 ```
 set ROOT_DIR=C:\Users\Peter\repo
 set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
 set SOURCE_DIR=%ROOT_DIR%\input-sdk
 set VCPKG_ROOT=%ROOT_DIR%\vcpkg
-set QT_ROOT=C:\Qt\5.14.2\msvc2017_64
+set Qt5_DIR=C:\Qt\5.14.2\msvc2017_64
 set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
 "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
 ```
