@@ -13,6 +13,10 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
+    },
+    {
+      "name": "sqlite3",
+      "host": true
     }
   ],
   "features": {

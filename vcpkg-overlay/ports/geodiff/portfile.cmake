@@ -19,4 +19,4 @@ vcpkg_configure_cmake(
 )
 
 vcpkg_install_cmake()
-file(WRITE ${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright "Geodiff is MIT\n")
+file(WRITE ${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright "Geodiff is MIT licensed\n")
