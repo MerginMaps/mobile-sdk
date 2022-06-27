@@ -85,7 +85,7 @@
         {
             "name": "gdal",
             "default-features": false,
-            "features": ["libspatialite", "tools"]
+            "features": ["libspatialite"]
         },
         {
             "name": "qgis",
@@ -99,6 +99,11 @@
         },
         {
             "name": "qca",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libgeotiff",
             "default-features": false,
             "features": []
         }
@@ -188,6 +193,10 @@
         {
             "name": "openssl",
             "version-string": "1.1.1j"
+        },
+        {
+            "name": "libgeotiff",
+            "version-string": "1.6.0"
         }
     ]
 }
