@@ -5,24 +5,15 @@
   "description": "The Geographic Data Abstraction Library for reading and writing geospatial raster and vector data.",
   "homepage": "hhttps://gdal.org/",
   "dependencies": [
-    "cfitsio",
     "curl",
     "expat",
     "geos",
-    "hdf5",
-    {
-      "name": "json-c",
-      "platform": "!windows"
-    },
-    "libgeotiff",
-    "liblzma",
     "libpng",
     "libpq",
     "libwebp",
     "libxml2",
-    "netcdf-c",
     "openjpeg",
-    "proj4",
+    "proj",
     "sqlite3",
     "zlib"
   ],
