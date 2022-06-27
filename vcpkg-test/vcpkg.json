@@ -8,9 +8,14 @@
             "features": [ "rtree", "json1", "fts3", "tool" ]
         },
         {
+            "name": "openssl",
+            "default-features": false,
+            "features": []
+        },
+        {
             "name": "curl",
             "default-features": false,
-            "features": [ "schannel" ]
+            "features": [ "openssl" ]
         },
         {
             "name": "exiv2",
@@ -179,6 +184,10 @@
         {
             "name": "qca",
             "version": "2.3.1"
+        },
+        {
+            "name": "openssl",
+            "version-string": "1.1.1j"
         }
     ]
 }
