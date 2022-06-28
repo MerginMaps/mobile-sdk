@@ -1,5 +1,5 @@
 set(QGIS_REF final-3_22_6)
-set(QGIS_SHA512 0d307e5daaab32c96442f3428d1b59bb23fcf56b1afe2fd76ea9bdb4de1fadca328934bd0e5f5aed09850ed63a1585d026ae44d77f7204d40da9c1370363df6b)
+set(QGIS_SHA512 6e13c9c046222596ccdc67606043eff19d1907b2daf285da3e04dfd82b0d1da3b8c0008feae37b0e936293d292a0d2b78f863605cfb9ce262153f9ccca179a8c)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
@@ -101,6 +101,16 @@ if("quick" IN_LIST FEATURES)
 else()
     list(APPEND QGIS_OPTIONS -DWITH_QUICK:BOOL=OFF)
 endif()
+
+# if("pointclouds" IN_LIST FEATURES)
+#    list(APPEND QGIS_OPTIONS -DWITH_EPT:BOOL=ON)
+#    list(APPEND QGIS_OPTIONS -DWITH_COPC:BOOL=ON)
+#    list(APPEND QGIS_OPTIONS -DWITH_PDAL:BOOL=ON)
+#else()
+  list(APPEND QGIS_OPTIONS -DWITH_EPT:BOOL=OFF)
+  list(APPEND QGIS_OPTIONS -DWITH_COPC:BOOL=OFF)
+  list(APPEND QGIS_OPTIONS -DWITH_PDAL:BOOL=OFF)
+#endif()
 
 # Configure debug and release library paths
 macro(FIND_LIB_OPTIONS basename relname debname suffix libsuffix)

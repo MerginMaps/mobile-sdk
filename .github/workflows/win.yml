@@ -69,6 +69,7 @@ jobs:
           target: desktop
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          modules: 'qtcharts'
 
       - name: set compiler environment
         shell: cmd

@@ -24,7 +24,9 @@ Download prebuild android SDKs from the GitHub Artifacts
 
 # Windows
 
-- install cmake, vcpkg, Visual Studio and Qt5_DIR and add to PATH
+You can download prebuild android SDKs from the GitHub Artifacts. If you want local build, you should:
+
+- install cmake, vcpkg, Visual Studio and Qt and add to PATH
 ```
 set ROOT_DIR=C:\Users\Peter\repo
 set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
@@ -45,6 +47,8 @@ cmake --build %BUILD_DIR% --config Release --verbose
 ```
 %BUILD_DIR%\Release\inputsdktest.exe
 ```
+
+- the resulting build tree is then located at `%BUILD_DIR%\vcpkg_installed`
 
 # iOS
 
