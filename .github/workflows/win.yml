@@ -41,18 +41,13 @@ jobs:
           dir|find "bytes free"
           
           RMDIR "C:\Program Files\dotnet" /S /Q
-          RMDIR "%CHROMEWEBDRIVER%" /S /Q
-          RMDIR "%EDGEWEBDRIVER%" /S /Q
-          RMDIR "%GECKOWEBDRIVER%" /S /Q
-          RMDIR "%SELENIUM_JAR_PATH%" /S /Q
-          RMDIR "%JAVA_HOME_8_X64%" /S /Q
-          RMDIR "%JAVA_HOME_11_X64%" /S /Q
+          RMDIR "C:\vcpkg" /S /Q
+          RMDIR "C:\SeleniumWebDrivers" /S /Q
           RMDIR "C:\msys64" /S /Q
-          RMDIR "%GOROOT_1_16_X64%" /S /Q
-          RMDIR "%GOROOT_1_17_X64%" /S /Q
-          RMDIR "%GOROOT_1_18_X64%" /S /Q
-          RMDIR "%PGROOT%" /S /Q
-          RMDIR "%ANDROID_HOME%" /S /Q    
+          RMDIR "C:\Program Files\PostgreSQL" /S /Q
+          RMDIR "C:\tools\Apache24" /S /Q
+          RMDIR "C:\tools\nginx-1.21.6%" /S /Q
+          RMDIR "C:\Android" /S /Q
           
           dir|find "bytes free"
           
