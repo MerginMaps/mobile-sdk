@@ -33,6 +33,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
           
+      - name: Free additional space
+        shell: cmd
+        run: |
+          RMDIR "C:\Program Files\dotnet\sdk" /S /Q
+          dir|find "bytes free"
+          
       - uses: friendlyanon/setup-vcpkg@v1
         with: 
           committish: ${{ env.VCPKG_BASELINE }}
@@ -91,6 +97,7 @@ jobs:
           exec { 
             cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} `
             -S ${{ github.workspace }}\vcpkg-test `
+            "-DCMAKE_MODULE_PATH=${{ github.workspace }}\vcpkg-test\cmake" `
             "-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\scripts\buildsystems\vcpkg.cmake" `
             -G "${{ env.CMAKE_GENERATOR }}" `
             -A ${{ env.CMAKE_ARCH }} `

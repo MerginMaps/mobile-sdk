@@ -11,6 +11,7 @@ find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(GDAL REQUIRED)
 find_package(PROJ4 CONFIG REQUIRED)
 find_package(QGIS REQUIRED)
+find_package(GEODIFF REQUIRED)
 
 add_executable(inputsdktest main.cpp)
 
