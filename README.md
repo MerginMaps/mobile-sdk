@@ -1,3 +1,4 @@
+[![Build win64](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml/badge.svg)](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml)
 [![Build macOS](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml)
 [![Build iOS](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml)
 [![Build android (on MacOS)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml)
@@ -23,11 +24,31 @@ Download prebuild android SDKs from the GitHub Artifacts
 
 # Windows
 
-!! WARNING: NOT MAINTAINED ATM !!!
+You can download prebuild android SDKs from the GitHub Artifacts. If you want local build, you should:
 
-Latest SDK for building on [WIN](https://www.dropbox.com/s/poi9ry119f7j7ez/input-sdk-win-x86_64-7.zip?dl=0)
+- install cmake, vcpkg, Visual Studio and Qt and add to PATH
+```
+set ROOT_DIR=C:\Users\Peter\repo
+set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
+set SOURCE_DIR=%ROOT_DIR%\input-sdk
+set VCPKG_ROOT=%ROOT_DIR%\vcpkg
+set Qt5_DIR=C:\Qt\5.14.2\msvc2017_64
+set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
+```
 
-[Windows notes](win/win.md)
+- run CMake to build deps and test project
+```
+cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test "-DCMAKE_MODULE_PATH=%SOURCE_DIR%\vcpkg-test\cmake" "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" -G "Visual Studio 17 2022" -A x64 -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets -DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports
+cmake --build %BUILD_DIR% --config Release --verbose
+```
+
+- run tests 
+```
+%BUILD_DIR%\Release\inputsdktest.exe
+```
+
+- the resulting build tree is then located at `%BUILD_DIR%\vcpkg_installed`
 
 # iOS
 
@@ -57,3 +78,4 @@ and https://github.com/rabits/dockerfiles
 - [distribute.sh](https://github.com/opengisch/OSGeo4A/blob/master/LICENSE-for-distribute-sh) MIT license, Copyright (c) 2010-2013 Kivy Team and other contributors
 - [Dockerfiles & recipes](https://github.com/opengisch/OSGeo4A) MIT license
 - [iOS toolchain](https://github.com/leetal/ios-cmake/blob/)
+- [vcpkg](https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt) MIT License

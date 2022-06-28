@@ -1,0 +1,203 @@
+{
+    "name": "input-sdk-vcpkg-test",
+    "version": "1.0.0",
+    "dependencies": [
+        {
+            "name": "sqlite3",
+            "default-features": false,
+            "features": [ "rtree", "json1", "fts3", "tool" ]
+        },
+        {
+            "name": "openssl",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "curl",
+            "default-features": false,
+            "features": [ "openssl" ]
+        },
+        {
+            "name": "exiv2",
+            "default-features": false,
+            "features": [ "xmp" ]
+        },
+        {
+            "name": "expat",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "geos",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "geodiff",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libiconv",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "freexl",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "proj",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "proj4",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libspatialindex",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libspatialite",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "protobuf",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libpq",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libwebp",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "gdal",
+            "default-features": false,
+            "features": ["libspatialite"]
+        },
+        {
+            "name": "qgis",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "qtkeychain",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "qca",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libgeotiff",
+            "default-features": false,
+            "features": []
+        }
+    ],
+    "builtin-baseline": "c168ce4e765409509c9c482faa0468c4e1ab386b",
+    "overrides": [
+        {
+            "name": "sqlite3",
+            "version": "3.37.2#1"
+        },
+        {
+            "name": "curl",
+            "version": "7.81.0"
+        },
+        {
+            "name": "exiv2",
+            "version": "0.27.5"
+        },
+        {
+            "name": "expat",
+            "version": "2.4.8"
+        },
+        {
+            "name": "geos",
+            "version": "3.9.1#3"
+        },
+        {
+            "name": "geodiff",
+            "version": "1.0.6"
+        },
+        {
+            "name": "libiconv",
+            "version": "1.17"
+        },
+        {
+            "name": "freexl",
+            "version": "1.0.6"
+        },
+        {
+            "name": "proj",
+            "version": "6.3.2"
+        },
+        {
+            "name": "proj4",
+            "version": "6.3.2"
+        },
+        {
+            "name": "libspatialindex",
+            "version": "1.9.3"
+        },
+        {
+            "name": "libspatialite",
+            "version-string": "4.3.0a#7"
+        },
+        {
+            "name": "protobuf",
+            "version-string": "3.11.4-1"
+        },
+        {
+            "name": "libpq",
+            "version": "12.2#20"
+        },
+        {
+            "name": "nu-book-zxing-cpp",
+            "version": "1.1.1"
+        },
+        {
+            "name": "libwebp",
+            "version": "1.2.2"
+        },
+        {
+            "name": "gdal",
+            "version": "3.1.3#5"
+        },
+        {
+            "name": "qgis",
+            "version": "3.22.6"
+        },
+        {
+            "name": "qtkeychain",
+            "version": "0.13.2#1"
+        },
+        {
+            "name": "qca",
+            "version": "2.3.1"
+        },
+        {
+            "name": "openssl",
+            "version-string": "1.1.1j"
+        },
+        {
+            "name": "libgeotiff",
+            "version-string": "1.6.0"
+        }
+    ]
+}
+
