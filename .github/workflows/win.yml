@@ -38,18 +38,34 @@ jobs:
       - name: Free additional space
         shell: cmd
         run: |
-          dir|find "bytes free"
+          dir ${{ github.workspace }} |find "bytes free"
+          dir \|find "bytes free"
           
+          dir /s "C:\Program Files\dotnet
           RMDIR "C:\Program Files\dotnet" /S /Q
+          
+          dir /s "C:\vcpkg"
           RMDIR "C:\vcpkg" /S /Q
+          
+          dir /s "C:\SeleniumWebDrivers"
           RMDIR "C:\SeleniumWebDrivers" /S /Q
+          
+          dir /s "C:\msys64"
           RMDIR "C:\msys64" /S /Q
+          
+          dir /s "C:\Program Files\PostgreSQL"
           RMDIR "C:\Program Files\PostgreSQL" /S /Q
+          
+          dir /s "C:\tools\Apache24"
           RMDIR "C:\tools\Apache24" /S /Q
-          RMDIR "C:\tools\nginx-1.21.6%" /S /Q
+          
+          dir /s "C:\tools\nginx-1.21.6"
+          RMDIR "C:\tools\nginx-1.21.6" /S /Q
+          
+          dir /s "C:\Android"
           RMDIR "C:\Android" /S /Q
           
-          dir|find "bytes free"
+          dir \|find "bytes free"
           
       - uses: friendlyanon/setup-vcpkg@v1
         with: 
