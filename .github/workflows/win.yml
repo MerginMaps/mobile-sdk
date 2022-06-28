@@ -43,7 +43,7 @@ jobs:
           cd "${{ env.VCPKG_ROOT }}"
           git init
           git remote add origin https://github.com/microsoft/vcpkg.git
-          git pull origin 
+          git pull origin master
           git checkout $VCPKG_BASELINE
           
       - name: Cache vcpkg
