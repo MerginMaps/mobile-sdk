@@ -21,47 +21,38 @@ jobs:
     
     env:
       QT_VERSION: 5.14.2
-      CACHE_VERSION: 5
+      CACHE_VERSION: 6
+      DEPS_CHECKSUM: 0 # TODO, calculate from vcpkg.json ?
       ARCH: "win64"
       TRIPLET: "x64-windows"
       VS_VERSION: "2022"
       CMAKE_GENERATOR: "Visual Studio 17 2022"
       CMAKE_ARCH: "x64"
-      DEPS_CHECKSUM: 0
       VCPKG_BASELINE: "c168ce4e765409509c9c482faa0468c4e1ab386b" # compatible with vcpkg.json baseline
+      VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
       
     steps:
+      - run: Get-PSDrive
+      
       - uses: actions/checkout@v2
-          
-      # we need ~15 GB space to finish the job    
-      # https://github.com/actions/virtual-environments/blob/main/images/win/Windows2022-Readme.md
-      - name: Free additional space
-        shell: cmd
+                
+      - name: Clone vcpkg
+        shell: bash
         run: |
-          dir ${{ github.workspace }} |find "bytes free"
-
-          RMDIR "C:\Program Files\dotnet" /S /Q
-          RMDIR "C:\vcpkg" /S /Q
-          RMDIR "C:\SeleniumWebDrivers" /S /Q
-          RMDIR "C:\msys64" /S /Q
-          RMDIR "C:\Program Files\PostgreSQL" /S /Q
-          RMDIR "C:\tools\Apache24" /S /Q
-          RMDIR "C:\tools\nginx-1.21.6" /S /Q
-          RMDIR "C:\Android" /S /Q
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          git checkout $VCPKG_BASELINE
           
-          dir ${{ github.workspace }} |find "bytes free"
+      - name: Cache vcpkg
+        id: cache-vcpkg-tool
+        uses: pat-s/always-upload-cache@v3.0.1
+        with:
+          path: ${{ env.VCPKG_ROOT }}
+          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}-v${{ env.CACHE_VERSION }}
           
-      - uses: friendlyanon/setup-vcpkg@v1
-        with: 
-          committish: ${{ env.VCPKG_BASELINE }}
-          
-      # TODO
-      # - name: Check deps versions change
-      #  shell: bash
-      #  run: |
-      #    CHECKSUM=$( md5sum -r vcpkg-test/vcpkg.json | cut -d ' ' -f1 )
-      #    echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
-
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
         uses: pat-s/always-upload-cache@v2.1.5
