@@ -50,7 +50,7 @@ jobs:
         id: cache-vcpkg-tool
         uses: pat-s/always-upload-cache@v3.0.1
         with:
-          path: ${{ env.VCPKG_ROOT }
+          path: ${{ env.VCPKG_ROOT }}
           key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}
           
       - name: Prepare build cache for branch/tag
