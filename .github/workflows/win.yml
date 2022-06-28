@@ -33,10 +33,27 @@ jobs:
     steps:
       - uses: actions/checkout@v2
           
+      # we need ~15 GB space to finish the job    
+      # https://github.com/actions/virtual-environments/blob/main/images/win/Windows2022-Readme.md
       - name: Free additional space
         shell: cmd
         run: |
-          RMDIR "C:\Program Files\dotnet\sdk" /S /Q
+          dir|find "bytes free"
+          
+          RMDIR "C:\Program Files\dotnet" /S /Q
+          RMDIR "%CHROMEWEBDRIVER%" /S /Q
+          RMDIR "%EDGEWEBDRIVER%" /S /Q
+          RMDIR "%GECKOWEBDRIVER%" /S /Q
+          RMDIR "%SELENIUM_JAR_PATH%" /S /Q
+          RMDIR "%JAVA_HOME_8_X64%" /S /Q
+          RMDIR "%JAVA_HOME_11_X64%" /S /Q
+          RMDIR "C:\msys64" /S /Q
+          RMDIR "%GOROOT_1_16_X64%" /S /Q
+          RMDIR "%GOROOT_1_17_X64%" /S /Q
+          RMDIR "%GOROOT_1_18_X64%" /S /Q
+          RMDIR "%PGROOT%" /S /Q
+          RMDIR "%ANDROID_HOME%" /S /Q    
+          
           dir|find "bytes free"
           
       - uses: friendlyanon/setup-vcpkg@v1
