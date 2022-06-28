@@ -29,7 +29,7 @@ jobs:
       CMAKE_GENERATOR: "Visual Studio 17 2022"
       CMAKE_ARCH: "x64"
       VCPKG_BASELINE: "c168ce4e765409509c9c482faa0468c4e1ab386b" # compatible with vcpkg.json baseline
-      VCPKG_ROOT: "C:\vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
+      VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
       
     steps:
       - run: Get-PSDrive
@@ -51,7 +51,7 @@ jobs:
         uses: pat-s/always-upload-cache@v3.0.1
         with:
           path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}
+          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}-v${{ env.CACHE_VERSION }}
           
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
