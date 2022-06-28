@@ -1,0 +1,13 @@
+include(FindPackageHandleStandardArgs)
+include(SelectLibraryConfigurations)
+
+find_path(GEODIFF_INCLUDE_DIR NAMES geodiff.h HINTS ${CURRENT_INSTALLED_DIR})
+find_library(GEODIFF_LIBRARY 
+  NAMES geodiff 
+  NAMES_PER_DIR PATH_SUFFIXES lib PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}" 
+  NO_DEFAULT_PATH REQUIRED)
+
+select_library_configurations(GEODIFF)
+
+set(GEODIFF_INCLUDE_DIRS ${GEODIFF_INCLUDE_DIR})
+set(GEODIFF_LIBRARIES ${GEODIFF_LIBRARY})

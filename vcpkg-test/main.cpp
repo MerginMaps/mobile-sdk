@@ -54,7 +54,7 @@ int test_qt()
 
 int test_qgis()
 {
-    printf("QGIS: %s\n", Qgis::versionInt());
+    printf("QGIS: %d\n", Qgis::versionInt());
     return 0;
 }
 
