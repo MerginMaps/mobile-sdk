@@ -9,6 +9,7 @@
 #include "gdal.h"
 #include <QtGlobal>
 #include "qgis.h"
+#include "ZXing/ZXVersion.h"
 
 int test_sqlite3()
 {   
@@ -46,6 +47,12 @@ int test_gdal()
     return 0;
 }
 
+int test_zxing()
+{   
+    printf("ZXING: %d.%d.%d\n", ZXING_VERSION_MAJOR, ZXING_VERSION_MINOR, ZXING_VERSION_PATCH);
+    return 0;
+}
+
 int test_qt()
 {
     printf("QT: %s\n", qVersion());
@@ -69,6 +76,7 @@ int main(int argc, char** argv){
     res += test_proj();
     res += test_qt();
     res += test_qgis();
+    res += test_zxing();
     
 	return res;
 }

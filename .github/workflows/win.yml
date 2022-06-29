@@ -140,13 +140,13 @@ jobs:
       - name: Create package
         uses: vimtor/action-zip@v1
         with:
-          files: ${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
+          files: ${{ steps.vars.outputs.WORKSPACE_DIR }}/build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
           dest: input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
         with:
-          path: ${{ github.workspace }}/input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          path: ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           if-no-files-found: error
           
       - name: Create Release

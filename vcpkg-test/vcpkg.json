@@ -23,6 +23,11 @@
             "features": [ "xmp" ]
         },
         {
+            "name": "nu-book-zxing-cpp",
+            "default-features": false,
+            "features": []
+        },
+        {
             "name": "expat",
             "default-features": false,
             "features": []
