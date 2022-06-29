@@ -142,12 +142,12 @@ jobs:
         with:
           files: build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
           recursive: true
-          dest: input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          dest: input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
         with:
-          path: ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          path: ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           if-no-files-found: error
           
       - name: Create Release
@@ -156,5 +156,5 @@ jobs:
         with:
           tag: win64-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
-          artifacts: input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          artifacts: input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           token: ${{ secrets.GITHUB_TOKEN }}
