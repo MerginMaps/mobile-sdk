@@ -140,7 +140,8 @@ jobs:
       - name: Create package
         uses: vimtor/action-zip@v1
         with:
-          files: ${{ steps.vars.outputs.WORKSPACE_DIR }}/build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
+          files: build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
+          recursive: true
           dest: input-sdk-qt-${{ env.QT_VERSION }}-win-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           
       - name: Upload Sdk in Artifacts
