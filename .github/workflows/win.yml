@@ -35,7 +35,15 @@ jobs:
       - run: Get-PSDrive
       
       - uses: actions/checkout@v2
-                
+
+      - name: Prepare vars
+        id: vars
+        shell: bash
+        run: |
+          WORKSPACE_DIR=$(cygpath -u ${{ github.workspace }})
+          echo "::set-output name=WORKSPACE_DIR::$WORKSPACE_DIR"
+          echo "WORKSPACE_DIR: $WORKSPACE_DIR"
+
       - name: Clone vcpkg
         shell: bash
         run: |
@@ -45,7 +53,7 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
-          
+
       - name: Cache vcpkg
         id: cache-vcpkg-tool
         uses: pat-s/always-upload-cache@v3.0.1
@@ -100,13 +108,13 @@ jobs:
           exec { 
             cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} `
             -S ${{ github.workspace }}\vcpkg-test `
-            "-DCMAKE_MODULE_PATH=${{ github.workspace }}\vcpkg-test\cmake" `
-            "-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\scripts\buildsystems\vcpkg.cmake" `
+            -DCMAKE_MODULE_PATH:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-test/cmake" `
+            -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
             -G "${{ env.CMAKE_GENERATOR }}" `
             -A ${{ env.CMAKE_ARCH }} `
             -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} `
-            "-DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}\vcpkg-overlay\triplets" `
-            "-DVCPKG_OVERLAY_PORTS=${{ github.workspace }}\vcpkg-overlay\ports"
+            -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/triplets" `
+            -DVCPKG_OVERLAY_PORTS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/ports"
           }
           exec { cmake --build ${{ github.workspace }}\build\${{ env.ARCH }}. --config Release }
           
