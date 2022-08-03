@@ -49,9 +49,10 @@ function build_gdal() {
 
   push_arm
 
-  export LDFLAGS="${LDFLAGS} -liconv -ltiff -lweb"
+  export LDFLAGS="${LDFLAGS} -liconv"
   export LDFLAGS="${LDFLAGS} -lgeos -framework Security -framework CoreFoundation -framework SystemConfiguration"
-    
+  export LDFLAGS="$LDFLAGS -lc++ -ltiff -lwebp"  
+  
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 
   GDAL_FLAGS="--disable-shared"

@@ -17,11 +17,15 @@ jobs:
       IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
       QT_VERSION: '5.14.2'
       ARCHES: 'arm64'
-      CACHE_VERSION: 0
+      CACHE_VERSION: 1
+      XC_VERSION: ${{ '13.2.1' }}
 
     steps:
       - uses: actions/checkout@v2
 
+      - name: Select latest Xcode
+        run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
+        
       - name: Check deps versions change
         run: |
           CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )

@@ -12,12 +12,12 @@ on:
 
 jobs:
   mac_os_build:
-    runs-on: macos-10.15
+    runs-on: macos-11
     if: github.repository == 'merginmaps/input-sdk'
     env:
       QT_VERSION: 5.14.2
       ARCHES: 'mac'
-      CACHE_VERSION: 0
+      CACHE_VERSION: 1
 
     steps:
       - uses: actions/checkout@v2
