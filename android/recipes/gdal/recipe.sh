@@ -90,7 +90,9 @@ function build_gdal() {
 
   try $MAKESMP static-lib
   try $MAKESMP install-static-lib
-
+  
+  try cp ./apps/*.h $STAGE_PATH/include/
+  
   pop_arm
 }
 

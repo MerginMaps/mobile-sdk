@@ -35,7 +35,7 @@ function prebuild_gdal() {
   touch .patched
 }
 
-function shouldbuild_gdal() {
+function shouldbuild_gdal() {  
   # If lib is newer than the sourcecode skip build
   if [ $STAGE_PATH/lib/libgdal.a -nt $BUILD_gdal/.patched ]; then
     DO_BUILD=0
@@ -99,6 +99,8 @@ function build_gdal() {
 
   try $MAKESMP static-lib
   try $MAKESMP install-static-lib
+  
+  try cp ./apps/*.h $STAGE_PATH/include/
 
   pop_arm
 }
