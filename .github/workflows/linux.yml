@@ -18,7 +18,7 @@ jobs:
       ARCH: 'linux-x86_64'
       UBUNTU_VERSION: 2204
       QT_VERSION: '5.14.2'
-      CACHE_VERSION: 1
+      CACHE_VERSION: 2
 
     steps:
       - uses: actions/checkout@v2

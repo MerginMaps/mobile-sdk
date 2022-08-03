@@ -17,7 +17,7 @@ jobs:
       IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
       QT_VERSION: '5.14.2'
       ARCHES: 'arm64'
-      CACHE_VERSION: 1
+      CACHE_VERSION: 2
       XC_VERSION: ${{ '13.2.1' }}
 
     steps:

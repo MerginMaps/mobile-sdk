@@ -21,7 +21,7 @@ jobs:
     
     env:
       QT_VERSION: 5.14.2
-      CACHE_VERSION: 7
+      CACHE_VERSION: 8
       DEPS_CHECKSUM: 1 # TODO, calculate from vcpkg.json ?
       ARCH: "win64"
       TRIPLET: "x64-windows"
