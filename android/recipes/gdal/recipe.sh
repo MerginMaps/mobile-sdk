@@ -88,8 +88,8 @@ function build_gdal() {
     --disable-driver-mrf \
     $GDAL_FLAGS
 
-  try $MAKESMP
-  try $MAKESMP install
+  try $MAKESMP static-lib
+  try $MAKESMP install-static-lib
 
   pop_arm
 }
