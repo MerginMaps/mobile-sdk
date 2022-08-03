@@ -26,7 +26,6 @@ function prebuild_libspatialite() {
   try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_libspatialite"
 
   try patch -p1 < $RECIPE_libspatialite/patches/config.patch
-  try patch -p1 < $RECIPE_libspatialite/patches/make.patch
 
   touch .patched
 }
@@ -45,23 +44,26 @@ function build_libspatialite() {
 
   push_arm
 
-  # Use Proj 6.0.0 compatibility headers.
-  # Remove in libspatialite 5.0.0
-  export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H"
-  # so the configure script can check that proj library contains pj_init_plus
-  export LDFLAGS="$LDFLAGS -lc++"
+  rm $BUILD_libspatialite/config.h
+  rm $BUILD_libspatialite/src/headers/spatialite/gaiaconfig.h
 
+  # so the configure script can check that proj library contains pj_init_plus
+  export LDFLAGS="$LDFLAGS -lc++ -ltiff -lwebp"  
+  export CFLAGS="$CFLAGS -I$BUILD_PATH/libspatialite/build-$ARCH/src/headers"
+  
   try $BUILD_libspatialite/configure \
     --prefix=$STAGE_PATH \
     --host=${TOOLCHAIN_PREFIX} \
     --with-geosconfig=$STAGE_PATH/bin/geos-config \
     --enable-libxml2=no \
-    --disable-shared \
     --disable-examples \
     --enable-proj=yes \
+    --enable-gcp=no \
+    --enable-minizip=no \
+    --disable-shared \
+    --enable-rttopo=no \
     --enable-static=yes
-
-
+  
   try $MAKESMP
   try make install &> install.log
 

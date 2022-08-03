@@ -12,11 +12,11 @@ on:
 
 jobs:
   linux_build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.repository == 'merginmaps/input-sdk'
     env:
       ARCH: 'linux-x86_64'
-      UBUNTU_VERSION: 2004
+      UBUNTU_VERSION: 2204
       QT_VERSION: '5.14.2'
       CACHE_VERSION: 0
 
