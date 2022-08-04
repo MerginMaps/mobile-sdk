@@ -121,6 +121,10 @@
     "builtin-baseline": "5bb332b432e0fa3899de1a2ef8fc4c10c435408d",
     "overrides": [
         {
+            "name": "tiff",
+            "version-string": "4.3.0#8"
+        },
+        {
             "name": "sqlite3",
             "version": "3.37.2#1"
         },
@@ -174,7 +178,7 @@
         },
         {
             "name": "nu-book-zxing-cpp",
-            "version": "1.1.1"
+            "version": "1.2.0"
         },
         {
             "name": "libwebp",
@@ -194,7 +198,7 @@
         },
         {
             "name": "qca",
-            "version": "2.3.1"
+            "version": "2.3.4#3"
         },
         {
             "name": "openssl",
@@ -203,10 +207,6 @@
         {
             "name": "libgeotiff",
             "version-string": "1.6.0"
-        },
-        {
-            "name": "tiff",
-            "version-string": "4.3.0#8"
         }
     ]
 }

@@ -45,6 +45,8 @@ function build_proj() {
         -DEXE_SQLITE3=`which sqlite3` \
         -DSQLITE3_INCLUDE_DIR=$STAGE_PATH/include \
         -DSQLITE3_LIBRARY=$STAGE_PATH/lib/libsqlite3.a \
+        -DTIFF_INCLUDE_DIR=$STAGE_PATH/include \
+        -DTIFF_LIBRARY=$STAGE_PATH/lib/libtiff.a \
         -DBUILD_APPS=OFF \
         -DENABLE_TIFF=ON \
         -DENABLE_CURL=OFF \

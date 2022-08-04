@@ -19,7 +19,7 @@ function prebuild_qca() {
   if [ -f .patched ]; then
     return
   fi
- 
+  
   try patch -p1 < $RECIPE_qca/patches/src.patch
 
   touch .patched
