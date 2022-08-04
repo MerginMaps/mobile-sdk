@@ -20,7 +20,7 @@ jobs:
       NDK_VERSION: r21
       SDK_PLATFORM: android-30
       SDK_BUILD_TOOLS: 28.0.3
-      CACHE_VERSION: 2
+      CACHE_VERSION: 3
       ARCHES: "armeabi-v7a arm64-v8a"
 
     steps:
@@ -57,11 +57,12 @@ jobs:
           key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-android
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           target: android
           arch: android
+          setup-python: 'false'
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 

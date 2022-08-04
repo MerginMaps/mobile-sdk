@@ -28,7 +28,7 @@ jobs:
       VS_VERSION: "2022"
       CMAKE_GENERATOR: "Visual Studio 17 2022"
       CMAKE_ARCH: "x64"
-      VCPKG_BASELINE: "c168ce4e765409509c9c482faa0468c4e1ab386b" # compatible with vcpkg.json baseline
+      VCPKG_BASELINE: "5bb332b432e0fa3899de1a2ef8fc4c10c435408d" # compatible with vcpkg.json baseline
       VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
       
     steps:
@@ -80,7 +80,7 @@ jobs:
           key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-win64
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           target: desktop

@@ -17,7 +17,7 @@ jobs:
     env:
       QT_VERSION: 5.14.2
       ARCHES: 'mac'
-      CACHE_VERSION: 2
+      CACHE_VERSION: 3
 
     steps:
       - uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
           key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-mac
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           target: desktop

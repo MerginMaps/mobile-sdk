@@ -17,7 +17,7 @@ jobs:
       IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
       QT_VERSION: '5.14.2'
       ARCHES: 'arm64'
-      CACHE_VERSION: 2
+      CACHE_VERSION: 3
       XC_VERSION: ${{ '13.2.1' }}
 
     steps:
@@ -57,10 +57,11 @@ jobs:
           key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-ios
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           target: ios
+          setup-python: 'false'
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
