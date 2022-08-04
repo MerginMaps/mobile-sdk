@@ -77,14 +77,15 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-win64
+          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-win64
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v2
         with:
           version: ${{ env.QT_VERSION }}
           target: desktop
           dir: ${{ github.workspace }}
+          py7zrversion: '==0.18.1'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: set compiler environment

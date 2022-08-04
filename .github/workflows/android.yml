@@ -20,7 +20,7 @@ jobs:
       NDK_VERSION: r21
       SDK_PLATFORM: android-30
       SDK_BUILD_TOOLS: 28.0.3
-      CACHE_VERSION: 3
+      CACHE_VERSION: 2
       ARCHES: "armeabi-v7a arm64-v8a"
 
     steps:
@@ -54,16 +54,16 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-android
+          key: ${{ runner.os }}-QtCache-v3-${{ env.QT_VERSION }}-android
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v2
         with:
           version: ${{ env.QT_VERSION }}
           target: android
           arch: android
-          setup-python: 'false'
           dir: ${{ github.workspace }}
+          py7zrversion: '==0.18.1'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
        # Android SDK & NDK
