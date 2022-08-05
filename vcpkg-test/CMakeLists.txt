@@ -17,7 +17,7 @@ add_executable(inputsdktest main.cpp)
 
 target_link_libraries(inputsdktest PRIVATE unofficial::sqlite3::sqlite3)
 target_link_libraries(inputsdktest PRIVATE Qt5::Core)
-target_link_libraries(inputsdktest PRIVATE proj PROJ::proj)
+target_link_libraries(inputsdktest PRIVATE PROJ::proj)
 target_link_libraries(inputsdktest PRIVATE GEOS::geos_c)
 target_include_directories(inputsdktest PRIVATE ${GDAL_INCLUDE_DIRS})
 target_link_libraries(inputsdktest PRIVATE ${GDAL_LIBRARIES})
