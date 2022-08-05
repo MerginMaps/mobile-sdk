@@ -5,7 +5,7 @@
 
 
 # dependencies of this recipe
-DEPS_proj=()
+DEPS_proj=(sqlite3 libtiff)
 
 # default build path
 BUILD_proj=$BUILD_PATH/proj/$(get_directory $URL_proj)
@@ -42,21 +42,24 @@ function build_proj() {
   try cd $BUILD_PATH/proj/build-$ARCH
 
   push_env
-
+  
   echo "using native sqlite3"
   which sqlite3
-
+  
   try $CMAKECMD \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
-    -DPROJ_TESTS=OFF \
-    -DBUILD_LIBPROJ_SHARED=OFF \
+    -DBUILD_TESTING=OFF \
+    -DBUILD_SHARED_LIBS=OFF \
     -DEXE_SQLITE3=`which sqlite3` \
-    -DBUILD_CCT=OFF \
-    -DBUILD_CS2CS=OFF \
-    -DBUILD_GEOD=OFF \
-    -DBUILD_GIE=OFF \
-    -DBUILD_PROJ=OFF \
-    -DBUILD_PROJINFO=OFF \
+    -DBUILD_APPS=OFF \
+    -DENABLE_TIFF=ON \
+    -DENABLE_CURL=OFF \
+    -DPROJ_CMAKE_SUBDIR=share/cmake/proj4 \
+    -DPROJ_DATA_SUBDIR=share/proj \
+    -DENABLE_CURL=ON \
+    -DPROJ_LIB_ENV_VAR_TRIED_LAST=OFF \
+    -DTIFF_INCLUDE_DIR=$STAGE_PATH/include \
+    -DTIFF_LIBRARY=$STAGE_PATH/lib/libtiff.a \
     $BUILD_proj
   check_file_configuration CMakeCache.txt
   

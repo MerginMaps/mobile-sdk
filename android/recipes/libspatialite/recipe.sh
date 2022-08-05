@@ -20,12 +20,11 @@ function prebuild_libspatialite() {
   if [ -f .patched ]; then
     return
   fi
-
+    
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_libspatialite
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_libspatialite
   
   try patch -p1 < $RECIPE_libspatialite/patches/configure.patch
-  try patch -p1 < $RECIPE_libspatialite/patches/spatialite.patch
   
   touch .patched
 }
@@ -43,26 +42,29 @@ function build_libspatialite() {
   try cd $BUILD_PATH/libspatialite/build-$ARCH
   push_arm
 
-  # Use Proj 6.0.0 compatibility headers.
-  # Remove in libspatialite 5.0.0
-  export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
   # so the configure script can check that geos library is ok
   export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
+  export LDFLAGS="$LDFLAGS -lproj -ltiff -lwebp"
   
-  try ./configure \
+  rm $BUILD_libspatialite/config.h
+  rm $BUILD_libspatialite/src/headers/spatialite/gaiaconfig.h
+
+  export CFLAGS="$CFLAGS -I$BUILD_PATH/libspatialite/build-$ARCH/src/headers"
+  
+  try $BUILD_libspatialite/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64 \
     --target=android \
-    --enable-examples=no \
-    --enable-proj=yes \
-    --enable-static=yes \
-    --disable-shared \
     --with-geosconfig=$STAGE_PATH/bin/geos-config \
     --enable-libxml2=no \
-    --enable-rttopo=no \
+    --disable-examples \
+    --enable-proj=yes \
     --enable-gcp=no \
     --enable-minizip=no \
+    --disable-shared \
+    --enable-rttopo=no \
+    --enable-static=yes \
     --disable-dependency-tracking
   
   try $MAKESMP

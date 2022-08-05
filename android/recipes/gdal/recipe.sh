@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp curl libspatialite)
+DEPS_gdal=(iconv sqlite3 geos postgresql expat proj webp curl libspatialite libtiff)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -15,7 +15,7 @@ RECIPE_gdal=$RECIPES_PATH/gdal
 # (you can apply patch etc here.)
 function prebuild_gdal() {
   cd $BUILD_gdal
-
+  
   # check marker
   if [ -f .patched ]; then
     return
@@ -23,6 +23,8 @@ function prebuild_gdal() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
+  
+  
   
   try patch -p1 < $RECIPE_gdal/patches/configure.patch
   
@@ -57,6 +59,7 @@ function build_gdal() {
   
   # so the configure script can check that static libraries linkage is ok
   export LDFLAGS="$LDFLAGS -lgeos_c -lgeos -lcurl -lssl -lcrypto"
+  export LDFLAGS="$LDFLAGS -ltiff -lwebp" 
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
@@ -75,9 +78,10 @@ function build_gdal() {
     --with-geos=$STAGE_PATH/bin/geos-config \
     --with-pg=no \
     --with-expat=$STAGE_PATH \
-    --with-rename-internal-libtiff-symbols=yes \
+    --with-libtiff=$STAGE_PATH \
     --with-rename-internal-libgeotiff-symbols=yes \
     --with-rename-internal-shapelib-symbols=yes \
+    --with-proj-extra-lib-for-test="-ltiff -lwebp" \
     --with-poppler=no \
     --with-libxml2=no \
     --with-podofo=no \
@@ -87,9 +91,11 @@ function build_gdal() {
     --disable-driver-mrf \
     $GDAL_FLAGS
 
-  try $MAKESMP
-  try $MAKESMP install
-
+  try $MAKESMP static-lib
+  try $MAKESMP install-static-lib
+  
+  try cp ./apps/*.h $STAGE_PATH/include/
+  
   pop_arm
 }
 

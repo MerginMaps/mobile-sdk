@@ -43,23 +43,27 @@ function build_libspatialite() {
 
   push_env
 
-  # Use Proj 6.0.0 compatibility headers.
-  # Remove in libspatialite 5.0.0
-  export CFLAGS="$CFLAGS -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
-  # so the configure script can check that proj library contains pj_init_plus
-  export LDFLAGS="$LDFLAGS -lc++"
-  # so the configure script can check that geos library is ok
-  export LDFLAGS="$LDFLAGS -lgeos"
+  # so the configure script can check that proj library is ok
+  export LDFLAGS="$LDFLAGS -lc++ -lgeos -lproj -lsqlite3 -lcurl -ltiff -lwebp -lz -framework Security -framework CoreFoundation -framework SystemConfiguration"
+  
+  rm $BUILD_libspatialite/config.h
+  rm $BUILD_libspatialite/src/headers/spatialite/gaiaconfig.h
+  
+  export CFLAGS="$CFLAGS -I$BUILD_PATH/libspatialite/build-$ARCH/src/headers"
   
   try $BUILD_libspatialite/configure \
     --prefix=$STAGE_PATH \
+    --target=macosx \
     --with-geosconfig=$STAGE_PATH/bin/geos-config \
     --enable-libxml2=no \
-    --disable-shared \
     --disable-examples \
     --enable-proj=yes \
+    --enable-gcp=no \
+    --enable-minizip=no \
+    --disable-shared \
+    --enable-rttopo=no \
     --enable-static=yes
-
+  
 
   try $MAKESMP
   try make install &> install.log

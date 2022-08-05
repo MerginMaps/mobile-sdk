@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_proj=(sqlite3 openssl)
+DEPS_proj=(sqlite3 libtiff)
 
 # default build path
 BUILD_proj=$BUILD_PATH/proj/$(get_directory $URL_proj)
@@ -39,10 +39,20 @@ function build_proj() {
   push_arm
 
   try $CMAKECMD \
-    -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
-    -DPROJ_TESTS=OFF \
-    -DEXE_SQLITE3=`which sqlite3` \
-    -DBUILD_LIBPROJ_SHARED=OFF \
+        -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+        -DBUILD_TESTING=OFF \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DEXE_SQLITE3=`which sqlite3` \
+        -DSQLITE3_INCLUDE_DIR=$STAGE_PATH/include \
+        -DSQLITE3_LIBRARY=$STAGE_PATH/lib/libsqlite3.a \
+        -DTIFF_INCLUDE_DIR=$STAGE_PATH/include \
+        -DTIFF_LIBRARY=$STAGE_PATH/lib/libtiff.a \
+        -DBUILD_APPS=OFF \
+        -DENABLE_TIFF=ON \
+        -DENABLE_CURL=OFF \
+        -DPROJ_CMAKE_SUBDIR=share/cmake/proj4 \
+        -DPROJ_DATA_SUBDIR=share/proj \
+        -DPROJ_LIB_ENV_VAR_TRIED_LAST=OFF \
     $BUILD_proj
 
   try $MAKESMP install

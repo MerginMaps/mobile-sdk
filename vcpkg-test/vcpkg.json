@@ -1,6 +1,6 @@
 {
     "name": "input-sdk-vcpkg-test",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "dependencies": [
         {
             "name": "sqlite3",
@@ -55,12 +55,12 @@
         {
             "name": "proj",
             "default-features": false,
-            "features": []
+            "features": ["tiff"]
         },
         {
             "name": "proj4",
             "default-features": false,
-            "features": []
+            "features": ["tiff"]
         },
         {
             "name": "libspatialindex",
@@ -108,13 +108,17 @@
             "features": []
         },
         {
-            "name": "libgeotiff",
+            "name": "tiff",
             "default-features": false,
-            "features": []
+            "features": ["webp", "zip"]
         }
     ],
-    "builtin-baseline": "c168ce4e765409509c9c482faa0468c4e1ab386b",
+    "builtin-baseline": "5bb332b432e0fa3899de1a2ef8fc4c10c435408d",
     "overrides": [
+        {
+            "name": "tiff",
+            "version-string": "4.3.0#8"
+        },
         {
             "name": "sqlite3",
             "version": "3.37.2#1"
@@ -149,11 +153,7 @@
         },
         {
             "name": "proj",
-            "version": "6.3.2"
-        },
-        {
-            "name": "proj4",
-            "version": "6.3.2"
+            "version": "9.0.1#1"
         },
         {
             "name": "libspatialindex",
@@ -161,7 +161,7 @@
         },
         {
             "name": "libspatialite",
-            "version-string": "4.3.0a#7"
+            "version-string": "5.0.1#7"
         },
         {
             "name": "protobuf",
@@ -173,7 +173,7 @@
         },
         {
             "name": "nu-book-zxing-cpp",
-            "version": "1.1.1"
+            "version": "1.2.0"
         },
         {
             "name": "libwebp",
@@ -193,15 +193,11 @@
         },
         {
             "name": "qca",
-            "version": "2.3.1"
+            "version": "2.3.4#3"
         },
         {
             "name": "openssl",
             "version-string": "1.1.1j"
-        },
-        {
-            "name": "libgeotiff",
-            "version-string": "1.6.0"
         }
     ]
 }

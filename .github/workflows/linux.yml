@@ -12,13 +12,13 @@ on:
 
 jobs:
   linux_build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.repository == 'merginmaps/input-sdk'
     env:
       ARCH: 'linux-x86_64'
-      UBUNTU_VERSION: 2004
+      UBUNTU_VERSION: 2204
       QT_VERSION: '5.14.2'
-      CACHE_VERSION: 0
+      CACHE_VERSION: 5
 
     steps:
       - uses: actions/checkout@v2
@@ -55,7 +55,7 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}
+          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -63,6 +63,7 @@ jobs:
           version: ${{ env.QT_VERSION }}
           setup-python: 'false'
           dir: ${{ github.workspace }}
+          py7zrversion: '==0.18.1'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: Export config.conf

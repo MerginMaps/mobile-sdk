@@ -12,12 +12,12 @@ on:
 
 jobs:
   mac_os_build:
-    runs-on: macos-10.15
+    runs-on: macos-11
     if: github.repository == 'merginmaps/input-sdk'
     env:
       QT_VERSION: 5.14.2
       ARCHES: 'mac'
-      CACHE_VERSION: 0
+      CACHE_VERSION: 4
 
     steps:
       - uses: actions/checkout@v2
@@ -50,7 +50,7 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-mac
+          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-mac
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -58,6 +58,7 @@ jobs:
           version: ${{ env.QT_VERSION }}
           target: desktop
           dir: ${{ github.workspace }}
+          py7zrversion: '==0.18.1'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: Export config.conf

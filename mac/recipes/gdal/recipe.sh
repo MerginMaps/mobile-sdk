@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(geos postgresql expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3 webp curl)
+DEPS_gdal=(geos postgresql expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3 webp curl libtiff)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -55,7 +55,8 @@ function build_gdal() {
     GDAL_FLAGS="$GDAL_FLAGS --enable-debug"
   fi
   
-  LDFLAGS="${LDFLAGS} -lgeos -framework Security -framework CoreFoundation -framework SystemConfiguration -lc++"
+  # so the configure script can check that proj library is ok
+  export LDFLAGS="$LDFLAGS -lgeos -lproj -lsqlite3 -lcurl -ltiff -lwebp -lz -framework Security -framework CoreFoundation -framework SystemConfiguration -lc++"
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
@@ -67,7 +68,7 @@ function build_gdal() {
     --with-geos=$STAGE_PATH/bin/geos-config \
     --with-pg=no \
     --with-expat=$STAGE_PATH \
-    --with-libtiff=internal \
+    --with-libtiff=$STAGE_PATH \
     --with-geotiff=internal \
     --with-spatialite=yes \
     --with-poppler=no \

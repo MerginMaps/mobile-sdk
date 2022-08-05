@@ -17,11 +17,15 @@ jobs:
       IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
       QT_VERSION: '5.14.2'
       ARCHES: 'arm64'
-      CACHE_VERSION: 0
+      CACHE_VERSION: 4
+      XC_VERSION: ${{ '13.2.1' }}
 
     steps:
       - uses: actions/checkout@v2
 
+      - name: Select latest Xcode
+        run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
+        
       - name: Check deps versions change
         run: |
           CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
@@ -50,14 +54,16 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-${{ env.QT_VERSION }}-ios
+          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-ios
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: ${{ env.QT_VERSION }}
           target: ios
+          setup-python: 'false'
           dir: ${{ github.workspace }}
+          py7zrversion: '==0.18.1'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: Export config.conf
