@@ -117,7 +117,7 @@ jobs:
             -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/triplets" `
             -DVCPKG_OVERLAY_PORTS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/ports"
           }
-          exec { cmake --build ${{ github.workspace }}\build\${{ env.ARCH }}. --config Release }
+          exec { cmake --build ${{ github.workspace }}\build\${{ env.ARCH }}. --config Release --verbose }
           
       - name: Run SDK Tests
         shell: pwsh

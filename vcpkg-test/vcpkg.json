@@ -108,14 +108,14 @@
             "features": []
         },
         {
-            "name": "libgeotiff",
-            "default-features": false,
-            "features": []
-        },
-        {
             "name": "tiff",
             "default-features": false,
             "features": ["webp", "zip"]
+        },
+        {
+            "name": "libgeotiff",
+            "default-features": false,
+            "features": []
         }
     ],
     "builtin-baseline": "5bb332b432e0fa3899de1a2ef8fc4c10c435408d",
