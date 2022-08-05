@@ -93,11 +93,6 @@ jobs:
         run: |
             CALL "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
     
-      - name: debug
-        shell: cmd 
-        run: |
-            type "C:\vcpkg-root\buildtrees\libgeotiff\install-x64-windows-rel-out.log"
-    
       - name: Build Sdk
         shell: pwsh
         run: |

@@ -111,11 +111,6 @@
             "name": "tiff",
             "default-features": false,
             "features": ["webp", "zip"]
-        },
-        {
-            "name": "libgeotiff",
-            "default-features": false,
-            "features": []
         }
     ],
     "builtin-baseline": "5bb332b432e0fa3899de1a2ef8fc4c10c435408d",
@@ -203,10 +198,6 @@
         {
             "name": "openssl",
             "version-string": "1.1.1j"
-        },
-        {
-            "name": "libgeotiff",
-            "version-string": "1.6.0#4"
         }
     ]
 }
