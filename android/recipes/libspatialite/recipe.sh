@@ -20,11 +20,11 @@ function prebuild_libspatialite() {
   if [ -f .patched ]; then
     return
   fi
-
+    
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_libspatialite
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_libspatialite
   
-  try patch -p1 < $RECIPE_libspatialite/patches/configure.patch
+  # try patch -p1 < $RECIPE_libspatialite/patches/configure.patch
   try patch -p1 < $RECIPE_libspatialite/patches/spatialite.patch
   
   touch .patched
@@ -45,7 +45,8 @@ function build_libspatialite() {
 
   # so the configure script can check that geos library is ok
   export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
-
+  export LDFLAGS="$LDFLAGS -lproj -ltiff -lwebp"
+  
   rm $BUILD_libspatialite/config.h
   rm $BUILD_libspatialite/src/headers/spatialite/gaiaconfig.h
 

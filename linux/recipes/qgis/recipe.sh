@@ -20,6 +20,10 @@ function prebuild_qgis() {
     return
   fi
   
+  # see https://bugreports.qt.io/browse/QTBUG-90395
+  # remove when we are on QT 5.15.2+
+  try patch -p1 < $RECIPE_qgis/patches/limits.patch
+  
   touch .patched
 }
 

@@ -55,12 +55,12 @@
         {
             "name": "proj",
             "default-features": false,
-            "features": []
+            "features": ["tiff"]
         },
         {
             "name": "proj4",
             "default-features": false,
-            "features": []
+            "features": ["tiff"]
         },
         {
             "name": "libspatialindex",
@@ -206,7 +206,7 @@
         },
         {
             "name": "libgeotiff",
-            "version-string": "1.6.0"
+            "version-string": "1.6.0#4"
         }
     ]
 }
