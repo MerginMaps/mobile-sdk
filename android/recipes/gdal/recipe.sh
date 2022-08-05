@@ -15,7 +15,7 @@ RECIPE_gdal=$RECIPES_PATH/gdal
 # (you can apply patch etc here.)
 function prebuild_gdal() {
   cd $BUILD_gdal
-
+  
   # check marker
   if [ -f .patched ]; then
     return
@@ -23,6 +23,8 @@ function prebuild_gdal() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
+  
+  
   
   try patch -p1 < $RECIPE_gdal/patches/configure.patch
   
@@ -79,6 +81,7 @@ function build_gdal() {
     --with-libtiff=$STAGE_PATH \
     --with-rename-internal-libgeotiff-symbols=yes \
     --with-rename-internal-shapelib-symbols=yes \
+    --with-proj-extra-lib-for-test="-ltiff -lwebp" \
     --with-poppler=no \
     --with-libxml2=no \
     --with-podofo=no \
