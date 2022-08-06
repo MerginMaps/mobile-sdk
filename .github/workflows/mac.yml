@@ -107,15 +107,24 @@ jobs:
           cd "${{ github.workspace }}/build/proj-data"
           tar -c -z -f ${{ github.workspace }}/${PROJ_TAR} ./
           
-      - name: Upload artifacts
+      - name: Upload SDK_TAR artifact
         uses: actions/upload-artifact@v2
         with:
-          path: |
-            ${{ github.workspace }}/${{ env.SDK_TAR }}
-            ${{ github.workspace }}/${{ env.SUPPORTED_FORMATS }} 
-            ${{ github.workspace }}/${{ env.PROJ_TAR }} 
+          path: ${{ github.workspace }}/${{ env.SDK_TAR }}
           if-no-files-found: error    
+
+      - name: Upload SUPPORTED_FORMATS artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/${{ env.SUPPORTED_FORMATS }} 
+          if-no-files-found: error 
           
+      - name: Upload PROJ_TAR artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/${{ env.PROJ_TAR }} 
+          if-no-files-found: error 
+
       - name: Create Release
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
