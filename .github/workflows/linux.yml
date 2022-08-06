@@ -18,7 +18,7 @@ jobs:
       ARCH: 'linux-x86_64'
       UBUNTU_VERSION: 2204
       QT_VERSION: '5.14.2'
-      CACHE_VERSION: 11
+      CACHE_VERSION: 13
       TRIPLET: "x64-linux"
       VCPKG_BASELINE: "5bb332b432e0fa3899de1a2ef8fc4c10c435408d" # compatible with vcpkg.json baseline
       VCPKG_ROOT: "/home/runner/vcpkg_root" # We need a lot of space for vcpkg build/install dir
@@ -103,7 +103,7 @@ jobs:
                    -DCMAKE_BUILD_TYPE=Release \
                    -S ${{ github.workspace }}/vcpkg-test \
                    -DCMAKE_MODULE_PATH:PATH=${{ github.workspace }}/vcpkg-test/cmake \
-                   -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+                   -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake \
                    -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
                    -DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}/vcpkg-overlay/triplets \
                    -DVCPKG_OVERLAY_PORTS=${{ github.workspace }}/vcpkg-overlay/ports
