@@ -3,9 +3,9 @@ name: Build Linux
 on:
   push:
     paths:
-      - 'linux/**'
+      - 'vcpkg-test/**'
+      - 'vcpkg-overlay/**'
       - '.github/workflows/linux.yml'
-      - 'versions.conf'
   release:
     types:
       - published
