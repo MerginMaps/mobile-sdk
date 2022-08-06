@@ -88,10 +88,6 @@ jobs:
           dir: ${{ github.workspace }}
           py7zrversion: '==0.18.1'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
- 
-      - name: Debug
-        run: |
-             cat /home/runner/vcpkg_root/buildtrees/proj/config-x64-linux-out.log
 
       - name: Build Sdk
         run: |
