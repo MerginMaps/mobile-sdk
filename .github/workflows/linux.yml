@@ -18,7 +18,7 @@ jobs:
       ARCH: 'linux-x86_64'
       UBUNTU_VERSION: 2204
       QT_VERSION: '5.14.2'
-      CACHE_VERSION: 10
+      CACHE_VERSION: 11
       TRIPLET: "x64-linux"
       VCPKG_BASELINE: "5bb332b432e0fa3899de1a2ef8fc4c10c435408d" # compatible with vcpkg.json baseline
       VCPKG_ROOT: "/home/runner/vcpkg_root" # We need a lot of space for vcpkg build/install dir
@@ -70,7 +70,8 @@ jobs:
             sudo apt-get install -y build-essential make ninja-build cmake
             sudo apt-get install g++
             sudo apt-get remove -y libopenexr-dev # Avoid gdal picking this system lib up
-            which ninja 
+            which ninja
+            which gcc
             
       - name: Cache Qt
         id: cache-qt
@@ -97,6 +98,8 @@ jobs:
              cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
                    -GNinja \
                    -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja \
+                   -DCMAKE_C_COMPILER=/usr/bin/gcc \
+                   -DCMAKE_CXX_COMPILER=/usr/bin/gcc \
                    -DCMAKE_BUILD_TYPE=Release \
                    -S ${{ github.workspace }}/vcpkg-test \
                    -DCMAKE_MODULE_PATH:PATH=${{ github.workspace }}/vcpkg-test/cmake \
