@@ -51,17 +51,6 @@
             "name": "freexl",
             "default-features": false,
             "features": []
-            
-        },
-        {
-            "name": "libwebp",
-            "default-features": false,
-            "features": []
-        },
-        {
-            "name": "tiff",
-            "default-features": false,
-            "features": ["webp", "zip"]
         },
         {
             "name": "proj",
@@ -94,6 +83,11 @@
             "features": []
         },
         {
+            "name": "libwebp",
+            "default-features": false,
+            "features": []
+        },
+        {
             "name": "gdal",
             "default-features": false,
             "features": ["libspatialite"]
@@ -112,17 +106,18 @@
             "name": "qca",
             "default-features": false,
             "features": []
+        },
+        {
+            "name": "tiff",
+            "default-features": false,
+            "features": ["webp", "zip"]
         }
     ],
     "builtin-baseline": "5bb332b432e0fa3899de1a2ef8fc4c10c435408d",
     "overrides": [
         {
-            "name": "libwebp",
-            "version": "1.2.3"
-        },
-        {
             "name": "tiff",
-            "version-string": "4.4.0#1"
+            "version-string": "4.3.0#8"
         },
         {
             "name": "sqlite3",
@@ -179,6 +174,10 @@
         {
             "name": "nu-book-zxing-cpp",
             "version": "1.2.0"
+        },
+        {
+            "name": "libwebp",
+            "version": "1.2.2"
         },
         {
             "name": "gdal",

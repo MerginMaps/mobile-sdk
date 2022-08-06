@@ -36,11 +36,7 @@ function build_qgis() {
   try cd $BUILD_PATH/qgis/build-$ARCH
 
   push_env
- 
-  # we want to produce CRSSYNC database here (at least somewhere)
-  # so we can add it to release artefacts
-  export LDFLAGS="$LDFLAGS -L$STAGE_PATH/lib -lgeodiff  -lproj -lZXing -lqt5keychain -lqca-qt5 -lgdal -lpq -lspatialite -lcharset -lxml2 -ltasn1 -lbz2 -lproj -lspatialindex -lgeos -lgeos_c -lprotobuf-lite -lexpat -lfreexl -lexiv2 -lexiv2-xmp -ltiff -lsqlite3 -liconv -lz -lzip -lwebp -lcurl -framework Security -framework CoreFoundation -framework SystemConfiguration"
-  
+
   try ${CMAKECMD} \
     -DQGIS_MAC_DEPS_DIR=$STAGE_PATH \
     -DWITH_BINDINGS=FALSE \
@@ -66,6 +62,7 @@ function build_qgis() {
     -DWITH_3D=FALSE \
     -DWITH_QGIS_PROCESS=OFF \
     -DQGIS_MACAPP_BUNDLE=-1 \
+    -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     -DFORCE_STATIC_LIBS=TRUE \
     -DUSE_OPENCL=OFF \
     -DPOSTGRES_INCLUDE_DIR=$STAGE_PATH/include \
