@@ -91,7 +91,7 @@ jobs:
           
           echo "Preparing SUPPORTED_FORMATS"
           SUPPORTED_FORMATS="input-sdk-gdal-supported-formats-${{ steps.time.outputs.time }}-${{ github.run_number }}.log"
-          cp ${{ github.workspace }}/build/stage/mac/supported_formats.log ${{ github.workspace }}/$SUPPORTED_FORMATS -v
+          cp ${{ github.workspace }}/build/stage/mac/supported_formats.log ${{ github.workspace }}/$SUPPORTED_FORMATS
           echo "SUPPORTED_FORMATS=${SUPPORTED_FORMATS}" >> $GITHUB_ENV
           
           echo "Preparing PROJ_TAR"
@@ -99,11 +99,11 @@ jobs:
           echo "PROJ_TAR=${PROJ_TAR}" >> $GITHUB_ENV
           echo ".. 1/2 qgis database"
           mkdir -p ${{ github.workspace }}/proj-data/resources
-          cp ${{ github.workspace }}/build/stage/mac/QGIS.app/Contents/Resources/resources/qgis.db ${{ github.workspace }}/proj-data/resources/ -v
-          cp ${{ github.workspace }}/build/stage/mac/QGIS.app/Contents/Resources/resources/srs.db ${{ github.workspace }}/proj-data/resources/ -v
+          cp ${{ github.workspace }}/build/stage/mac/QGIS.app/Contents/Resources/resources/qgis.db ${{ github.workspace }}/proj-data/resources/
+          cp ${{ github.workspace }}/build/stage/mac/QGIS.app/Contents/Resources/resources/srs.db ${{ github.workspace }}/proj-data/resources/
           echo ".. 2/2 proj resources"
           mkdir -p ${{ github.workspace }}/proj-data/proj
-          cp ${{ github.workspace }}/build/stage/mac/share/proj/* ${{ github.workspace }}/proj-data/proj/ -v
+          cp ${{ github.workspace }}/build/stage/mac/share/proj/* ${{ github.workspace }}/proj-data/proj/
           cd "${{ github.workspace }}/proj-data"
           tar -c -z -f ${{ github.workspace }}/${PROJ_TAR} ./
           
