@@ -18,7 +18,7 @@ jobs:
       ARCH: 'linux-x86_64'
       UBUNTU_VERSION: 2204
       QT_VERSION: '5.14.2'
-      CACHE_VERSION: 7
+      CACHE_VERSION: 8
       TRIPLET: "x64-linux"
       VCPKG_BASELINE: "5bb332b432e0fa3899de1a2ef8fc4c10c435408d" # compatible with vcpkg.json baseline
       VCPKG_ROOT: "/home/runner/vcpkg_root" # We need a lot of space for vcpkg build/install dir
@@ -67,7 +67,7 @@ jobs:
         run: |
             echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
             sudo apt-get update
-            sudo apt-get install -y build-essential make
+            sudo apt-get install -y build-essential make ninja-build cmake
             sudo apt-get remove -y libopenexr-dev # Avoid gdal picking this system lib up
 
       - name: Cache Qt
@@ -93,6 +93,7 @@ jobs:
              mkdir -p ${{ github.workspace }}/build/${{ env.ARCH }}
         
              cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
+                   -DCMAKE_GENERATOR=Ninja \
                    -DCMAKE_BUILD_TYPE=Release \
                    -S ${{ github.workspace }}/vcpkg-test \
                    "-DCMAKE_MODULE_PATH:PATH=${{ github.workspace }}/vcpkg-test/cmake" \
