@@ -1,13 +1,20 @@
+Platform SDKs:
+
 [![Build win64](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml/badge.svg)](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml)
 [![Build macOS](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml)
 [![Build iOS](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml)
 [![Build android (on MacOS)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml)
 [![Build Linux](https://github.com/merginmaps/input-sdk/actions/workflows/linux.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/linux.yml)
 
+Extra resources (part of MacOS releases/builds):
+
+[![PROJ resources](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml)
+[![List of GDAL supported formats](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml)
+
 # input-sdk
 
-SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) for mobile devices
-
+SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) for mobile devices   
+  
 Mergin Maps Input app makes surveying of geospatial data easy. You can design your survey project in QGIS with custom forms.
 
 Click here to download the app on your Android or iOS devices [merginmaps.com](http://merginmaps.com)
