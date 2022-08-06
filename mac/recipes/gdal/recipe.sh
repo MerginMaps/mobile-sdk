@@ -104,6 +104,7 @@ function postbuild_gdal() {
     
     # we want to produce list of gdal formats supported here
     # so we can add it to release artefacts
-    $STAGE_PATH/bin/gdalinfo --formats | tee -a $STAGE_PATH/supported_formats.log
-    $STAGE_PATH/bin/ogrinfo --formats | tee -a $STAGE_PATH/supported_formats.log
+    # echo "Supported formats: "
+    $STAGE_PATH/bin/gdalinfo --formats | tee -a $STAGE_PATH/supported_formats.log >/dev/null 2>&1
+    $STAGE_PATH/bin/ogrinfo --formats | tee -a $STAGE_PATH/supported_formats.log >/dev/null 2>&1
 }
