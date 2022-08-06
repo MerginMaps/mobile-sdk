@@ -67,7 +67,7 @@ jobs:
         run: |
             echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
             sudo apt-get update
-            sudo apt-get install -y gperf autopoint '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libgstreamer-plugins-base1.0-0 gstreamer1.0-plugins-bad
+            sudo apt-get install -y build-essential make
             sudo apt-get remove -y libopenexr-dev # Avoid gdal picking this system lib up
 
       - name: Cache Qt
