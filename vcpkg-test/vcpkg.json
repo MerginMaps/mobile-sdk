@@ -122,7 +122,7 @@
         },
         {
             "name": "tiff",
-            "version-string": "4.3.0#8"
+            "version-string": "4.4.0#1"
         },
         {
             "name": "sqlite3",
