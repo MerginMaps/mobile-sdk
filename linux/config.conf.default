@@ -1,5 +1,0 @@
-#### PATHS ####
-export ROOT_OUT_PATH=<path>/input-sdk/build/linux
-
-### BUILD ###
-export ARCHES=("x86_64")

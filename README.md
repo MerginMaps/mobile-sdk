@@ -22,6 +22,32 @@ how to do diff `diff -rupN file.orig file`
 
 Download prebuild android SDKs from the GitHub Artifacts
 
+# Linux (Ubuntu)
+
+You can download prebuild android SDKs from the GitHub Artifacts. If you want local build, you should:
+
+- install vcpkg, clone input-sdk, install QT and adjust env
+```
+export ROOT_DIR=/users/bob/repo
+export BUILD_DIR=$ROOT_DIR/build-sdk/linux-x86_64
+export SOURCE_DIR=ROOT_DIR/input-sdk
+export VCPKG_ROOT=ROOT_DIR/vcpkg
+export Qt5_DIR=/opt/Qt/X.Y.Z/linux-x86_64
+```
+
+- run CMake to build deps and test project
+```
+cmake -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release -S $SOURCE_DIR/vcpkg-test "-DCMAKE_MODULE_PATH:PATH=$SOURCE_DIR/vcpkg-test/cmake" "-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-linux -DVCPKG_OVERLAY_TRIPLETS=$SOURCE_DIR$/vcpkg-overlay/triplets -DVCPKG_OVERLAY_PORTS=$SOURCE_DIR/vcpkg-overlay/ports
+cmake --build $BUILD_DIR --verbose
+```
+
+- run tests 
+```
+$BUILD_DIR/inputsdktest.exe
+```
+
+- the resulting build tree is then located at `$BUILD_DIR/vcpkg_installed`
+
 # Windows
 
 You can download prebuild android SDKs from the GitHub Artifacts. If you want local build, you should:

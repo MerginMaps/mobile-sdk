@@ -19,15 +19,39 @@ jobs:
       UBUNTU_VERSION: 2204
       QT_VERSION: '5.14.2'
       CACHE_VERSION: 5
-
+      TRIPLET: "x64-linux"
+      VCPKG_BASELINE: "5bb332b432e0fa3899de1a2ef8fc4c10c435408d" # compatible with vcpkg.json baseline
+      VCPKG_ROOT: "/home/runner/vcpkg_root" # We need a lot of space for vcpkg build/install dir
+      
     steps:
+      - name: Check disk space
+        run: |
+            df --output=avail -h "/home/runner/" | tail -n 1
+          
       - uses: actions/checkout@v2
 
       - name: Check deps versions change
         run: |
-          CHECKSUM=$( md5sum versions.conf | cut -d ' ' -f1 )
+          CHECKSUM=$( md5sum vcpkg-test/vcpkg.json | cut -d ' ' -f1 )
           echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
+      - name: Clone vcpkg
+        shell: bash
+        run: |
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          git checkout $VCPKG_BASELINE
+
+      - name: Cache vcpkg
+        id: cache-vcpkg-tool
+        uses: pat-s/always-upload-cache@v3.0.1
+        with:
+          path: ${{ env.VCPKG_ROOT }}
+          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}-v${{ env.CACHE_VERSION }}
+          
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
         uses: pat-s/always-upload-cache@v2.1.5
@@ -42,13 +66,9 @@ jobs:
       - name: Install Build Dependencies
         run: |
             echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-            sudo apt-get install -y bison ca-certificates ccache cmake cmake-curses-gui dh-python expect flex flip gdal-bin \
-                            git graphviz libexiv2-dev libexpat1-dev libfcgi-dev libgdal-dev libgeos-dev \
-                            libgsl-dev libpq-dev libproj-dev libprotobuf-dev \
-                            libspatialindex-dev libspatialite-dev libsqlite3-dev libsqlite3-mod-spatialite libyaml-tiny-perl \
-                            libzip-dev libzstd-dev lighttpd locales ninja-build \
-                            pkg-config poppler-utils protobuf-compiler python3-all-dev \
-                            spawn-fcgi xauth xfonts-100dpi xfonts-75dpi xfonts-base xfonts-scalable xvfb
+            sudo apt-get update
+            sudo apt-get install -y gperf autopoint '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libgstreamer-plugins-base1.0-0 gstreamer1.0-plugins-bad
+            sudo apt-get remove -y libopenexr-dev # Avoid gdal picking this system lib up
 
       - name: Cache Qt
         id: cache-qt
@@ -66,29 +86,42 @@ jobs:
           py7zrversion: '==0.18.1'
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
-      - name: Export config.conf
-        run: |
-          touch ./linux/config.conf
-          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./linux/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCH }}"\"")"  >> ./linux/config.conf
-          cat ./linux/config.conf
-
       - name: Build Sdk
         run: |
-          ./linux/distribute.sh -mqgis
+             export PATH="$VCPKG_ROOT/bin:$PATH"
+             cd $GITHUB_WORKSPACE
+             mkdir -p ${{ github.workspace }}/build/${{ env.ARCH }}
+        
+             cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -S ${{ github.workspace }}/vcpkg-test \
+                   "-DCMAKE_MODULE_PATH:PATH=${{ github.workspace }}/vcpkg-test/cmake" \
+                   "-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+                   -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
+                   -DVCPKG_OVERLAY_TRIPLETS=${{ github.workspace }}/vcpkg-overlay/triplets \
+                   -DVCPKG_OVERLAY_PORTS=${{ github.workspace }}/vcpkg-overlay/ports
 
+             cmake --build $BUILD_DIR --verbose
+
+      - name: Run SDK Tests
+        shell: pwsh
+        run: |
+            cd build/${{ env.ARCH }}
+            ls
+            ./inputsdktest
+            
       - name: Get TimeStamp
         id: time
         uses: nanzm/get-time-action@v1.1
         with:
           timeZone: 8
           format: 'YYYYMMDD'
-
+          
       - name: Create package
         run: |
           SDK_TAR=input-sdk-ubuntu-${{ env.UBUNTU_VERSION }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd "${{ github.workspace }}/build/stage/${{ env.ARCH }}"
+          cd "${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}"
           tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
