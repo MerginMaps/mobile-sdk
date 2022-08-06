@@ -131,5 +131,5 @@ jobs:
         with:
           tag: mac-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
-          artifacts: ${{ env.SDK_TAR }}, ${{ env.SUPPORTED_FORMATS }}, ${{ env.PROJ_TAR }}
+          artifacts: "${{ env.SDK_TAR }},${{ env.SUPPORTED_FORMATS }},${{ env.PROJ_TAR }}"
           token: ${{ secrets.GITHUB_TOKEN }}
