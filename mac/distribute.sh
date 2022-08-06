@@ -561,6 +561,8 @@ function run_build() {
 	info "Run postbuild $module"
     fn=$(echo postbuild_$module)
     debug "Call $fn"
+    $fn
+    
     fold_pop
   done
 }
