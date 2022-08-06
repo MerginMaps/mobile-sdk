@@ -71,7 +71,8 @@ jobs:
             sudo apt-get remove -y libopenexr-dev # Avoid gdal picking this system lib up
             
             # fix CMake Error: CMake was unable to find a build program corresponding to "Ninja".  CMAKE_MAKE_PROGRAM is not set
-            ln -s /usr/bin/ninja /usr/bin/ninja-build
+            sudo ln -s /usr/bin/ninja /usr/bin/ninja-build
+            which ninja
 
       - name: Cache Qt
         id: cache-qt
