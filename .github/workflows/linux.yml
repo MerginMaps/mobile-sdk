@@ -18,7 +18,7 @@ jobs:
       ARCH: 'linux-x86_64'
       UBUNTU_VERSION: 2204
       QT_VERSION: '5.14.2'
-      CACHE_VERSION: 5
+      CACHE_VERSION: 6
       TRIPLET: "x64-linux"
       VCPKG_BASELINE: "5bb332b432e0fa3899de1a2ef8fc4c10c435408d" # compatible with vcpkg.json baseline
       VCPKG_ROOT: "/home/runner/vcpkg_root" # We need a lot of space for vcpkg build/install dir
