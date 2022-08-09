@@ -83,29 +83,53 @@ jobs:
 
       - name: Create package
         run: |
+          echo "Preparing SDK_TAR"
           SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-mac-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
           cd "${{ github.workspace }}/build/stage/mac"
           tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
-
-      - name: Upload Sdk in Artifacts
+          
+          echo "Preparing SUPPORTED_FORMATS"
+          SUPPORTED_FORMATS="input-sdk-gdal-supported-formats-${{ steps.time.outputs.time }}-${{ github.run_number }}.log"
+          cp ${{ github.workspace }}/build/stage/mac/supported_formats.log ${{ github.workspace }}/$SUPPORTED_FORMATS
+          echo "SUPPORTED_FORMATS=${SUPPORTED_FORMATS}" >> $GITHUB_ENV
+          
+          echo "Preparing PROJ_TAR"
+          PROJ_TAR=input-sdk-proj-mac-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+          echo "PROJ_TAR=${PROJ_TAR}" >> $GITHUB_ENV
+          echo ".. 1/2 qgis database"
+          mkdir -p ${{ github.workspace }}/proj-data/resources
+          cp ${{ github.workspace }}/build/stage/mac/QGIS.app/Contents/Resources/resources/qgis.db ${{ github.workspace }}/proj-data/resources/
+          cp ${{ github.workspace }}/build/stage/mac/QGIS.app/Contents/Resources/resources/srs.db ${{ github.workspace }}/proj-data/resources/
+          echo ".. 2/2 proj resources"
+          mkdir -p ${{ github.workspace }}/proj-data/proj
+          cp ${{ github.workspace }}/build/stage/mac/share/proj/* ${{ github.workspace }}/proj-data/proj/
+          cd "${{ github.workspace }}/proj-data"
+          tar -c -z -f ${{ github.workspace }}/${PROJ_TAR} ./
+          
+      - name: Upload SDK_TAR artifact
         uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
-          if-no-files-found: error
+          if-no-files-found: error    
 
-      - name: Upload supported formats in Artifacts
+      - name: Upload SUPPORTED_FORMATS artifact
         uses: actions/upload-artifact@v2
         with:
-          name: supported_formats.log
-          path: ${{ github.workspace }}/build/stage/mac/supported_formats.log
-          if-no-files-found: error
+          path: ${{ github.workspace }}/${{ env.SUPPORTED_FORMATS }} 
+          if-no-files-found: error 
           
+      - name: Upload PROJ_TAR artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/${{ env.PROJ_TAR }} 
+          if-no-files-found: error 
+
       - name: Create Release
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
           tag: mac-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
-          artifacts: ${{ env.SDK_TAR }}, supported_formats.log
+          artifacts: "${{ env.SDK_TAR }},${{ env.SUPPORTED_FORMATS }},${{ env.PROJ_TAR }}"
           token: ${{ secrets.GITHUB_TOKEN }}
