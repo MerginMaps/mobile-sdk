@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(geos postgresql expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3 webp curl libtiff)
+DEPS_gdal=(geos postgresql jpeg expat proj exiv2 freexl libspatialite libspatialindex libtasn1 libzip sqlite3 webp curl libtiff)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -56,7 +56,7 @@ function build_gdal() {
   fi
   
   # so the configure script can check that proj library is ok
-  export LDFLAGS="$LDFLAGS -lgeos -lproj -lsqlite3 -lcurl -ltiff -lwebp -lz -framework Security -framework CoreFoundation -framework SystemConfiguration -lc++"
+  export LDFLAGS="$LDFLAGS -lgeos -lproj -lsqlite3 -lcurl -ltiff -ljpeg -lwebp -lz -framework Security -framework CoreFoundation -framework SystemConfiguration -lc++"
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
@@ -84,11 +84,10 @@ function build_gdal() {
     --with-pcre=no \
     --with-proj=$STAGE_PATH \
     --with-png=internal \
-    --with-jpeg=internal \
+    --with-jpeg=$STAGE_PATH \
     --disable-driver-mrf \
     $GDAL_FLAGS
-
-
+  
   try $MAKESMP
   try $MAKESMP install
 

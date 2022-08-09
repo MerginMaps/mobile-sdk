@@ -110,7 +110,7 @@
         {
             "name": "tiff",
             "default-features": false,
-            "features": ["webp", "zip"]
+            "features": ["webp", "zip", "jpeg"]
         }
     ],
     "builtin-baseline": "5bb332b432e0fa3899de1a2ef8fc4c10c435408d",

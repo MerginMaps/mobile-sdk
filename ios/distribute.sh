@@ -217,7 +217,6 @@ function push_arm() {
   fi
 
   CMAKE_TOOLCHAIN_FILE=$ROOT_PATH/tools/ios.toolchain.cmake
-  export CFLAGS=
   export CFLAGS="$CFLAGS -fobjc-nonfragile-abi -fobjc-legacy-dispatch -fPIC -arch ${ARCH} -isysroot $SYSROOT"
   # TODO QtCrypto to QGIS, libxml2 to ?
   export CFLAGS="${CFLAGS} -I$STAGE_PATH/include -I$SYSROOT/usr/include/libxml2 $VERSION_MIN"
