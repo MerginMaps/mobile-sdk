@@ -2,7 +2,7 @@
 
 
 # dependencies of this recipe
-DEPS_libtiff=(webp libzip)
+DEPS_libtiff=(webp libzip jpeg)
 
 
 # default build path
@@ -42,7 +42,7 @@ function build_libtiff() {
   try cd $BUILD_PATH/libtiff/build-$ARCH
 
   push_arm
-
+  
   try $CMAKECMD \
    -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
    -DBUILD_SHARED_LIBS=OFF \
@@ -51,13 +51,17 @@ function build_libtiff() {
    -DZSTD_SUPPORT=BOOL:OFF \
    -DZSTD_FOUND=OFF \
    -DLERC_SUPPORT=BOOL:OFF \
-   -DJPEG_SUPPORT=BOOL:OFF \
+   -DJPEG_SUPPORT=BOOL:ON \
    -DZIP_SUPPORT=BOOL:ON \
-  -DBUILD_DOCS=OFF \
-  -DBUILD_CONTRIB=OFF \
-  -DBUILD_TESTS=OFF \
-  -DCMAKE_DISABLE_FIND_PACKAGE_ZSTD=ON \
-  -DANDROID=TRUE \
+   -DCMAKE_CXX_FLAGS=-DRENAME_INTERNAL_LIBJPEG_SYMBOLS \
+   -DCMAKE_C_FLAGS=-DRENAME_INTERNAL_LIBJPEG_SYMBOLS \
+   -DBUILD_DOCS=OFF \
+   -DBUILD_CONTRIB=OFF \
+   -DBUILD_TESTS=OFF \
+   -DCMAKE_DISABLE_FIND_PACKAGE_ZSTD=ON \
+   -DJPEG_INCLUDE_DIR=$STAGE_PATH/include \
+   -DJPEG_LIBRARY=$STAGE_PATH/lib/libjpeg.a \
+   -DANDROID=TRUE \
   $BUILD_libtiff
     
   try $MAKESMP install
@@ -67,9 +71,8 @@ function build_libtiff() {
 
 # function called after all the compile have been done
 function postbuild_libtiff() {
-    LIB_ARCHS=`lipo -archs ${STAGE_PATH}/lib/libtiff.a`
-    if [[ $LIB_ARCHS != *"$ARCH"* ]]; then
-      error "Library was not successfully build for ${ARCH}"
-      exit 1;
+    if [ ! -f ${STAGE_PATH}/lib/libtiff.a ]; then
+        error "Library was not successfully build for ${ARCH}"
+        exit 1;
     fi
 }

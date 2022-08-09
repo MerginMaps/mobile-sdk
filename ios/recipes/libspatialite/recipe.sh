@@ -48,7 +48,7 @@ function build_libspatialite() {
   rm $BUILD_libspatialite/src/headers/spatialite/gaiaconfig.h
 
   # so the configure script can check that proj library contains pj_init_plus
-  export LDFLAGS="$LDFLAGS -lc++ -ltiff -lwebp"  
+  export LDFLAGS="$LDFLAGS -lc++ -ltiff -lwebp -ljpeg"  
   export CFLAGS="$CFLAGS -I$BUILD_PATH/libspatialite/build-$ARCH/src/headers"
   
   try $BUILD_libspatialite/configure \

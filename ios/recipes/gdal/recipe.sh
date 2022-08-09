@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_gdal=(iconv geos postgresql expat webp proj curl libspatialite libtiff)
+DEPS_gdal=(iconv geos postgresql expat webp proj curl libspatialite libtiff jpeg)
 
 # default build path
 BUILD_gdal=$BUILD_PATH/gdal/$(get_directory $URL_gdal)
@@ -51,7 +51,7 @@ function build_gdal() {
 
   export LDFLAGS="${LDFLAGS} -liconv"
   export LDFLAGS="${LDFLAGS} -lgeos -framework Security -framework CoreFoundation -framework SystemConfiguration"
-  export LDFLAGS="$LDFLAGS -lc++ -ltiff -lwebp"  
+  export LDFLAGS="$LDFLAGS -lc++ -ltiff -lwebp -ljpeg"  
   
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
 
@@ -93,6 +93,7 @@ function build_gdal() {
     --with-podofo=no \
     --with-pdfium=no \
     --with-proj=$STAGE_PATH \
+    --with-jpeg=$STAGE_PATH \
     --disable-driver-mrf \
     --with-png=internal \
     $GDAL_FLAGS

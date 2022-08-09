@@ -45,7 +45,7 @@
    $as_echo_n "(cached) " >&6
  else
 -  ac_func_search_save_LIBS=$LIBS
-+  ac_func_search_save_LIBS="$LIBS -ltiff -lwebp"
++  ac_func_search_save_LIBS="$LIBS -ltiff -lwebp -ljpeg"
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
  
@@ -54,7 +54,7 @@
    else
      ac_res=-l$ac_lib
 -    LIBS="-l$ac_lib -lm -lpthread -lsqlite3 $ac_func_search_save_LIBS"
-+    LIBS="-l$ac_lib -lm -lsqlite3 -ltiff -lwebp $ac_func_search_save_LIBS"
++    LIBS="-l$ac_lib -lm -lsqlite3 -ltiff -lwebp -ljpeg $ac_func_search_save_LIBS"
    fi
    if ac_fn_c_try_link "$LINENO"; then :
    ac_cv_search_pj_init_plus=$ac_res

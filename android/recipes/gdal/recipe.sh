@@ -59,7 +59,7 @@ function build_gdal() {
   
   # so the configure script can check that static libraries linkage is ok
   export LDFLAGS="$LDFLAGS -lgeos_c -lgeos -lcurl -lssl -lcrypto"
-  export LDFLAGS="$LDFLAGS -ltiff -lwebp" 
+  export LDFLAGS="$LDFLAGS -ltiff -lwebp -ljpeg" 
   
   # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
@@ -81,12 +81,13 @@ function build_gdal() {
     --with-libtiff=$STAGE_PATH \
     --with-rename-internal-libgeotiff-symbols=yes \
     --with-rename-internal-shapelib-symbols=yes \
-    --with-proj-extra-lib-for-test="-ltiff -lwebp" \
+    --with-proj-extra-lib-for-test="-ltiff -lwebp -ljpeg" \
     --with-poppler=no \
     --with-libxml2=no \
     --with-podofo=no \
     --with-pdfium=no \
     --with-proj=$STAGE_PATH \
+    --with-jpeg=$STAGE_PATH \
     --with-png=internal \
     --disable-driver-mrf \
     $GDAL_FLAGS

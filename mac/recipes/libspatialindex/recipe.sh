@@ -26,7 +26,7 @@ function prebuild_libspatialindex() {
 
   # remove in release 1.9.4
   # see https://github.com/libspatialindex/libspatialindex/commit/387a5a07d4f7ab6d94d9f3aaf728f5cc81b2d944
-  try patch --verbose --forward -p1 < $RECIPE_spatialindex/patches/temporaryfile.patch
+  try patch --verbose --forward -p1 < $RECIPE_libspatialindex/patches/temporaryfile.patch
   try patch -p1 < $RECIPE_libspatialindex/patches/spatialindex.patch
   	
   touch .patched

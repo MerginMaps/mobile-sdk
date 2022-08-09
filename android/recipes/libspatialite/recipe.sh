@@ -44,7 +44,7 @@ function build_libspatialite() {
 
   # so the configure script can check that geos library is ok
   export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
-  export LDFLAGS="$LDFLAGS -lproj -ltiff -lwebp"
+  export LDFLAGS="$LDFLAGS -lproj -ltiff -lwebp -ljpeg"
   
   rm $BUILD_libspatialite/config.h
   rm $BUILD_libspatialite/src/headers/spatialite/gaiaconfig.h

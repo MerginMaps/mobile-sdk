@@ -44,7 +44,7 @@ function build_libspatialite() {
   push_env
 
   # so the configure script can check that proj library is ok
-  export LDFLAGS="$LDFLAGS -lc++ -lgeos -lproj -lsqlite3 -lcurl -ltiff -lwebp -lz -framework Security -framework CoreFoundation -framework SystemConfiguration"
+  export LDFLAGS="$LDFLAGS -lc++ -lgeos -lproj -lsqlite3 -lcurl -ltiff -ljpeg -lwebp -lz -framework Security -framework CoreFoundation -framework SystemConfiguration"
   
   rm $BUILD_libspatialite/config.h
   rm $BUILD_libspatialite/src/headers/spatialite/gaiaconfig.h
