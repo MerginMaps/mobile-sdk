@@ -26,7 +26,7 @@ function prebuild_zxing() {
 
 function shouldbuild_zxing() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libZXing.a -nt $BUILD_zxing/.patched ]; then
+  if [ $STAGE_PATH/lib/libZXing.so -nt $BUILD_zxing/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -41,7 +41,7 @@ function build_zxing() {
   try $CMAKECMD \
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_BLACKBOX_TESTS=OFF \
-    -DBUILD_SHARED_LIBS=OFF \
+    -DBUILD_SHARED_LIBS=ON \
     -DBUILD_UNIT_TESTS=OFF \
     $BUILD_zxing
   
@@ -53,7 +53,7 @@ function build_zxing() {
 
 # function called after all the compile have been done
 function postbuild_zxing() {
-    if [ ! -f ${STAGE_PATH}/lib/libZXing.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libZXing.so ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

@@ -25,7 +25,7 @@ function prebuild_qca() {
 
 function shouldbuild_qca() {
  # If lib is newer than the sourcecode skip build
- if [ ${STAGE_PATH}/lib/libqca-qt5.a -nt $BUILD_qca/.patched ]; then
+ if [ ${STAGE_PATH}/lib/libqca-qt6.a -nt $BUILD_qca/.patched ]; then
   DO_BUILD=0
  fi
 }
@@ -39,8 +39,7 @@ function build_qca() {
 
  # configure
  try ${CMAKECMD} \
-  -DQT4_BUILD=OFF \
-  -DQCA_SUFFIX=qt5 \
+  -DQT6=ON \
   -DBUILD_TESTS=OFF \
   -DBUILD_TOOLS=OFF \
   -DWITH_nss_PLUGIN=OFF \
@@ -64,7 +63,7 @@ function build_qca() {
 
 # function called after all the compile have been done
 function postbuild_qca() {
-    if [ ! -f ${STAGE_PATH}/lib/libqca-qt5.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libqca-qt6.a ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

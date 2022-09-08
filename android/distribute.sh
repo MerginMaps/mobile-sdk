@@ -25,6 +25,10 @@ if [ "X$ROOT_OUT_PATH" == "X" ]; then
   error "you need ROOT_OUT_PATH argument in config.conf"
 fi
 
+if [ "X$QT_ANDROID_BASE" == "X" ]; then
+  error "you need QT_ANDROID_BASE argument in config.conf"
+fi
+
 # Resolve Python path
 PYTHON="$(which python3)"
 if [ "X$PYTHON" == "X" ]; then
@@ -194,13 +198,27 @@ function push_arm() {
   export OLD_LD=$LD
   export OLD_CMAKECMD=$CMAKECMD
   export OLD_ANDROID_CMAKE_LINKER_FLAGS=$ANDROID_CMAKE_LINKER_FLAGS
-
+  export OLD_QT_BASE=$QT_BASE  
+  
   # this must be something depending of the API level of Android
   PYPLATFORM=$($PYTHON -c 'from __future__ import print_function; import sys; print(sys.platform)')
   if [ "$PYPLATFORM" == "linux2" ]; then
     PYPLATFORM="linux"
+    QT_HOST_PLATFORM="linux"
   elif [ "$PYPLATFORM" == "linux3" ]; then
     PYPLATFORM="linux"
+    QT_HOST_PLATFORM="linux"
+  elif [ "$PYPLATFORM" == "darwin" ]; then
+    PYPLATFORM="darwin"
+    QT_HOST_PLATFORM="macos"
+  else 
+    echo "Not supported HOST plaform"
+    exit 1;  
+  fi
+  
+  if [ ! -d "$QT_ANDROID_BASE/$QT_HOST_PLATFORM" ]; then
+      echo "Error: Host QT required too! Install $QT_ANDROID_BASE/$QT_HOST_PLATFORM"
+      exit 1
   fi
 
   # Setup compiler toolchain based on CPU architecture
@@ -211,6 +229,7 @@ function push_arm() {
       export TOOLCHAIN_BASEDIR=arm-linux-androideabi
       export QT_ARCH_PREFIX=armv7
       export ANDROID_SYSTEM=android
+      export QT_BASE=$QT_ANDROID_BASE/android_armv7
   elif [ "X${ARCH}" == "Xarm64-v8a" ]; then
       export TOOLCHAIN_FULL_PREFIX=aarch64-linux-android${ANDROIDAPI}
       export TOOLCHAIN_SHORT_PREFIX=aarch64-linux-android
@@ -218,15 +237,35 @@ function push_arm() {
       export TOOLCHAIN_BASEDIR=aarch64-linux-android
       export QT_ARCH_PREFIX=arm64 # watch out when changing this, openssl depends on it
       export ANDROID_SYSTEM=android64
+      export QT_BASE=$QT_ANDROID_BASE/android_arm64_v8a
   else
       echo "Error: Please report issue to enable support for arch (${ARCH})."
       exit 1
   fi
+  
+  if [ ! -d "$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH" ]; then
+      echo "Error: $ANDROIDNDK error 1."
+      exit 1
+  fi
 
-  export CFLAGS="-DANDROID -fomit-frame-pointer --sysroot $NDKPLATFORM -I$STAGE_PATH/include"
+  if [ ! -d "$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_PREFIX/$ANDROIDAPI" ]; then
+      echo "Error: $ANDROIDNDK error 2."
+      exit 1
+  fi
+
+  if [ ! -d "$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/bin/" ]; then
+      echo "Error: $ANDROIDNDK error 3."
+      exit 1
+  fi
+  
+  if [ ! -d "$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_SHORT_PREFIX/$ANDROIDAPI" ]; then
+      echo "Error: $ANDROIDNDK error 4."
+      exit 1
+  fi
+
+  export CFLAGS="-DANDROID -fomit-frame-pointer -I$STAGE_PATH/include"
   export CFLAGS="$CFLAGS -Wno-unused-command-line-argument"
-  export CFLAGS="$CFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH -isystem $ANDROIDNDK/sources/cxx-stl/llvm-libc++/include"
-  export CFLAGS="$CFLAGS -isystem $ANDROIDNDK/sysroot/usr/include -isystem $ANDROIDNDK/sysroot/usr/include/$TOOLCHAIN_SHORT_PREFIX "
+  export CFLAGS="$CFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
   export CFLAGS="$CFLAGS -D__ANDROID_API__=$ANDROIDAPI"
 
   export LDFLAGS="-lm -L$STAGE_PATH/lib"
@@ -251,7 +290,7 @@ function push_arm() {
 
   export ANDROID_CMAKE_LINKER_FLAGS=""
   # for libGLESv2.so and similar
-  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$QT_ARCH_PREFIX/usr/lib"
+  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_SHORT_PREFIX/$ANDROIDAPI"
 
   # folder with libc++_shared.so
   ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
@@ -263,7 +302,7 @@ function push_arm() {
 
   ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-llog"
 
-  # for libQt5AndroidExtras_arm64-v8a.so and similar
+  # for libQt6*.so
   ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$QT_BASE/lib"
 
   export PATH="$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/bin/:$ANDROIDSDK/tools:$ANDROIDNDK:$QT_BASE/bin:$PATH"
@@ -304,7 +343,14 @@ function push_arm() {
   export CMAKECMD="$CMAKECMD -DCMAKE_FIND_ROOT_PATH:PATH=$ANDROID_NDK;$QT_BASE;$BUILD_PATH;$STAGE_PATH"
   export CMAKECMD="$CMAKECMD -DCMAKE_PREFIX_PATH=${QT_BASE}"
   export CMAKECMD="$CMAKECMD -DANDROID_ABI=$ARCH -DANDROID_NDK=$ANDROID_NDK -DANDROID_NATIVE_API_LEVEL=$ANDROIDAPI -DANDROID=ON -DANDROID_STL=c++_shared"
-
+  export CMAKECMD="$CMAKECMD -DQt6_DIR:PATH=$QT_BASE/lib/cmake"
+  
+  # Looks like iOS doesn't have these, but requires them for Qt6::Core
+  export CMAKECMD="$CMAKECMD -DQt6CoreTools_DIR:PATH=$QT_ANDROID_BASE/$QT_HOST_PLATFORM/lib/cmake/Qt6CoreTools"
+  export CMAKECMD="$CMAKECMD -DQt6LinguistTools_DIR:PATH=$QT_ANDROID_BASE/$QT_HOST_PLATFORM/lib/cmake/Qt6LinguistTools"
+  export CMAKECMD="$CMAKECMD -DQt6WidgetsTools_DIR:PATH=$QT_ANDROID_BASE/$QT_HOST_PLATFORM/lib/cmake/Qt6WidgetsTools"
+  export CMAKECMD="$CMAKECMD -DQt6GuiTools_DIR:PATH=$QT_ANDROID_BASE/$QT_HOST_PLATFORM/lib/cmake/Qt6GuiTools"
+  
   # export environment for Qt
   export ANDROID_NDK_ROOT=$ANDROIDNDK
   # and for cmake
@@ -326,6 +372,7 @@ function pop_arm() {
   export MAKE=$OLD_MAKE
   export CMAKECMD=$OLD_CMAKECMD
   export ANDROID_CMAKE_LINKER_FLAGS=$OLD_ANDROID_CMAKE_LINKER_FLAGS
+  export QT_BASE=$OLD_QT_BASE
 }
 
 function usage() {
@@ -426,8 +473,6 @@ function run_prepare() {
       echo "Error: Please report issue to enable support for newer arch (${ARCH})."
       exit 1
   fi
-
-  export NDKPLATFORM="$ANDROIDNDK/platforms/android-$ANDROIDAPI/arch-$SHORTARCH"
 
   info "Check mandatory tools"
   # ensure that some tools are existing

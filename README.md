@@ -32,14 +32,14 @@ set ROOT_DIR=C:\Users\Peter\repo
 set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
 set SOURCE_DIR=%ROOT_DIR%\input-sdk
 set VCPKG_ROOT=%ROOT_DIR%\vcpkg
-set Qt5_DIR=C:\Qt\5.14.2\msvc2017_64
+set Qt6_DIR=C:\Qt\6.3.2\msvc2019_64
 set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
-"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
 ```
 
 - run CMake to build deps and test project
 ```
-cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test "-DCMAKE_MODULE_PATH:PATH=%SOURCE_DIR%\vcpkg-test\cmake" "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" -G "Visual Studio 17 2022" -A x64 -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets -DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports
+cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test "-DCMAKE_MODULE_PATH:PATH=%SOURCE_DIR%\vcpkg-test\cmake" "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" -G "Visual Studio 16 2019" -A x64 -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets -DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports
 cmake --build %BUILD_DIR% --config Release --verbose
 ```
 
@@ -54,14 +54,32 @@ cmake --build %BUILD_DIR% --config Release --verbose
 
 Download prebuild iOS SDKs from the GitHub Artifacts
 
-[iOS notes](ios/ios.md)
+## Manual Build
+1. you need to have Qt installed
+2. copy and modify config.conf.default to config.conf with your setup
+3. run `distribute.sh -mqgis`
+
+- if you want armv7 and different SDK, you may try to build QT yourself (not tested)
+- all libraries are STATIC, due to some limitation for iOS platform (distribution on AppStore, Qt
+distribution for iOS, etc.)
+- sometimes you need to debug from XCode (generated project); use RelWithDb, not full debug build
 
 # MacOS
 
 Download prebuild mac SDKs from the GitHub Artifacts
 
 ## Manual Build
-1. you need to have Qt installed
+1. you need to have Qt installed (with Qt Connectivity, Qt Multimedia, Qt Positioning, Qt Sensort, Qt5 Compatibility Module)
+2. copy and modify config.conf.default to config.conf with your setup
+3. run `distribute.sh -mqgis`
+
+# Linux 
+
+We use Ubuntu LTS for building. Download prebuild ubuntu SDKs from the GitHub Artifacts
+
+## Manual Build
+1. you need to have Qt installed (with Qt Connectivity, Qt Multimedia, Qt Positioning, Qt Sensort, Qt5 Compatibility Module)
+2. Check `.github/workflows/linux.yml` for list of apt packages to install
 2. copy and modify config.conf.default to config.conf with your setup
 3. run `distribute.sh -mqgis`
 

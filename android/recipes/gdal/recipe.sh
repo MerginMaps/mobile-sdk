@@ -24,13 +24,7 @@ function prebuild_gdal() {
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_gdal
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_gdal
   
-  
-  
   try patch -p1 < $RECIPE_gdal/patches/configure.patch
-  
-  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
-  try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
-  try patch -p1 < $RECIPE_gdal/patches/png_rename.patch
    
   touch .patched
 }
@@ -61,7 +55,7 @@ function build_gdal() {
   export LDFLAGS="$LDFLAGS -lgeos_c -lgeos -lcurl -lssl -lcrypto"
   export LDFLAGS="$LDFLAGS -ltiff -lwebp -ljpeg" 
   
-  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
+  # We have external JPEG, but still with renamed symbols
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   export CPPFLAGS="${CPPFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   
@@ -74,6 +68,8 @@ function build_gdal() {
     --build=x86_64 \
     --prefix=$STAGE_PATH \
     --with-sqlite3=$STAGE_PATH \
+    --with-webp=$STAGE_PATH \
+    --with-curl=$STAGE_PATH \
     --with-spatialite=yes \
     --with-geos=$STAGE_PATH/bin/geos-config \
     --with-pg=no \
@@ -84,6 +80,10 @@ function build_gdal() {
     --with-proj-extra-lib-for-test="-ltiff -lwebp -ljpeg" \
     --with-poppler=no \
     --with-libxml2=no \
+    --with-zstd=no \
+    --with-pcre=no \
+    --with-lz4=no \
+    --with-pcre2=no \
     --with-podofo=no \
     --with-pdfium=no \
     --with-proj=$STAGE_PATH \
@@ -91,7 +91,7 @@ function build_gdal() {
     --with-png=internal \
     --disable-driver-mrf \
     $GDAL_FLAGS
-
+      
   try $MAKESMP static-lib
   try $MAKESMP install-static-lib
   

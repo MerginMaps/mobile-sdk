@@ -40,7 +40,7 @@ function build_openssl() {
   push_arm
   export CC=$TOOLCHAIN_FULL_PREFIX-clang
   export CFLAGS=""
-  export ANDROID_NDK_HOME=$ANDROIDNDK
+  export ANDROID_NDK_HOME="$ANDROIDNDK"
   
   try $BUILD_openssl/Configure shared ${SSL_ARCH} -D__ANDROID_API__=$ANDROIDAPI --prefix=/
   ${MAKE} depend

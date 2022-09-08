@@ -20,14 +20,12 @@ function prebuild_qtkeychain() {
     return
   fi
 
-  # try patch --verbose --forward -p1 < $RECIPE_qtkeychain/patches/cxx11.patch
-
   touch .patched
 }
 
 function shouldbuild_qtkeychain() {
  # If lib is newer than the sourcecode skip build
- if [ ${STAGE_PATH}/lib/libqt5keychain.a -nt $BUILD_qtkeychain/.patched ]; then
+ if [ ${STAGE_PATH}/lib/libqt6keychain.a -nt $BUILD_qtkeychain/.patched ]; then
   DO_BUILD=0
  fi
 }
@@ -41,22 +39,21 @@ function build_qtkeychain() {
 
  # configure
  try ${CMAKECMD} \
-  -DQT4_BUILD=OFF \
-  -DQCA_SUFFIX=qt5 \
-  -DBUILD_TEST_APPLICATION=OFF \
-  -DBUILD_TOOLS=OFF \
-  -DWITH_nss_PLUGIN=OFF \
-  -DWITH_pkcs11_PLUGIN=OFF \
-  -DQTKEYCHAIN_STATIC=TRUE \
+     -DBUILD_WITH_QT6=ON \
+     -DBUILD_TEST_APPLICATION=OFF \
+     -DBUILD_SHARED_LIBS=OFF \
+     -DBUILD_TOOLS=OFF \
+     -DWITH_nss_PLUGIN=OFF \
+     -DWITH_pkcs11_PLUGIN=OFF \
   $BUILD_qtkeychain
  try $MAKESMP install
 
  pop_arm
 }
-
+    
 # function called after all the compile have been done
 function postbuild_qtkeychain() {
-  LIB_ARCHS=`lipo -archs ${STAGE_PATH}/lib/libqt5keychain.a`
+  LIB_ARCHS=`lipo -archs ${STAGE_PATH}/lib/libqt6keychain.a`
   if [[ $LIB_ARCHS != *"$ARCH"* ]]; then
     error "Library was not successfully build for ${ARCH}"
     exit 1;

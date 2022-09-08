@@ -56,7 +56,6 @@ function build_proj() {
     -DENABLE_CURL=OFF \
     -DPROJ_CMAKE_SUBDIR=share/cmake/proj4 \
     -DPROJ_DATA_SUBDIR=share/proj \
-    -DENABLE_CURL=ON \
     -DPROJ_LIB_ENV_VAR_TRIED_LAST=OFF \
     -DTIFF_INCLUDE_DIR=$STAGE_PATH/include \
     -DTIFF_LIBRARY=$STAGE_PATH/lib/libtiff.a \

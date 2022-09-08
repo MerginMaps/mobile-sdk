@@ -15,13 +15,18 @@ jobs:
     runs-on: macos-11
     if: github.repository == 'merginmaps/input-sdk'
     env:
-      QT_VERSION: 5.14.2
+      QT_VERSION: 6.3.2
       ARCHES: 'mac'
-      CACHE_VERSION: 1
-
+      CACHE_VERSION: 0
+      MACOSX_DEPLOYMENT_TARGET: 10.15.0
+      XC_VERSION: ${{ '13.2.1' }}
+      
     steps:
       - uses: actions/checkout@v2
 
+      - name: Select latest Xcode
+        run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
+        
       - name: Check deps versions change
         run: |
           CHECKSUM=`md5 -r versions.conf | cut -d\  -f1`
@@ -41,33 +46,29 @@ jobs:
       - name: Install Build Dependencies
         run: |
           echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-          brew install bison flex automake shtool gtk-doc
+          brew install bison flex automake shtool gtk-doc cmake
           echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
 
-      - name: Cache Qt
-        id: cache-qt
-        uses: pat-s/always-upload-cache@v2.1.5
-        with:
-          path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-mac
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           target: desktop
           dir: ${{ github.workspace }}
-          py7zrversion: '==0.18.1'
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning'
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-mac
 
       - name: Export config.conf
         run: |
           touch ./mac/config.conf
           echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./mac/config.conf
-          echo -e "export QT_BASE="/opt/Qt/${{ env.QT_BASE }}/clang_64""  >> ./mac/config.conf
+          echo -e "export QT_BASE="/opt/Qt/${{ env.QT_BASE }}/macos""  >> ./mac/config.conf
           echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./mac/config.conf
           echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./mac/config.conf
+          echo -e "export MACOSX_DEPLOYMENT_TARGET=("\""${{ env.MACOSX_DEPLOYMENT_TARGET }}"\"")"  >> ./mac/config.conf
           cat ./mac/config.conf
 
       - name: Build Sdk

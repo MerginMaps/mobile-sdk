@@ -27,6 +27,17 @@ if [ "X$QT_VERSION" == "X" ]; then
   error "you need QT_VERSION argument in config.conf"
 fi
 
+if [ ! -f "$QT_BASE/ios/bin/qmake" ]; then
+    echo "$QT_BASE/ios/bin/qmake does not exist"
+    exit 1
+fi
+
+if [ ! -f "$QT_BASE/macos/bin/qmake" ]; then
+    echo "$QT_BASE/macos/bin/qmake does not exist. Host QT required too!"
+    exit 1
+fi
+
+
 # Paths
 ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"
@@ -194,10 +205,11 @@ function push_arm() {
   fi
 
   QT_PATH="$QT_BASE/ios"
+  
   # Test QT libraries are compiled for this architecture
-  QT_ARCHS=`lipo -archs ${QT_PATH}/lib/libQt5Core.a`
+  QT_ARCHS=`lipo -archs ${QT_PATH}/lib/libQt6Core.a`
   if [[ $QT_ARCHS != *"$ARCH"* ]]; then
-    error "${QT_PATH}/lib/libQt5Core.a is available only for $QT_ARCHS, not $ARCH"
+    error "${QT_PATH}/lib/libQt6Core.a is available only for $QT_ARCHS, not $ARCH"
     exit 1;
   fi
 
@@ -236,6 +248,12 @@ function push_arm() {
   CMAKECMD="${CMAKECMD} -DDEPLOYMENT_TARGET=${IOS_MIN_SDK_VERSION} -DQT_PATH=$QT_PATH"
   CMAKECMD="$CMAKECMD -DCMAKE_PREFIX_PATH:PATH=$QT_PATH;$BUILD_PATH;$STAGE_PATH"
 
+  # Looks like iOS doesn't have these, but requires them for Qt6::Core
+  CMAKECMD="$CMAKECMD -DQt6CoreTools_DIR:PATH=$QT_BASE/macos/lib/cmake/Qt6CoreTools"
+  CMAKECMD="$CMAKECMD -DQt6LinguistTools_DIR:PATH=$QT_BASE/macos/lib/cmake/Qt6LinguistTools"
+  CMAKECMD="$CMAKECMD -DQt6WidgetsTools_DIR:PATH=$QT_BASE/macos/lib/cmake/Qt6WidgetsTools"
+  CMAKECMD="$CMAKECMD -DQt6GuiTools_DIR:PATH=$QT_BASE/macos/lib/cmake/Qt6GuiTools"
+  
   if false; then
     CMAKECMD="${CMAKECMD} -DENABLE_BITCODE=1"
     CFLAGS="${CFLAGS} -fembed-bitcode"

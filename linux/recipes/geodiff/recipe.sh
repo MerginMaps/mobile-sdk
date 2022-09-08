@@ -27,7 +27,7 @@ function prebuild_geodiff() {
 
 function shouldbuild_geodiff() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libgeodiff.a -nt $BUILD_geodiff/.patched ]; then
+  if [ $STAGE_PATH/lib/libgeodiff.so -nt $BUILD_geodiff/.patched ]; then
     DO_BUILD=0
   fi
 }
@@ -42,8 +42,8 @@ function build_geodiff() {
   try $CMAKECMD \
     -DENABLE_TESTS=OFF \
     -DBUILD_TOOLS=OFF \
-    -DBUILD_STATIC=ON \
-    -DBUILD_SHARED=OFF \
+    -DBUILD_STATIC=OFF \
+    -DBUILD_SHARED=ON \
     -DWITH_POSTGRESQL=OFF \
     $BUILD_geodiff/geodiff
 
@@ -54,7 +54,7 @@ function build_geodiff() {
 
 # function called after all the compile have been done
 function postbuild_geodiff() {
-    if [ ! -f ${STAGE_PATH}/lib/libgeodiff.a ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libgeodiff.so ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

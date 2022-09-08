@@ -23,15 +23,12 @@ function prebuild_jpeg() {
     return
   fi
 
-  try cp $RECIPE_jpeg/patches/CMakeLists.txt $BUILD_jpeg/frmts/jpeg/libjpeg/
   # so it is not picked by install step!
-  try cp $RECIPE_jpeg/patches/cpl_port.h $BUILD_jpeg/frmts/jpeg/ 
-  try rm $BUILD_jpeg/frmts/jpeg/libjpeg/makefile.vc
+  try cp $RECIPE_jpeg/patches/cpl_port.h $BUILD_jpeg/frmts/jpeg/
   
-  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
-  try patch -p1 < $RECIPE_jpeg/patches/jpeg_rename.patch
+  try rm $BUILD_jpeg/frmts/jpeg/libjpeg/CMakeLists.txt
+  try cp $RECIPE_jpeg/patches/CMakeLists.txt $BUILD_jpeg/frmts/jpeg/libjpeg/
 
-  
   touch .patched
 }
 

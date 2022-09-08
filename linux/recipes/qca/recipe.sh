@@ -24,7 +24,7 @@ function prebuild_qca() {
 }
 
 function shouldbuild_qca() {
- if [ -f $STAGE_PATH/lib/libqca-qt5.so ]; then
+ if [ -f $STAGE_PATH/lib/libqca-qt6.so ]; then
   DO_BUILD=0
  fi
 }
@@ -38,16 +38,17 @@ function build_qca() {
 
  # configure
  try $CMAKECMD \
-  -DQT4_BUILD=OFF \
-  -DQCA_SUFFIX=qt5 \
-  -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
-  -DBUILD_TESTS=OFF \
-  -DBUILD_TOOLS=OFF \
-  -DWITH_nss_PLUGIN=OFF \
-  -DWITH_pkcs11_PLUGIN=OFF \
-  -DWITH_gcrypt_PLUGIN=OFF \
-  -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE \
-  -DBUILD_SHARED_LIBS=ON \
+     -DQT6=ON \
+     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+     -DBUILD_TESTS=OFF \
+     -DBUILD_TOOLS=OFF \
+     -DWITH_nss_PLUGIN=OFF \
+     -DWITH_pkcs11_PLUGIN=OFF \
+     -DWITH_gnupg_PLUGIN=OFF \
+     -DWITH_gcrypt_PLUGIN=OFF \
+     -DWITH_botan_PLUGIN=NO \
+     -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE \
+     -DBUILD_SHARED_LIBS=ON \
   $BUILD_qca
 
  try $MAKESMP install
@@ -57,7 +58,7 @@ function build_qca() {
 
 # function called after all the compile have been done
 function postbuild_qca() {
-    if [ ! -f $STAGE_PATH/lib/libqca-qt5.so ]; then
+    if [ ! -f $STAGE_PATH/lib/libqca-qt6.so ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

@@ -15,17 +15,23 @@ jobs:
   android_build:
     runs-on: macos-11
     env:
-      QT_VERSION: '5.14.2'
+      QT_VERSION: '6.3.2'
       ANDROIDAPI: 24
-      NDK_VERSION: r21
+      NDK_VERSION: r22
+      NDK_VERSION_FULL: r22b
+      JDK_VERSION: 1.8
       SDK_PLATFORM: android-30
-      SDK_BUILD_TOOLS: 28.0.3
-      CACHE_VERSION: 1
+      SDK_BUILD_TOOLS: 31.0.0
+      CACHE_VERSION: 0
       ARCHES: "armeabi-v7a arm64-v8a"
-
+      XC_VERSION: ${{ '13.2.1' }}
+      
     steps:
       - uses: actions/checkout@v2
 
+      - name: Select latest Xcode
+        run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
+        
       - name: Check deps versions change
         run: |
           CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
@@ -41,42 +47,54 @@ jobs:
           restore-keys: |
             cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
             cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
-
+          
       - name: Install Build Dependencies
         run: |
           echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
           brew install bison flex automake shtool gtk-doc
           echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
+          pip3 install -U pip
+          pip3 install aqtinstall
 
       - name: Cache Qt
         id: cache-qt
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v3-${{ env.QT_VERSION }}-android
-
+          key: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-android
+          
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
-        with:
-          version: ${{ env.QT_VERSION }}
-          target: android
-          arch: android
-          dir: ${{ github.workspace }}
-          py7zrversion: '==0.18.1'
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
-
+        if: steps.cache-qt.outputs.cache-hit != 'true'
+        run: |
+          aqt install-qt \
+            mac android ${{ env.QT_VERSION }} android_arm64_v8a \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
+            -O ${{ github.workspace }}/Qt
+            
+          aqt install-qt \
+            mac android ${{ env.QT_VERSION }} android_armv7 \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
+            -O ${{ github.workspace }}/Qt
+        
+          aqt install-qt \
+            mac desktop ${{ env.QT_VERSION }} \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
+            -O ${{ github.workspace }}/Qt
+          
+          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
+          
        # Android SDK & NDK
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r21e
+          ndk-version: ${{ env.NDK_VERSION_FULL }}
           add-to-path: true
 
-      - name: Set up JDK 1.8
+      - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-         java-version: 1.8
+         java-version: ${{ env.JDK_VERSION }}
 
       - name: Setup Android SDK
         uses: malinskiy/action-android/install-sdk@release/0.1.2
@@ -94,7 +112,7 @@ jobs:
           echo -e "export ANDROIDSDK=${ANDROID_HOME}"  >> ./android/config.conf
           echo -e "export ANDROIDNDK=${{ steps.setup-ndk.outputs.ndk-path }}"  >> ./android/config.conf
           echo -e "export ANDROIDNDKVER=${{ env.NDK_VERSION }}"  >> ./android/config.conf
-          echo -e "export QT_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android"  >> ./android/config.conf
+          echo -e "export QT_ANDROID_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}"  >> ./android/config.conf
           echo -e "export ANDROIDAPI=${{ env.ANDROIDAPI }}"  >> ./android/config.conf
           echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./android/config.conf
           cat ./android/config.conf

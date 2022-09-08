@@ -26,9 +26,6 @@ function prebuild_iconv() {
   try cp $ROOT_OUT_PATH/.packages/config.sub "$BUILD_iconv/libcharset/build-aux"
   try cp $ROOT_OUT_PATH/.packages/config.guess "$BUILD_iconv/libcharset/build-aux"
 
-  try patch -p1 < $RECIPE_iconv/patches/iconv.patch
-  try patch -p1 < $RECIPE_iconv/patches/charset.patch
-
   touch .patched
 }
 
@@ -46,7 +43,10 @@ function build_iconv() {
 
   push_arm
 
-  try $BUILD_iconv/configure --prefix=$STAGE_PATH --host=${TOOLCHAIN_PREFIX} --disable-shared
+  try $BUILD_iconv/configure \
+      --prefix=$STAGE_PATH \
+      --host=${TOOLCHAIN_PREFIX} \
+      --disable-shared
 
   # iconv library is present in iOS SDK, just build charset library that is missing
   cd libcharset

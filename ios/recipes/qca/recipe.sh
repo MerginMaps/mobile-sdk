@@ -27,7 +27,7 @@ function prebuild_qca() {
 
 function shouldbuild_qca() {
  # If lib is newer than the sourcecode skip build
- if [ ${STAGE_PATH}/lib/libqca-qt5.a -nt $BUILD_qca/.patched ]; then
+ if [ ${STAGE_PATH}/lib/libqca-qt6.a -nt $BUILD_qca/.patched ]; then
   DO_BUILD=0
  fi
 }
@@ -41,27 +41,28 @@ function build_qca() {
 
  # configure
  try ${CMAKECMD} \
-  -DQT4_BUILD=OFF \
-  -DQCA_SUFFIX=qt5 \
-  -DBUILD_TESTS=OFF \
-  -DBUILD_TOOLS=OFF \
-  -DBUILD_SHARED_LIBS=OFF \
-  -DWITH_nss_PLUGIN=OFF \
-  -DWITH_pkcs11_PLUGIN=OFF \
-  -DWITH_gnupg_PLUGIN=OFF \
-  -DWITH_gcrypt_PLUGIN=OFF \
-  -DOSX_FRAMEWORK=OFF \
-  -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE \
-  -DLIBRARY_TYPE=STATIC \
+     -DQT6=ON \
+     -DBUILD_TESTS=OFF \
+     -DBUILD_TOOLS=OFF \
+     -DWITH_nss_PLUGIN=OFF \
+     -DWITH_pkcs11_PLUGIN=OFF \
+     -DWITH_gnupg_PLUGIN=OFF \
+     -DWITH_gcrypt_PLUGIN=OFF \
+     -DOSX_FRAMEWORK=OFF \
+     -DWITH_botan_PLUGIN=NO \
+     -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE \
+     -DLIBRARY_TYPE=STATIC \
+     -DBUILD_SHARED_LIBS=OFF \
   $BUILD_qca
+ 
  try $MAKESMP install
-
+     
  pop_arm
 }
 
 # function called after all the compile have been done
 function postbuild_qca() {
-  LIB_ARCHS=`lipo -archs ${STAGE_PATH}/lib/libqca-qt5.a`
+  LIB_ARCHS=`lipo -archs ${STAGE_PATH}/lib/libqca-qt6.a`
   if [[ $LIB_ARCHS != *"$ARCH"* ]]; then
     error "Library was not successfully build for ${ARCH}"
     exit 1;

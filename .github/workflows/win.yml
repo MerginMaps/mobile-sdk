@@ -17,29 +17,35 @@ concurrency:
 jobs:
   win64_build:
     if: ( github.repository == 'MerginMaps/input-sdk' )
-    runs-on: windows-2022
+    runs-on: windows-2019
     
     env:
-      QT_VERSION: 5.14.2
+      QT_VERSION: '6.3.2'
       CACHE_VERSION: 0
-      DEPS_CHECKSUM: 2 # TODO, calculate from vcpkg.json ?
       ARCH: "win64"
       TRIPLET: "x64-windows"
-      VS_VERSION: "2022"
-      CMAKE_GENERATOR: "Visual Studio 17 2022"
+      VS_VERSION: "2019"
+      CMAKE_GENERATOR: "Visual Studio 16 2019" # see https://github.com/actions/runner-images/blob/main/images/win/Windows2019-Readme.md
       CMAKE_ARCH: "x64"
-      VCPKG_BASELINE: "5bb332b432e0fa3899de1a2ef8fc4c10c435408d" # compatible with vcpkg.json baseline
+      QT_ARCH: "win64_msvc2019_64" # run: aqt list $QT_VERSION windows desktop
+      VCPKG_BASELINE: "a291bcad8093f9f17988fe66543aefd674812f0e" # compatible with vcpkg.json baseline
       VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
       
     steps:
       - run: Get-PSDrive
       
       - uses: actions/checkout@v2
-
+ 
+ 
       - name: Prepare vars
         id: vars
         shell: bash
         run: |
+          # Check deps versions change          
+          DEPS_CHECKSUM=`md5sum vcpkg-test/vcpkg.json | cut -d\  -f1`
+          echo "::set-output name=DEPS_CHECKSUM::$DEPS_CHECKSUM"
+          echo "DEPS_CHECKSUM: $DEPS_CHECKSUM"
+          
           WORKSPACE_DIR=$(cygpath -m "${{ github.workspace }}")
           echo "::set-output name=WORKSPACE_DIR::$WORKSPACE_DIR"
           echo "WORKSPACE_DIR: $WORKSPACE_DIR"
@@ -59,7 +65,7 @@ jobs:
         uses: pat-s/always-upload-cache@v3.0.1
         with:
           path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}-v${{ env.CACHE_VERSION }}
+          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}
           
       - name: Prepare build cache for branch/tag
         # use a fork of actions/cache@v2 to upload cache even when the build or test failed
@@ -67,33 +73,33 @@ jobs:
         with:
           path: ${{ github.workspace }}/build
           # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
+          key: cache-${{ steps.vars.outputs.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
+            cache-${{ steps.vars.outputs.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
+            cache-${{ steps.vars.outputs.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
           
-      - name: Cache Qt
-        id: cache-qt
-        uses: pat-s/always-upload-cache@v2.1.5
-        with:
-          path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-win64
-
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           target: desktop
+          arch: ${{ env.QT_ARCH }}
           dir: ${{ github.workspace }}
-          py7zrversion: '==0.18.1'
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning'
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-win
 
       - name: set compiler environment
         shell: cmd
         run: |
-            CALL "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
-    
-      - name: Build Sdk
+            CALL "C:\Program Files (x86)\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
+
+      - name: check QT installation
+        shell: cmd
+        run: |
+            DIR /s /b ${{ env.Qt6_Dir }}\lib\cmake
+
+      - name: Build Deps
         shell: pwsh
         run: |
           $ErrorActionPreference = 'continue'
@@ -115,10 +121,31 @@ jobs:
             -A ${{ env.CMAKE_ARCH }} `
             -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} `
             -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/triplets" `
-            -DVCPKG_OVERLAY_PORTS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/ports"
+            -DVCPKG_OVERLAY_PORTS="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/ports"
           }
+
+      - name: Upload build logs on deps failure
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: build-logs-x64-windows
+          path: |
+            ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
+
+      - name: Build Test App
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'continue'
+          function exec
+          {
+              param ( [ScriptBlock] $ScriptBlock )
+              & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
+              if ($LastExitCode -ne 0) { exit $LastExitCode }
+          }
+          $env:PATH="$env:VCPKG_ROOT;$env:PATH"
+          cd $env:GITHUB_WORKSPACE
           exec { cmake --build ${{ github.workspace }}\build\${{ env.ARCH }}. --config Release --verbose }
-          
+
       - name: Run SDK Tests
         shell: pwsh
         run: |
