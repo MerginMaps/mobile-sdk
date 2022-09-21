@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_qgis=(exiv2 protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff qtlocation zxing geodiff)
+DEPS_qgis=(exiv2 protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff zxing geodiff)
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -18,12 +18,6 @@ function prebuild_qgis() {
   # check marker
   if [ -f .patched ]; then
     return
-  fi
-
-  module_dir=$(eval "echo \$O4iOS_qgis_DIR")
-  if [ "$module_dir" ]
-  then
-    echo "\$O4iOS_qgis_DIR is not empty, manually patch your files if needed!"
   fi
 
   touch .patched
@@ -50,6 +44,7 @@ function build_qgis() {
     -DDISABLE_DEPRECATED=ON \
     -DWITH_QTWEBKIT=OFF \
     -DWITH_EPT=OFF \
+    -DWITH_COPC=OFF \
     -DWITH_PDAL=OFF \
     -DFORCE_STATIC_LIBS=TRUE \
     -DQT_LRELEASE_EXECUTABLE=`which lrelease` \
@@ -68,8 +63,8 @@ function build_qgis() {
     -DGEOS_LIBRARY=$STAGE_PATH/lib/libgeos_c.a \
     -DGEOS_LIB_NAME_WITH_PREFIX=-lgeos_c \
     -DGEOS_VERSION=$VERSION_geos \
-    -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt5/QtCrypto \
-    -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5.a \
+    -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt6/QtCrypto \
+    -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt6.a \
     -DQCA_VERSION_STR=$VERSION_qca \
     -DPROJ_INCLUDE_DIR=$STAGE_PATH/include \
     -DPROJ_LIBRARY=$STAGE_PATH/lib/libproj.a \
@@ -86,15 +81,14 @@ function build_qgis() {
     -DPOSTGRES_CONFIG_PREFER_PATH= \
     -DPOSTGRES_INCLUDE_DIR=$STAGE_PATH/include \
     -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.a \
-    -DQTKEYCHAIN_INCLUDE_DIR=$STAGE_PATH/include/qt5keychain \
-    -DQTKEYCHAIN_LIBRARY=$STAGE_PATH/lib/libqt5keychain.a \
+    -DQTKEYCHAIN_INCLUDE_DIR=$STAGE_PATH/include/qt6keychain \
+    -DQTKEYCHAIN_LIBRARY=$STAGE_PATH/lib/libqt6keychain.a \
     -DSPATIALINDEX_INCLUDE_DIR=$STAGE_PATH/include/spatialindex \
     -DSPATIALINDEX_LIBRARY=$STAGE_PATH/lib/libspatialindex.a \
     -DSPATIALITE_INCLUDE_DIR=$STAGE_PATH/include \
     -DSPATIALITE_LIBRARY=$STAGE_PATH/lib/libspatialite.a \
     -DPYTHON_EXECUTABLE=`which python3` \
     -DWITH_QT5SERIALPORT=OFF \
-    -DWITH_INTERNAL_POLY2TRI=OFF \
     -DWITH_BINDINGS=OFF \
     -DWITH_INTERNAL_SPATIALITE=OFF \
     -DWITH_ANALYSIS=OFF \
@@ -103,9 +97,8 @@ function build_qgis() {
     -DWITH_QTMOBILITY=OFF \
     -DWITH_QUICK=OFF \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
-    -DPoly2Tri_INCLUDE_DIR=$STAGE_PATH/include/poly2tri \
-    -DPoly2Tri_LIBRARY=$QT_PATH/lib/libpoly2tri.a \
-    -DENABLE_QT5=ON \
+    -DWITH_INTERNAL_POLY2TRI=TRUE \
+    -DBUILD_WITH_QT6=ON \
     -DENABLE_TESTS=OFF \
     -DEXIV2_INCLUDE_DIR=$STAGE_PATH/include \
     -DEXIV2_LIBRARY=$STAGE_PATH/lib/libexiv2.a \

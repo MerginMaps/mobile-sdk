@@ -17,7 +17,7 @@ jobs:
     env:
       ARCH: 'linux-x86_64'
       UBUNTU_VERSION: 2204
-      QT_VERSION: '5.14.2'
+      QT_VERSION: '6.3.2'
       CACHE_VERSION: 0
 
     steps:
@@ -42,29 +42,23 @@ jobs:
       - name: Install Build Dependencies
         run: |
             echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-            sudo apt-get install -y bison ca-certificates ccache cmake cmake-curses-gui dh-python expect flex flip gdal-bin \
-                            git graphviz libexiv2-dev libexpat1-dev libfcgi-dev libgdal-dev libgeos-dev \
-                            libgsl-dev libpq-dev libproj-dev libprotobuf-dev \
-                            libspatialindex-dev libspatialite-dev libsqlite3-dev libsqlite3-mod-spatialite libyaml-tiny-perl \
+            sudo apt-get install -y bison ca-certificates ccache cmake cmake-curses-gui dh-python expect flex flip \
+                            git graphviz libexiv2-dev libexpat1-dev libfcgi-dev libgeos-dev \
+                            libgsl-dev libfreexl-dev libpq-dev libprotobuf-dev \
+                            libspatialindex-dev libsqlite3-dev libyaml-tiny-perl \
                             libzip-dev libzstd-dev lighttpd locales ninja-build \
                             pkg-config poppler-utils protobuf-compiler python3-all-dev \
                             spawn-fcgi xauth xfonts-100dpi xfonts-75dpi xfonts-base xfonts-scalable xvfb
 
-      - name: Cache Qt
-        id: cache-qt
-        uses: pat-s/always-upload-cache@v2.1.5
-        with:
-          path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}
-
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           setup-python: 'false'
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning'
           dir: ${{ github.workspace }}
-          py7zrversion: '==0.18.1'
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-lnx
 
       - name: Export config.conf
         run: |

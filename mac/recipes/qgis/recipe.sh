@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_qgis=(exiv2 protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff qtlocation zxing geodiff)
+DEPS_qgis=(exiv2 protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff zxing geodiff)
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -39,25 +39,21 @@ function build_qgis() {
  
   # we want to produce CRSSYNC database here (at least somewhere)
   # so we can add it to release artefacts
-  export LDFLAGS="$LDFLAGS -L$STAGE_PATH/lib -lgeodiff  -lproj -lZXing -lqt5keychain -lqca-qt5 -lgdal -lpq -lspatialite -lcharset -lxml2 -ltasn1 -lbz2 -lproj -lspatialindex -lgeos -lgeos_c -lprotobuf-lite -lexpat -lfreexl -lexiv2 -lexiv2-xmp -ltiff -lsqlite3 -liconv -lz -lzip -lwebp -ljpeg -lcurl -framework Security -framework CoreFoundation -framework SystemConfiguration"
+  export LDFLAGS="$LDFLAGS -L$STAGE_PATH/lib -lgeodiff  -lproj -lZXing -lqt6keychain -lqca-qt6 -lgdal -lpq -lspatialite -lcharset -lxml2 -ltasn1 -lbz2 -lproj -lspatialindex -lgeos -lgeos_c -lprotobuf-lite -lexpat -lfreexl -lexiv2 -lexiv2-xmp -ltiff -lsqlite3 -liconv -lz -lzip -lwebp -ljpeg -lcurl -framework Security -framework CoreFoundation -framework SystemConfiguration"
   
   try ${CMAKECMD} \
+    -DBUILD_WITH_QT6=ON \
     -DQGIS_MAC_DEPS_DIR=$STAGE_PATH \
     -DWITH_BINDINGS=FALSE \
     -DWITH_DESKTOP=OFF \
     -DWITH_EPT=OFF \
+    -DWITH_COPC=OFF \
     -DWITH_PDAL=OFF \
     -DWITH_ANALYSIS=OFF \
     -DDISABLE_DEPRECATED=ON \
     -DWITH_QTWEBKIT=OFF \
-    -DWITH_GRASS=OFF \
-    -DWITH_GEOREFERENCER=OFF \
-    -DWITH_QTMOBILITY=OFF \
     -DWITH_QUICK=OFF \
-    -DENABLE_QT5=ON \
     -DENABLE_TESTS=OFF \
-    -DWITH_INTERNAL_QWTPOLAR=OFF \
-    -DWITH_QWTPOLAR=OFF \
     -DWITH_GUI=OFF \
     -DWITH_APIDOC=OFF \
     -DWITH_ASTYLE=OFF \
@@ -68,6 +64,7 @@ function build_qgis() {
     -DQGIS_MACAPP_BUNDLE=-1 \
     -DFORCE_STATIC_LIBS=TRUE \
     -DUSE_OPENCL=OFF \
+    -DWITH_QT5SERIALPORT=OFF \
     -DPOSTGRES_INCLUDE_DIR=$STAGE_PATH/include \
     -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.a \
     $BUILD_qgis

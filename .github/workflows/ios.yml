@@ -15,9 +15,9 @@ jobs:
     runs-on: macos-11
     env:
       IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
-      QT_VERSION: '5.14.2'
+      QT_VERSION: '6.3.2'
       ARCHES: 'arm64'
-      CACHE_VERSION: 1
+      CACHE_VERSION: 0
       XC_VERSION: ${{ '13.2.1' }}
 
     steps:
@@ -45,27 +45,37 @@ jobs:
       - name: Install Build Dependencies
         run: |
           echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-          brew install bison flex automake shtool gtk-doc
+          brew install bison flex automake shtool gtk-doc cmake
           echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
-
+          pip3 install -U pip
+          pip3 install aqtinstall
+      
+      # cannot use install-qt-action@v3 due to missing input-sdk/Qt/6.3.x/macos/bin/qmake
+      # see also https://github.com/miurahr/aqtinstall/issues/503
       - name: Cache Qt
         id: cache-qt
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-ios
-
+          key: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-ios
+          
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
-        with:
-          version: ${{ env.QT_VERSION }}
-          target: ios
-          setup-python: 'false'
-          dir: ${{ github.workspace }}
-          py7zrversion: '==0.18.1'
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
-
+        if: steps.cache-qt.outputs.cache-hit != 'true'
+        run: |
+          aqt install-qt \
+            mac ios ${{ env.QT_VERSION }} \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
+            -O ${{ github.workspace }}/Qt
+            
+          aqt install-qt \
+            mac desktop ${{ env.QT_VERSION }} \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
+            -O ${{ github.workspace }}/Qt
+            
+          ls -la ${{ github.workspace }}/Qt
+          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
+          
       - name: Export config.conf
         run: |
           touch ./ios/config.conf
@@ -76,6 +86,10 @@ jobs:
           echo -e "export MACOSX_DEPLOYMENT_TARGET=${{ env.IOS_MIN_SDK_VERSION }}"  >> ./ios/config.conf
           echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./ios/config.conf
           cat ./ios/config.conf
+          
+          ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/ios/bin/qmake --version
+          which cmake 
+          cmake --version
 
       - name: Build Sdk
         run: |

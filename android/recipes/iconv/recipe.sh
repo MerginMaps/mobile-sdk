@@ -21,7 +21,6 @@ function prebuild_iconv() {
     return
   fi
 
-  try patch -p1 < $RECIPES_PATH/iconv/patches/libiconv.patch
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_iconv/build-aux
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_iconv/build-aux
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_iconv/libcharset/build-aux
@@ -43,15 +42,16 @@ function build_iconv() {
   try cd $BUILD_PATH/iconv/build-$ARCH
 
   push_arm
-
+  
   try $BUILD_iconv/configure \
     --prefix=$STAGE_PATH \
     --host=$TOOLCHAIN_PREFIX \
     --build=x86_64 \
-    --disable-shared
+    --enable-shared=no
   
   try $MAKESMP
   try make install
+
 
   pop_arm
 }

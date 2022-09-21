@@ -26,10 +26,6 @@ function prebuild_gdal() {
   
   try patch -p1 < $RECIPE_gdal/patches/configure.patch
   
-  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
-  try patch -p1 < $RECIPE_gdal/patches/jpeg_rename.patch
-  try patch -p1 < $RECIPE_gdal/patches/png_rename.patch
-  
   patch_configure_file configure
 
   touch .patched
@@ -58,7 +54,7 @@ function build_gdal() {
   # so the configure script can check that proj library is ok
   export LDFLAGS="$LDFLAGS -lgeos -lproj -lsqlite3 -lcurl -ltiff -ljpeg -lwebp -lz -framework Security -framework CoreFoundation -framework SystemConfiguration -lc++"
   
-  # this is backporting https://github.com/OSGeo/gdal/commit/f3090267d5c30e4560df5cde7ee3c805a8a2ddab to released 3.1.3
+  # We have external JPEG, but still with renamed symbols
   export CFLAGS="${CFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   export CPPFLAGS="${CPPFLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS"
   
@@ -84,6 +80,11 @@ function build_gdal() {
     --with-pcre=no \
     --with-proj=$STAGE_PATH \
     --with-png=internal \
+    --with-rename-internal-libpng-symbols=yes \
+    --with-lz4=no \
+    --with-pcre2=no \
+    --with-heif=no \
+    --with-exr=no \
     --with-jpeg=$STAGE_PATH \
     --disable-driver-mrf \
     $GDAL_FLAGS

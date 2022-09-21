@@ -25,7 +25,7 @@ function prebuild_qtkeychain() {
 
 function shouldbuild_qtkeychain() {
  # If lib is newer than the sourcecode skip build
- if [ ${STAGE_PATH}/lib/libqt5keychain.a -nt $BUILD_qtkeychain/.patched ]; then
+ if [ ${STAGE_PATH}/lib/libqt6keychain.a -nt $BUILD_qtkeychain/.patched ]; then
   DO_BUILD=0
  fi
 }
@@ -39,13 +39,12 @@ function build_qtkeychain() {
 
  # configure
  try ${CMAKECMD} \
-  -DQT4_BUILD=OFF \
-  -DQCA_SUFFIX=qt5 \
+  -DBUILD_WITH_QT6=ON \
   -DBUILD_TEST_APPLICATION=OFF \
+  -DBUILD_SHARED_LIBS=OFF \
   -DBUILD_TOOLS=OFF \
   -DWITH_nss_PLUGIN=OFF \
   -DWITH_pkcs11_PLUGIN=OFF \
-  -DQTKEYCHAIN_STATIC=TRUE \
   $BUILD_qtkeychain
  
  check_file_configuration CMakeCache.txt
@@ -58,7 +57,7 @@ function build_qtkeychain() {
 
 # function called after all the compile have been done
 function postbuild_qtkeychain() {
-  if [ ! -f ${STAGE_PATH}/lib/libqt5keychain.a ]; then
+  if [ ! -f ${STAGE_PATH}/lib/libqt6keychain.a ]; then
       error "Library was not successfully build for ${ARCH}"
       exit 1;
   fi

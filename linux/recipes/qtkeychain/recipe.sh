@@ -24,7 +24,7 @@ function prebuild_qtkeychain() {
 }
 
 function shouldbuild_qtkeychain() {
- if [ -f $STAGE_PATH/lib/libqt5keychain.so ]; then
+ if [ -f $STAGE_PATH/lib/libqt6keychain.so ]; then
   DO_BUILD=0
  fi
 }
@@ -38,24 +38,23 @@ function build_qtkeychain() {
 
  # configure
  try $CMAKECMD \
-  -DQT4_BUILD=OFF \
-  -DQCA_SUFFIX=qt5 \
-  -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
-  -DBUILD_TEST_APPLICATION=OFF \
-  -DBUILD_TOOLS=OFF \
-  -DWITH_nss_PLUGIN=OFF \
-  -DWITH_pkcs11_PLUGIN=OFF \
-  -DQTKEYCHAIN_STATIC=FALSE \
+      -DBUILD_WITH_QT6=ON \
+      -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
+      -DBUILD_TEST_APPLICATION=OFF \
+      -DBUILD_SHARED_LIBS=ON \
+      -DBUILD_TOOLS=OFF \
+      -DWITH_nss_PLUGIN=OFF \
+      -DWITH_pkcs11_PLUGIN=OFF \
   $BUILD_qtkeychain
 
-  try $MAKESMP VERBOSE=1 install
+  try $MAKESMP install
 
   pop_env
 }
 
 # function called after all the compile have been done
 function postbuild_qtkeychain() {
-    if [ ! -f $STAGE_PATH/lib/libqt5keychain.so ]; then
+    if [ ! -f $STAGE_PATH/lib/libqt6keychain.so ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi

@@ -8,14 +8,9 @@
             "features": [ "rtree", "json1", "fts3", "tool" ]
         },
         {
-            "name": "openssl",
-            "default-features": false,
-            "features": []
-        },
-        {
             "name": "curl",
             "default-features": false,
-            "features": [ "openssl" ]
+            "features": [ "non-http", "schannel" ]
         },
         {
             "name": "exiv2",
@@ -90,30 +85,40 @@
         {
             "name": "gdal",
             "default-features": false,
-            "features": ["libspatialite"]
-        },
-        {
-            "name": "qgis",
-            "default-features": false,
-            "features": []
-        },
-        {
-            "name": "qtkeychain",
-            "default-features": false,
-            "features": []
-        },
-        {
-            "name": "qca",
-            "default-features": false,
             "features": []
         },
         {
             "name": "tiff",
             "default-features": false,
             "features": ["webp", "zip", "jpeg"]
+        },
+        {
+            "name": "qgis-qt6",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "qtkeychain-qt6",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "qca-qt6",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "qt6",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "libpng",
+            "default-features": false,
+            "features": []
         }
     ],
-    "builtin-baseline": "5bb332b432e0fa3899de1a2ef8fc4c10c435408d",
+    "builtin-baseline": "a291bcad8093f9f17988fe66543aefd674812f0e",
     "overrides": [
         {
             "name": "tiff",
@@ -169,7 +174,7 @@
         },
         {
             "name": "libpq",
-            "version": "12.2#20"
+            "version": "12.9#1"
         },
         {
             "name": "nu-book-zxing-cpp",
@@ -181,24 +186,27 @@
         },
         {
             "name": "gdal",
-            "version": "3.1.3#5"
+            "version": "3.5.1#1"
         },
         {
-            "name": "qgis",
-            "version": "3.22.6"
+            "name": "qgis-qt6",
+            "version": "3.27.0"
         },
         {
-            "name": "qtkeychain",
-            "version": "0.13.2#1"
+            "name": "qtkeychain-qt6",
+            "version": "0.13.2#3"
         },
         {
-            "name": "qca",
-            "version": "2.3.4#3"
+            "name": "qca-qt6",
+            "version": "2.3.4#4"
         },
         {
-            "name": "openssl",
-            "version-string": "1.1.1j"
+            "name": "qt6",
+            "version": "6.3.2"
+        },
+        {
+            "name": "libpng",
+            "version": "1.6.37#19"
         }
     ]
 }
-

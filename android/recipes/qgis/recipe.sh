@@ -17,7 +17,11 @@ function prebuild_qgis() {
     if [ -f .patched ]; then
       return
     fi
-
+    
+    # REMOVE when this PR is merged:
+    # https://github.com/qgis/QGIS/pull/50210
+    try patch -p1 < $RECIPE_qgis/patches/wkbptr.patch
+    
     touch .patched
 }
 
@@ -33,12 +37,13 @@ function build_qgis() {
   try cd $BUILD_PATH/qgis/build-$ARCH
 
   push_arm
-
+      
   try $CMAKECMD \
     -DCMAKE_DISABLE_FIND_PACKAGE_HDF5=TRUE \
     -DWITH_DESKTOP=OFF \
     -DWITH_EPT=OFF \
     -DWITH_PDAL=OFF \
+    -DWITH_COPC=OFF \
     -DWITH_ANALYSIS=OFF \
     -DDISABLE_DEPRECATED=ON \
     -DWITH_QTWEBKIT=OFF \
@@ -72,12 +77,12 @@ function build_qgis() {
     -DWITH_QUICK=OFF \
     -DLIBTASN1_INCLUDE_DIR=$STAGE_PATH/include \
     -DLIBTASN1_LIBRARY=$STAGE_PATH/lib/libtasn1.a \
-    -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt5/QtCrypto \
-    -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt5.a \
-    -DQTKEYCHAIN_INCLUDE_DIR=$STAGE_PATH/include/qt5keychain \
-    -DQTKEYCHAIN_LIBRARY=$STAGE_PATH/lib/libqt5keychain.a \
+    -DQCA_INCLUDE_DIR=$STAGE_PATH/include/Qca-qt6/QtCrypto \
+    -DQCA_LIBRARY=$STAGE_PATH/lib/libqca-qt6.a \
+    -DQTKEYCHAIN_INCLUDE_DIR=$STAGE_PATH/include/qt6keychain \
+    -DQTKEYCHAIN_LIBRARY=$STAGE_PATH/lib/libqt6keychain.a \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
-    -DENABLE_QT5=ON \
+    -DBUILD_WITH_QT6=ON \
     -DENABLE_TESTS=OFF \
     -DEXPAT_INCLUDE_DIR=$STAGE_PATH/include \
     -DEXPAT_LIBRARY=$STAGE_PATH/lib/libexpat.a \
@@ -99,6 +104,7 @@ function build_qgis() {
     -DWITH_QSPATIALITE=OFF \
     $BUILD_qgis
 
+  try $MAKESMP VERBOSE=1
   try $MAKESMP install
   pop_arm
 

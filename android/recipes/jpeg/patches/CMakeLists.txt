@@ -59,8 +59,7 @@ add_library(
   jdmainct.c
   jdsample.c
   jfdctint.c
-  # jmemnobs.c
-  jmemansi.c
+  jmemnobs.c
   jquant1.c)
   
 target_include_directories(jpeg PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/..)
@@ -72,7 +71,6 @@ if (RENAME_INTERNAL_JPEG_SYMBOLS)
 endif ()
 
 # produce position independent code, default is on when building a shared library
-# we need -fPIC on android!
 # option(GDAL_OBJECT_LIBRARIES_POSITION_INDEPENDENT_CODE "Set ON to produce -fPIC code" ${BUILD_SHARED_LIBS})
 # set_property(TARGET jpeg PROPERTY POSITION_INDEPENDENT_CODE ${GDAL_OBJECT_LIBRARIES_POSITION_INDEPENDENT_CODE})
 # target_sources(${GDAL_LIB_TARGET_NAME} PRIVATE $<TARGET_OBJECTS:libjpeg>)

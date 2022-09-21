@@ -112,6 +112,10 @@ function push_env() {
   export OLD_CFLAGS=$CFLAGS
   export OLD_CXXFLAGS=$CXXFLAGS
   
+  export CFLAGS="$CFLAGS -I$STAGE_PATH/include"
+  export CXXFLAGS="$CXXFLAGS -I$STAGE_PATH/include"
+  export LDFLAGS="$LDFLAGS -L$STAGE_PATH/lib"
+  
   CMAKECMD="cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH"
   
   export MAKESMP="make" # with more cores I have on CI: c++: fatal error: Killed signal terminated program cc1plus

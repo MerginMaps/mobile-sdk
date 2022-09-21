@@ -1,0 +1,11 @@
+--- a/src/botantools/botan/botan/stl_util.h
++++ b/src/botantools/botan/botan/stl_util.h
+@@ -77,7 +77,7 @@ inline R search_map(const std::map<K, V>
+ /*************************************************
+  * Function adaptor for delete operation          *
+  *************************************************/
+-template<class T> class del_fun : public std::unary_function<T, void>
++template<class T> class del_fun
+ {
+ public:
+     void operator()(T *ptr)
