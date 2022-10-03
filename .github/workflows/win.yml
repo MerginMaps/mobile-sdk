@@ -21,7 +21,7 @@ jobs:
     
     env:
       QT_VERSION: '6.3.2'
-      CACHE_VERSION: 0
+      CACHE_VERSION: 1
       ARCH: "win64"
       TRIPLET: "x64-windows"
       VS_VERSION: "2019"
