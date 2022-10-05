@@ -281,10 +281,9 @@ function push_arm() {
       # https://github.com/android/ndk/issues/379
       # https://github.com/merginmaps/input/issues/641
       export LDFLAGS="$LDFLAGS -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libunwind.a"
-
-      export CFLAGS="$CFLAGS -fPIC"
   fi
 
+  export CFLAGS="$CFLAGS -fPIC"
   export CXXFLAGS="$CFLAGS"
   export CPPFLAGS="$CFLAGS"
 
