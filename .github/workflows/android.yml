@@ -20,7 +20,7 @@ jobs:
       NDK_VERSION: r22
       NDK_VERSION_FULL: r22b
       JDK_VERSION: 11
-      SDK_PLATFORM: android-30
+      SDK_PLATFORM: android-31
       SDK_BUILD_TOOLS: 31.0.0
       CACHE_VERSION: 1
       ARCHES: "armeabi-v7a arm64-v8a"
