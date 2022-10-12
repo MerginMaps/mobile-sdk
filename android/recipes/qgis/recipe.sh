@@ -18,10 +18,6 @@ function prebuild_qgis() {
       return
     fi
     
-    # REMOVE when this PR is merged:
-    # https://github.com/qgis/QGIS/pull/50210
-    try patch -p1 < $RECIPE_qgis/patches/wkbptr.patch
-    
     touch .patched
 }
 

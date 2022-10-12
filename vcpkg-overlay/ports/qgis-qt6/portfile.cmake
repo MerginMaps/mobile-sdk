@@ -1,5 +1,5 @@
-set(QGIS_REF 2b6121f9b98c35b2cf453dd879e3553b97f943c9) # Soon to be 3.28
-set(QGIS_SHA512 0e3e99ab794bbd8ca65c030dba21193a10a372b6fb678b95510458796edbbeb35817a83c69b33bf3a58bb00fd5e32acbc87405bbfa709a578fab11711fe5b32d)
+set(QGIS_REF 34227bdf1ce6ee14e394c833039065817648c403) # Soon to be 3.28
+set(QGIS_SHA512 9ba9ca0b6390e5865fb85f3e76e974c231224aedf5c807abe9e0afc4403562dcb526f15a3a82b9cdf1680f3b41309122f1e07e3da55b3ac237653be970bbdf36)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
@@ -14,7 +14,6 @@ vcpkg_from_github(
         exiv2.patch
         crssync.patch
         bigobj.patch
-		winextras.patch
 )
 
 file(REMOVE ${SOURCE_PATH}/cmake/FindQtKeychain.cmake)

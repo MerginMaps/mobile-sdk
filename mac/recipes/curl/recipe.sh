@@ -26,7 +26,7 @@ function prebuild_curl() {
 
 function shouldbuild_curl() {
   # If lib is newer than the sourcecode skip build
-  if [ $BUILD_PATH/curl/build-$ARCH/lib/libcurl.a -nt $BUILD_curl/.patched ]; then
+  if [ ${STAGE_PATH}/lib/libcurl.a -nt $BUILD_curl/.patched ]; then
     DO_BUILD=0
   fi
 }
