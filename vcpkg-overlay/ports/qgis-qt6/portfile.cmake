@@ -1,12 +1,11 @@
-set(QGIS_REF 34227bdf1ce6ee14e394c833039065817648c403) # Soon to be 3.28
-set(QGIS_SHA512 9ba9ca0b6390e5865fb85f3e76e974c231224aedf5c807abe9e0afc4403562dcb526f15a3a82b9cdf1680f3b41309122f1e07e3da55b3ac237653be970bbdf36)
+set(QGIS_REF final-3_28_0)
+set(QGIS_SHA512 35579ec2122059be7ec9fad7742e8e94f2bc646071cc5a5db9ba584cb44ee8784d5bbc8cf7225fda80c647c093ad06667b6388846fdd4eab01ffc14e7a0a08b3)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO qgis/QGIS
     REF ${QGIS_REF}
-    SHA512   ${QGIS_SHA512}
-    HEAD_REF master
+    SHA512 ${QGIS_SHA512}
     PATCHES
         gdal.patch
         keychain.patch
