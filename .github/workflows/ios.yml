@@ -50,8 +50,6 @@ jobs:
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
           pip3 install -U pip
           pip3 install aqtinstall
-          
-          which aqt
       
       # cannot use install-qt-action@v3 due to missing input-sdk/Qt/6.3.x/macos/bin/qmake
       # see also https://github.com/miurahr/aqtinstall/issues/503
@@ -65,12 +63,12 @@ jobs:
       - name: Install Qt
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
-          aqt install-qt \
+          python3 -m aqt install-qt \
             mac ios ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
             -O ${{ github.workspace }}/Qt
             
-          aqt install-qt \
+          python3 -m aqt install-qt \
             mac desktop ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
             -O ${{ github.workspace }}/Qt

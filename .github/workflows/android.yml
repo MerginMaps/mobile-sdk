@@ -56,30 +56,28 @@ jobs:
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
           pip3 install -U pip
           pip3 install aqtinstall
-          
-          which aqt
 
       - name: Cache Qt
         id: cache-qt
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-android
+          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-android
           
       - name: Install Qt
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
-          aqt install-qt \
+          python3 -m aqt install-qt \
             mac android ${{ env.QT_VERSION }} android_arm64_v8a \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
             -O ${{ github.workspace }}/Qt
             
-          aqt install-qt \
+          python3 -m aqt install-qt \
             mac android ${{ env.QT_VERSION }} android_armv7 \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
             -O ${{ github.workspace }}/Qt
         
-          aqt install-qt \
+          python3 -m aqt install-qt \
             mac desktop ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning \
             -O ${{ github.workspace }}/Qt
