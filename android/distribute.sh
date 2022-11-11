@@ -216,11 +216,6 @@ function push_arm() {
     exit 1;  
   fi
   
-  if [ ! -d "$QT_ANDROID_BASE/$QT_HOST_PLATFORM" ]; then
-      echo "Error: Host QT required too! Install $QT_ANDROID_BASE/$QT_HOST_PLATFORM"
-      exit 1
-  fi
-
   # Setup compiler toolchain based on CPU architecture
   if [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
       export TOOLCHAIN_FULL_PREFIX=armv7a-linux-androideabi${ANDROIDAPI}
@@ -240,6 +235,19 @@ function push_arm() {
       export QT_BASE=$QT_ANDROID_BASE/android_arm64_v8a
   else
       echo "Error: Please report issue to enable support for arch (${ARCH})."
+      exit 1
+  fi
+  
+  export QT_PATH="$QT_BASE"
+  export QT_HOST_PATH="$QT_ANDROID_BASE/$QT_HOST_PLATFORM"
+  
+  if [ ! -d "$QT_PATH" ]; then
+      echo "Error: QT_PATH $QT_PATH missing"
+      exit 1
+  fi
+  
+  if [ ! -d "$QT_HOST_PATH" ]; then
+      echo "Error: QT_HOST_PATH $QT_HOST_PATH missing"
       exit 1
   fi
   
@@ -350,13 +358,13 @@ function push_arm() {
   export CMAKECMD="$CMAKECMD -DCMAKE_FIND_ROOT_PATH:PATH=$ANDROID_NDK;$QT_BASE;$BUILD_PATH;$STAGE_PATH"
   export CMAKECMD="$CMAKECMD -DCMAKE_PREFIX_PATH=${QT_BASE}"
   export CMAKECMD="$CMAKECMD -DANDROID_ABI=$ARCH -DANDROID_NDK=$ANDROID_NDK -DANDROID_PLATFORM=android-$ANDROIDAPI -DANDROID=ON -DANDROID_STL=c++_shared"
-  export CMAKECMD="$CMAKECMD -DQt6_DIR:PATH=$QT_BASE/lib/cmake"
+  export CMAKECMD="$CMAKECMD -DQt6_DIR:PATH=$QT_BASE/lib/cmake -DQT_HOST_PATH=$QT_HOST_PATH"
   
   # Looks like iOS doesn't have these, but requires them for Qt6::Core
-  export CMAKECMD="$CMAKECMD -DQt6CoreTools_DIR:PATH=$QT_ANDROID_BASE/$QT_HOST_PLATFORM/lib/cmake/Qt6CoreTools"
-  export CMAKECMD="$CMAKECMD -DQt6LinguistTools_DIR:PATH=$QT_ANDROID_BASE/$QT_HOST_PLATFORM/lib/cmake/Qt6LinguistTools"
-  export CMAKECMD="$CMAKECMD -DQt6WidgetsTools_DIR:PATH=$QT_ANDROID_BASE/$QT_HOST_PLATFORM/lib/cmake/Qt6WidgetsTools"
-  export CMAKECMD="$CMAKECMD -DQt6GuiTools_DIR:PATH=$QT_ANDROID_BASE/$QT_HOST_PLATFORM/lib/cmake/Qt6GuiTools"
+  export CMAKECMD="$CMAKECMD -DQt6CoreTools_DIR:PATH=$QT_HOST_PATH/lib/cmake/Qt6CoreTools"
+  export CMAKECMD="$CMAKECMD -DQt6LinguistTools_DIR:PATH=$QT_HOST_PATH/lib/cmake/Qt6LinguistTools"
+  export CMAKECMD="$CMAKECMD -DQt6WidgetsTools_DIR:PATH=$QT_HOST_PATH/lib/cmake/Qt6WidgetsTools"
+  export CMAKECMD="$CMAKECMD -DQt6GuiTools_DIR:PATH=$QT_HOST_PATH/lib/cmake/Qt6GuiTools"
   
   # export environment for Qt
   export ANDROID_NDK_ROOT=$ANDROIDNDK

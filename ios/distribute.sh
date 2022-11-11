@@ -204,7 +204,18 @@ function push_arm() {
       VERSION_MIN="-miphoneos-version-min=${IOS_MIN_SDK_VERSION}"
   fi
 
-  QT_PATH="$QT_BASE/ios"
+  export QT_PATH="$QT_BASE/ios"
+  export QT_HOST_PATH="$QT_BASE/macos"
+  
+  if [ ! -d "$QT_PATH" ]; then
+      echo "Error: QT_PATH $QT_PATH missing"
+      exit 1
+  fi
+  
+  if [ ! -d "$QT_HOST_PATH" ]; then
+      echo "Error: QT_HOST_PATH $QT_HOST_PATH missing"
+      exit 1
+  fi
   
   # Test QT libraries are compiled for this architecture
   QT_ARCHS=`lipo -archs ${QT_PATH}/lib/libQt6Core.a`
@@ -245,14 +256,14 @@ function push_arm() {
   fi
   CMAKECMD="${CMAKECMD} -DENABLE_VISIBILITY=0 -DARCHS=${ARCH} -DPLATFORM=${PLATFORM}"
   CMAKECMD="${CMAKECMD} -DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH"
-  CMAKECMD="${CMAKECMD} -DDEPLOYMENT_TARGET=${IOS_MIN_SDK_VERSION} -DQT_PATH=$QT_PATH"
+  CMAKECMD="${CMAKECMD} -DDEPLOYMENT_TARGET=${IOS_MIN_SDK_VERSION} -DQT_PATH=$QT_PATH -DQT_HOST_PATH=$QT_HOST_PATH"
   CMAKECMD="$CMAKECMD -DCMAKE_PREFIX_PATH:PATH=$QT_PATH;$BUILD_PATH;$STAGE_PATH"
 
   # Looks like iOS doesn't have these, but requires them for Qt6::Core
-  CMAKECMD="$CMAKECMD -DQt6CoreTools_DIR:PATH=$QT_BASE/macos/lib/cmake/Qt6CoreTools"
-  CMAKECMD="$CMAKECMD -DQt6LinguistTools_DIR:PATH=$QT_BASE/macos/lib/cmake/Qt6LinguistTools"
-  CMAKECMD="$CMAKECMD -DQt6WidgetsTools_DIR:PATH=$QT_BASE/macos/lib/cmake/Qt6WidgetsTools"
-  CMAKECMD="$CMAKECMD -DQt6GuiTools_DIR:PATH=$QT_BASE/macos/lib/cmake/Qt6GuiTools"
+  CMAKECMD="$CMAKECMD -DQt6CoreTools_DIR:PATH=$QT_HOST_PATH/lib/cmake/Qt6CoreTools"
+  CMAKECMD="$CMAKECMD -DQt6LinguistTools_DIR:PATH=$QT_HOST_PATH/lib/cmake/Qt6LinguistTools"
+  CMAKECMD="$CMAKECMD -DQt6WidgetsTools_DIR:PATH=$QT_HOST_PATH/lib/cmake/Qt6WidgetsTools"
+  CMAKECMD="$CMAKECMD -DQt6GuiTools_DIR:PATH=$QT_HOST_PATH/lib/cmake/Qt6GuiTools"
   
   if false; then
     CMAKECMD="${CMAKECMD} -DENABLE_BITCODE=1"
