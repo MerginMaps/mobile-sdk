@@ -50,6 +50,8 @@ jobs:
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
           pip3 install -U pip
           pip3 install aqtinstall
+          
+          which aqt
       
       # cannot use install-qt-action@v3 due to missing input-sdk/Qt/6.3.x/macos/bin/qmake
       # see also https://github.com/miurahr/aqtinstall/issues/503
@@ -58,7 +60,7 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-ios
+          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-ios
           
       - name: Install Qt
         if: steps.cache-qt.outputs.cache-hit != 'true'
