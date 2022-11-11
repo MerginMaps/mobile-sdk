@@ -224,7 +224,7 @@ function push_arm() {
   # Setup compiler toolchain based on CPU architecture
   if [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
       export TOOLCHAIN_FULL_PREFIX=armv7a-linux-androideabi${ANDROIDAPI}
-      export TOOLCHAIN_SHORT_PREFIX=arm-linux-androideabi
+      export TOOLCHAIN_SHORT_PREFIX=llvm
       export TOOLCHAIN_PREFIX=arm-linux-androideabi
       export TOOLCHAIN_BASEDIR=arm-linux-androideabi
       export QT_ARCH_PREFIX=armv7
@@ -232,7 +232,7 @@ function push_arm() {
       export QT_BASE=$QT_ANDROID_BASE/android_armv7
   elif [ "X${ARCH}" == "Xarm64-v8a" ]; then
       export TOOLCHAIN_FULL_PREFIX=aarch64-linux-android${ANDROIDAPI}
-      export TOOLCHAIN_SHORT_PREFIX=aarch64-linux-android
+      export TOOLCHAIN_SHORT_PREFIX=llvm
       export TOOLCHAIN_PREFIX=aarch64-linux-android
       export TOOLCHAIN_BASEDIR=aarch64-linux-android
       export QT_ARCH_PREFIX=arm64 # watch out when changing this, openssl depends on it
@@ -248,7 +248,7 @@ function push_arm() {
       exit 1
   fi
 
-  if [ ! -d "$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_PREFIX/$ANDROIDAPI" ]; then
+  if [ ! -d "$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_BASEDIR/$ANDROIDAPI" ]; then
       echo "Error: $ANDROIDNDK error 2."
       exit 1
   fi
@@ -258,7 +258,7 @@ function push_arm() {
       exit 1
   fi
   
-  if [ ! -d "$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_SHORT_PREFIX/$ANDROIDAPI" ]; then
+  if [ ! -d "$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_BASEDIR/$ANDROIDAPI" ]; then
       echo "Error: $ANDROIDNDK error 4."
       exit 1
   fi
@@ -266,11 +266,13 @@ function push_arm() {
   export CFLAGS="-DANDROID -fomit-frame-pointer -I$STAGE_PATH/include"
   export CFLAGS="$CFLAGS -Wno-unused-command-line-argument"
   export CFLAGS="$CFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
+  export CFLAGS="$CFLAGS -U__ANDROID_MIN_SDK_VERSION__"
+  export CFLAGS="$CFLAGS -D__ANDROID_MIN_SDK_VERSION__=$ANDROIDAPI"
+  export CFLAGS="$CFLAGS -U__ANDROID_API_"
   export CFLAGS="$CFLAGS -D__ANDROID_API__=$ANDROIDAPI"
-
   export LDFLAGS="-lm -L$STAGE_PATH/lib"
   export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
-  export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_PREFIX/$ANDROIDAPI"
+  export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_BASEDIR/$ANDROIDAPI"
 
   if [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
       # make sure that symbols from the following system libs are not exported - on 32-bit ARM this was causing crashes when unwinding
@@ -289,7 +291,7 @@ function push_arm() {
 
   export ANDROID_CMAKE_LINKER_FLAGS=""
   # for libGLESv2.so and similar
-  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_SHORT_PREFIX/$ANDROIDAPI"
+  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_BASEDIR/$ANDROIDAPI"
 
   # folder with libc++_shared.so
   ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
@@ -327,6 +329,12 @@ function push_arm() {
   export MAKE="make"
   export READELF="$TOOLCHAIN_SHORT_PREFIX-readelf"
 
+  IS_AR=$(which $AR)
+  if [ "X$IS_AR" == "X" ]; then
+    error "you need $AR on PATH $PATH"
+    exit 1
+  fi
+ 
   # see https://developer.android.com/ndk/guides/cmake#variables
   # https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android
   export CMAKECMD="cmake"
@@ -341,7 +349,7 @@ function push_arm() {
   CMAKECMD="$CMAKECMD -DCMAKE_TOOLCHAIN_FILE=$ANDROIDNDK/build/cmake/android.toolchain.cmake"
   export CMAKECMD="$CMAKECMD -DCMAKE_FIND_ROOT_PATH:PATH=$ANDROID_NDK;$QT_BASE;$BUILD_PATH;$STAGE_PATH"
   export CMAKECMD="$CMAKECMD -DCMAKE_PREFIX_PATH=${QT_BASE}"
-  export CMAKECMD="$CMAKECMD -DANDROID_ABI=$ARCH -DANDROID_NDK=$ANDROID_NDK -DANDROID_NATIVE_API_LEVEL=$ANDROIDAPI -DANDROID=ON -DANDROID_STL=c++_shared"
+  export CMAKECMD="$CMAKECMD -DANDROID_ABI=$ARCH -DANDROID_NDK=$ANDROID_NDK -DANDROID_PLATFORM=android-$ANDROIDAPI -DANDROID=ON -DANDROID_STL=c++_shared"
   export CMAKECMD="$CMAKECMD -DQt6_DIR:PATH=$QT_BASE/lib/cmake"
   
   # Looks like iOS doesn't have these, but requires them for Qt6::Core

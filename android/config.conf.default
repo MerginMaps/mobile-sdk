@@ -1,17 +1,17 @@
 export ROOT_OUT_PATH=<where you want build SDK>
 
 ### Currently suggested versions ####
-export ANDROIDNDKVER=r22
+export ANDROIDNDKVER=r23
 export ANDROIDAPI=24 # == CMake's ANDROID_NATIVE_API_LEVEL == gradle's minSdkVersion == Dockerfile ANDROID_NDK_PLATFORM
 
 #### PATHS ####
 export ANDROIDSDK="/path/to/android-sdk"
 export ANDROIDNDK="/path/to/android-ndk"
-export QT_ANDROID_BASE="/path/to/qt/sdk/Qt/6.3.2"
+export QT_ANDROID_BASE="/path/to/qt/sdk/Qt/6.4.0"
 
 # For example:
 # export ANDROIDSDK="/opt/android/sdk"
-# export ANDROIDNDK="/opt/android-ndk-r22/"
+# export ANDROIDNDK="/opt/android-ndk-r23/"
 
 # QGIS needs a bison 3. On MacOS you may need
 # to install one with e.g. homebrew or qgis_deps

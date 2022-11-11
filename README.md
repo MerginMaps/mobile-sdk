@@ -17,6 +17,7 @@ Click here to download the app on your Android or iOS devices [merginmaps.com](h
 # Tips
 
 - how to do diff `diff -rupN file.orig file`
+- how to do diff from GIT `git diff master`
 - find SHA512 hash (vcpkg): `shasum -a 512 myfile.tar.gz`
 
 # Android 

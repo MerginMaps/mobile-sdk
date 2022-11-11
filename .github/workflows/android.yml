@@ -15,10 +15,10 @@ jobs:
   android_build:
     runs-on: macos-11
     env:
-      QT_VERSION: '6.3.2'
+      QT_VERSION: '6.4.0'
       ANDROIDAPI: 24
-      NDK_VERSION: r22
-      NDK_VERSION_FULL: r22b
+      NDK_VERSION: r23
+      NDK_VERSION_FULL: r23b
       JDK_VERSION: 11
       SDK_PLATFORM: android-31
       SDK_BUILD_TOOLS: 31.0.0

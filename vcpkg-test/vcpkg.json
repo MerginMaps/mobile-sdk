@@ -190,7 +190,7 @@
         },
         {
             "name": "qgis-qt6",
-            "version": "3.28.0"
+            "version": "3.28.0#1"
         },
         {
             "name": "qtkeychain-qt6",
@@ -202,7 +202,7 @@
         },
         {
             "name": "qt6",
-            "version": "6.3.2"
+            "version": "6.4.0"
         },
         {
             "name": "libpng",

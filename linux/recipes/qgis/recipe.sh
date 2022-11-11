@@ -20,6 +20,9 @@ function prebuild_qgis() {
     return
   fi
     
+  # remove when https://github.com/qgis/QGIS/pull/50866 is merged
+  try patch -p1 < $RECIPE_qgis/patches/qt640.patch
+  
   touch .patched
 }
 
