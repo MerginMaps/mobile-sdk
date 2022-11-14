@@ -10,15 +10,17 @@
  
  using namespace QKeychain;
  
-@@ -101,7 +103,11 @@ void WritePasswordJobPrivate::scheduledS
+@@ -101,7 +103,13 @@ void WritePasswordJobPrivate::scheduledS
          end.add(Calendar::YEAR, 99);
  
          const KeyPairGeneratorSpec spec =
 -                KeyPairGeneratorSpec::Builder(Context(QtAndroid::androidActivity())).
 +#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 +     KeyPairGeneratorSpec::Builder(Context(QtAndroid::androidActivity())).
-+#else
++#elif QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
 +     KeyPairGeneratorSpec::Builder(QNativeInterface::QAndroidApplication::context()).
++#else
++     KeyPairGeneratorSpec::Builder((jobject)QNativeInterface::QAndroidApplication::context()).
 +#endif
                  setAlias(alias).
                  setSubject(X500Principal(QStringLiteral("CN=QtKeychain, O=Android Authority"))).

@@ -13,6 +13,7 @@ vcpkg_from_github(
         exiv2.patch
         crssync.patch
         bigobj.patch
+        qt640.patch
 )
 
 file(REMOVE ${SOURCE_PATH}/cmake/FindQtKeychain.cmake)

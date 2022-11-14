@@ -60,9 +60,11 @@ function build_android_protobuf() {
     -Dprotobuf_BUILD_TESTS=OFF \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
     -DBUILD_SHARED_LIBS=OFF \
+    -Dprotobuf_BUILD_PROTOC_BINARIES=OFF \
     $BUILD_protobuf/cmake
 
-  try $MAKESMP
+  try $MAKESMP libprotobuf
+  try $MAKESMP libprotobuf-lite
   try $MAKE install
 
   pop_arm
