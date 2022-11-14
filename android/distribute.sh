@@ -272,7 +272,7 @@ function push_arm() {
   fi
 
   export CFLAGS="-DANDROID -fomit-frame-pointer -I$STAGE_PATH/include"
-  export CFLAGS="$CFLAGS -Wno-unused-command-line-argument"
+  export CFLAGS="$CFLAGS -Wno-unused-command-line-argument -Wno-macro-redefined"
   export CFLAGS="$CFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
   export CFLAGS="$CFLAGS -U__ANDROID_MIN_SDK_VERSION__"
   export CFLAGS="$CFLAGS -D__ANDROID_MIN_SDK_VERSION__=$ANDROIDAPI"
