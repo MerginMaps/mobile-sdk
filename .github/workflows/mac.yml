@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-11
     if: github.repository == 'merginmaps/input-sdk'
     env:
-      QT_VERSION: 6.4.0
+      QT_VERSION: 6.4.1
       ARCHES: 'mac'
       CACHE_VERSION: 0
       MACOSX_DEPLOYMENT_TARGET: 10.15.0
@@ -57,9 +57,9 @@ jobs:
           version: ${{ env.QT_VERSION }}
           target: desktop
           dir: ${{ github.workspace }}
-          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning'
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-mac
+          cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-mac
 
       - name: Export config.conf
         run: |

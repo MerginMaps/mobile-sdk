@@ -20,8 +20,8 @@ jobs:
     runs-on: windows-2019
     
     env:
-      QT_VERSION: '6.4.0'
-      CACHE_VERSION: 0
+      QT_VERSION: '6.4.1'
+      CACHE_VERSION: 1
       ARCH: "win64"
       TRIPLET: "x64-windows"
       VS_VERSION: "2019"
@@ -85,9 +85,9 @@ jobs:
           target: desktop
           arch: ${{ env.QT_ARCH }}
           dir: ${{ github.workspace }}
-          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning'
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-win
+          cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-win
 
       - name: set compiler environment
         shell: cmd
