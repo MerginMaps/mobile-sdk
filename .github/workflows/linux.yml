@@ -55,10 +55,10 @@ jobs:
         with:
           version: ${{ env.QT_VERSION }}
           setup-python: 'false'
-          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning'
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-lnx
+          cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-lnx
 
       - name: Export config.conf
         run: |
