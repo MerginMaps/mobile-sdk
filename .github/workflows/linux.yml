@@ -18,7 +18,7 @@ jobs:
       ARCH: 'linux-x86_64'
       UBUNTU_VERSION: 2204
       QT_VERSION: '6.4.1'
-      CACHE_VERSION: 0
+      CACHE_VERSION: 5
 
     steps:
       - uses: actions/checkout@v2
@@ -58,7 +58,7 @@ jobs:
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-lnx
+          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-lnx
 
       - name: Export config.conf
         run: |
