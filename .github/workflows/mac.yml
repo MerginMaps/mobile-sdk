@@ -17,7 +17,7 @@ jobs:
     env:
       QT_VERSION: 6.4.1
       ARCHES: 'mac'
-      CACHE_VERSION: 0
+      CACHE_VERSION: 1
       MACOSX_DEPLOYMENT_TARGET: 10.15.0
       XC_VERSION: ${{ '13.2.1' }}
       

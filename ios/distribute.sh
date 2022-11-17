@@ -731,6 +731,10 @@ function run() {
     run_build
     run_postbuild
   done
+  info "Copy toolchain to bundle"
+  # see https://github.com/MerginMaps/input-sdk/issues/87
+  try cp ${ROOT_PATH}/tools/ios.toolchain.cmake ${ROOT_OUT_PATH}/stage/
+  
   info "All done !"
 }
 

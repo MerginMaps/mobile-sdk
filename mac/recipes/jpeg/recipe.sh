@@ -29,6 +29,9 @@ function prebuild_jpeg() {
   try rm $BUILD_jpeg/frmts/jpeg/libjpeg/CMakeLists.txt
   try cp $RECIPE_jpeg/patches/CMakeLists.txt $BUILD_jpeg/frmts/jpeg/libjpeg/
 
+  # https://github.com/OSGeo/gdal/pull/6725
+  try patch -p1 < $RECIPE_jpeg/patches/jerror.patch
+  
   touch .patched
 }
 

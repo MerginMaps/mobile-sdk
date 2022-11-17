@@ -19,9 +19,6 @@ function prebuild_qca() {
   if [ -f .patched ]; then
     return
   fi
-  
-  # UPSTREAM patch: https://phabricator.kde.org/D23289
-  try patch -p1 < $RECIPE_qca/patches/no_setuid.patch
 
   touch .patched
 }

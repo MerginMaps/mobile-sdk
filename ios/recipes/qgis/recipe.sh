@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_qgis=(exiv2 protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff zxing geodiff)
+DEPS_qgis=(exiv2 protobuf libtasn1 gdal qca proj libspatialite libspatialindex expat postgresql libzip qtkeychain geodiff zxing geodiff poly2tri)
 
 # default build path
 BUILD_qgis=$BUILD_PATH/qgis/$(get_directory $URL_qgis)
@@ -91,6 +91,9 @@ function build_qgis() {
     -DSPATIALITE_INCLUDE_DIR=$STAGE_PATH/include \
     -DSPATIALITE_LIBRARY=$STAGE_PATH/lib/libspatialite.a \
     -DPYTHON_EXECUTABLE=`which python3` \
+    -DWITH_INTERNAL_POLY2TRI=FALSE \
+    -DPoly2Tri_INCLUDE_DIR=$STAGE_PATH/include/poly2tri \
+    -DPoly2Tri_LIBRARY=${QT_PATH}/lib/libQt6Bundled_Poly2Tri.a \
     -DWITH_QT5SERIALPORT=OFF \
     -DWITH_BINDINGS=OFF \
     -DWITH_INTERNAL_SPATIALITE=OFF \
@@ -100,7 +103,6 @@ function build_qgis() {
     -DWITH_QTMOBILITY=OFF \
     -DWITH_QUICK=OFF \
     -DCMAKE_INSTALL_PREFIX:PATH=$STAGE_PATH \
-    -DWITH_INTERNAL_POLY2TRI=TRUE \
     -DBUILD_WITH_QT6=ON \
     -DENABLE_TESTS=OFF \
     -DEXIV2_INCLUDE_DIR=$STAGE_PATH/include \
