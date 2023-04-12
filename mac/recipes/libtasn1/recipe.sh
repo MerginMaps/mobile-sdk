@@ -37,18 +37,13 @@ function shouldbuild_libtasn1() {
 # function called to build the source code
 function build_libtasn1() {
   push_env
-
-  export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
-  
-  try cd $BUILD_libtasn1
-  try $MAKE autoreconf
- 
-  patch_configure_file configure
   
   try mkdir -p $BUILD_PATH/libtasn1/build-$ARCH
   try cd $BUILD_PATH/libtasn1/build-$ARCH
-
-  try $BUILD_libtasn1/configure --disable-doc --disable-valgrind-tests --prefix=$STAGE_PATH --disable-shared
+  
+  export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
+  
+  try $BUILD_libtasn1/configure --disable-doc --disable-valgrind-tests --prefix=$STAGE_PATH --disable-shared --disable-gcc-warnings --disable-silent-rules
   try $MAKESMP install
 
   pop_env

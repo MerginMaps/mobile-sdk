@@ -1,5 +1,5 @@
-set(QGIS_REF final-3_28_0)
-set(QGIS_SHA512 35579ec2122059be7ec9fad7742e8e94f2bc646071cc5a5db9ba584cb44ee8784d5bbc8cf7225fda80c647c093ad06667b6388846fdd4eab01ffc14e7a0a08b3)
+set(QGIS_REF final-3_28_5)
+set(QGIS_SHA512 5fc375bb9c7e0a4fe19688c6c44deaff1aa4b6e0c8de0bf23b21011199030bd101f62335d71da153ed3e7f169ee67ae08a04f6bf8bc3f6f86c9c5818d8039d86)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
@@ -14,6 +14,7 @@ vcpkg_from_github(
         crssync.patch
         bigobj.patch
         qt640.patch
+        geonode.patch
 )
 
 file(REMOVE ${SOURCE_PATH}/cmake/FindQtKeychain.cmake)

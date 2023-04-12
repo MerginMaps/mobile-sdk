@@ -15,9 +15,9 @@ jobs:
     runs-on: macos-12
     env:
       IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
-      QT_VERSION: '6.4.2'
+      QT_VERSION: '6.5.0'
       ARCHES: 'arm64'
-      CACHE_VERSION: 1
+      CACHE_VERSION: 0
       XC_VERSION: ${{ '14.2' }}
 
     steps:

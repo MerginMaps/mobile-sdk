@@ -20,7 +20,7 @@ jobs:
     runs-on: windows-2019
     
     env:
-      QT_VERSION: '6.4.2'
+      QT_VERSION: '6.5.0'
       CACHE_VERSION: 0
       ARCH: "win64"
       TRIPLET: "x64-windows"
@@ -28,7 +28,7 @@ jobs:
       CMAKE_GENERATOR: "Visual Studio 16 2019" # see https://github.com/actions/runner-images/blob/main/images/win/Windows2019-Readme.md
       CMAKE_ARCH: "x64"
       QT_ARCH: "win64_msvc2019_64" # run: aqt list $QT_VERSION windows desktop
-      VCPKG_BASELINE: "a291bcad8093f9f17988fe66543aefd674812f0e" # compatible with vcpkg.json baseline
+      VCPKG_BASELINE: "203383666e2422ed31e1faebe6efa6e306bd126d" # compatible with vcpkg.json baseline
       VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
       
     steps:

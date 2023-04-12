@@ -23,6 +23,9 @@ function prebuild_qgis() {
   # remove when https://github.com/qgis/QGIS/pull/50866 is merged
   try patch -p1 < $RECIPE_qgis/patches/qt640.patch
   
+  # remove when using qgis 3.30+
+  try patch -p1 < $RECIPE_qgis/patches/geonode.patch
+  
   touch .patched
 }
 

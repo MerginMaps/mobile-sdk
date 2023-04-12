@@ -38,17 +38,18 @@ function shouldbuild_libtasn1() {
 function build_libtasn1() {
   push_arm
 
-  export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
-
-  try cd $BUILD_libtasn1
-  try $MAKE autoreconf
-
   try mkdir -p $BUILD_PATH/libtasn1/build-$ARCH
   try cd $BUILD_PATH/libtasn1/build-$ARCH
-
-  try $BUILD_libtasn1/configure --disable-doc --disable-valgrind-tests --prefix=$STAGE_PATH --host=${TOOLCHAIN_PREFIX} --disable-shared
+  
+  export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
+  
+  try $BUILD_libtasn1/configure --disable-doc --disable-valgrind-tests --prefix=$STAGE_PATH \
+    --host=$TOOLCHAIN_PREFIX \
+    --build=x86_64 \
+    --disable-shared --disable-gcc-warnings --disable-silent-rules
+  
   try $MAKESMP install
-
+  
   pop_arm
 }
 
