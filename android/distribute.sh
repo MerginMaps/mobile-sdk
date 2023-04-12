@@ -36,6 +36,13 @@ if [ "X$PYTHON" == "X" ]; then
     exit 1
 fi
 
+# Check patchelf is present
+PATCHELF="$(which patchelf)"
+if [ "X$PATCHELF" == "X" ]; then
+    error "Unable to find patchelf"
+    exit 1
+fi
+
 # Paths
 ROOT_PATH="$(dirname $($PYTHON -c 'from __future__ import print_function; import os,sys;print(os.path.realpath(sys.argv[1]))' $0))"
 STAGE_PATH="${ROOT_OUT_PATH}/stage/$ARCH"

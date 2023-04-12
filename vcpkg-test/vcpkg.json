@@ -190,7 +190,7 @@
         },
         {
             "name": "qgis-qt6",
-            "version": "3.28.5"
+            "version": "3.28.5#1"
         },
         {
             "name": "qtkeychain-qt6",

@@ -15,9 +15,11 @@ function prebuild_openssl() {
 
 function shouldbuild_openssl() {
   # If lib is newer than the sourcecode skip build
-  if [ $STAGE_PATH/lib/libssl.so -nt $BUILD_openssl/.patched ]; then
+  if [ $STAGE_PATH/lib/libssl_3.so -nt $BUILD_openssl/.patched ]; then
     DO_BUILD=0
   fi
+  
+  DO_BUILD=1
 }
 
 # function called to build the source code
@@ -44,17 +46,30 @@ function build_openssl() {
   
   try $BUILD_openssl/Configure shared ${SSL_ARCH} -D__ANDROID_API__=$ANDROIDAPI --prefix=/
   ${MAKE} depend
-  ${MAKE} DESTDIR=${STAGE_PATH} SHLIB_VERSION_NUMBER= SHLIB_EXT=_1_1.so build_libs
+  ${MAKE} DESTDIR=${STAGE_PATH} SHLIB_VERSION_NUMBER= build_libs
 
   # install
-  try ${MAKE} SHLIB_VERSION_NUMBER= SHLIB_EXT=_1_1.so DESTDIR=$STAGE_PATH install_dev install_engines
+  try ${MAKE} SHLIB_VERSION_NUMBER= DESTDIR=$STAGE_PATH install_dev
+  
+  cd $STAGE_PATH/lib
+  rm libcrypto.a
+  rm libssl.a
+  
+  
+  mv libcrypto.so libcrypto_3.so
+  try patchelf --set-soname libcrypto_3.so libcrypto_3.so
+  
+  mv libssl.so libssl_3.so
+  try patchelf --set-soname libssl_3.so libssl_3.so
+  
+  try patchelf --replace-needed libcrypto.so libcrypto_3.so libssl_3.so
 
   pop_arm
 }
 
 # function called after all the compile have been done
 function postbuild_openssl() {
-    if [ ! -f ${STAGE_PATH}/lib/libssl.so ]; then
+    if [ ! -f ${STAGE_PATH}/lib/libssl_3.so ]; then
         error "Library was not successfully build for ${ARCH}"
         exit 1;
     fi
