@@ -166,7 +166,7 @@
         },
         {
             "name": "libspatialite",
-            "version-string": "5.0.1#7"
+            "version-string": "5.0.1#11"
         },
         {
             "name": "protobuf",
