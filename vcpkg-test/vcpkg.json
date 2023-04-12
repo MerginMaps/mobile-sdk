@@ -174,7 +174,7 @@
         },
         {
             "name": "libpq",
-            "version": "12.9#1"
+            "version": "15.2#2"
         },
         {
             "name": "nu-book-zxing-cpp",
