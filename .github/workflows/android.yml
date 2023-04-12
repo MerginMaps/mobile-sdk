@@ -51,7 +51,7 @@ jobs:
       - name: Install Build Dependencies
         run: |
           echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-          brew install bison flex automake shtool gtk-doc
+          brew install bison flex automake shtool gtk-doc patchelf
           echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
           echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
           pip3 install -U pip
