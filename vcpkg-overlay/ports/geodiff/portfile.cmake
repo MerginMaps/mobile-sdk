@@ -1,5 +1,5 @@
 # Be sure to update both of these versions together.
-set(GEODIFF_VERSION 1.0.6)
+set(GEODIFF_VERSION 2.0.2)
 set(GEODIFF_HASH e91c189fd14434cb8b1975de52f986e54495a4cebde27c53ec5b4fef78ff880df3b329705b50a39ffec3c60bae62967e235fd8f60ed41d8505191184d02cae8f)
 
 vcpkg_from_github(

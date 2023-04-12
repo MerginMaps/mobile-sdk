@@ -1,6 +1,6 @@
 {
     "name": "input-sdk-vcpkg-test",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "dependencies": [
         {
             "name": "sqlite3",
@@ -118,7 +118,7 @@
             "features": []
         }
     ],
-    "builtin-baseline": "a291bcad8093f9f17988fe66543aefd674812f0e",
+    "builtin-baseline": "203383666e2422ed31e1faebe6efa6e306bd126d",
     "overrides": [
         {
             "name": "tiff",
@@ -146,7 +146,7 @@
         },
         {
             "name": "geodiff",
-            "version": "1.0.6"
+            "version": "2.0.2"
         },
         {
             "name": "libiconv",
@@ -190,7 +190,7 @@
         },
         {
             "name": "qgis-qt6",
-            "version": "3.28.0#1"
+            "version": "3.28.5"
         },
         {
             "name": "qtkeychain-qt6",
@@ -202,7 +202,7 @@
         },
         {
             "name": "qt6",
-            "version": "6.4.2"
+            "version": "6.5.0"
         },
         {
             "name": "libpng",

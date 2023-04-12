@@ -1,4 +1,4 @@
-export QT_VERSION=6.3.2
+export QT_VERSION=6.5.0
 
 export ROOT_OUT_PATH=/opt/INPUT/input-sdk-ios-DEV
 

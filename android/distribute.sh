@@ -251,10 +251,10 @@ function push_arm() {
       exit 1
   fi
   
-  if [ ! -d "$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH" ]; then
-      echo "Error: $ANDROIDNDK error 1."
-      exit 1
-  fi
+  # if [ ! -d "$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH" ]; then
+  #      echo "Error: $ANDROIDNDK error 1."
+  #    exit 1
+  # fi
 
   if [ ! -d "$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_BASEDIR/$ANDROIDAPI" ]; then
       echo "Error: $ANDROIDNDK error 2."
@@ -270,16 +270,16 @@ function push_arm() {
       echo "Error: $ANDROIDNDK error 4."
       exit 1
   fi
-
+ 
   export CFLAGS="-DANDROID -fomit-frame-pointer -I$STAGE_PATH/include"
   export CFLAGS="$CFLAGS -Wno-unused-command-line-argument -Wno-macro-redefined"
-  export CFLAGS="$CFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
+  # export CFLAGS="$CFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
   export CFLAGS="$CFLAGS -U__ANDROID_MIN_SDK_VERSION__"
   export CFLAGS="$CFLAGS -D__ANDROID_MIN_SDK_VERSION__=$ANDROIDAPI"
   export CFLAGS="$CFLAGS -U__ANDROID_API_"
   export CFLAGS="$CFLAGS -D__ANDROID_API__=$ANDROIDAPI"
   export LDFLAGS="-lm -L$STAGE_PATH/lib"
-  export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
+  # export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
   export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_BASEDIR/$ANDROIDAPI"
 
   if [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
@@ -302,7 +302,8 @@ function push_arm() {
   ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/toolchains/llvm/prebuilt/$PYPLATFORM-x86_64/sysroot/usr/lib/$TOOLCHAIN_BASEDIR/$ANDROIDAPI"
 
   # folder with libc++_shared.so
-  ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
+  # ANDROID_CMAKE_LINKER_FLAGS="$ANDROID_CMAKE_LINKER_FLAGS;-Wl,-rpath=$ANDROIDNDK/sources/cxx-stl/llvm-libc++/libs/$ARCH"
+  
   # keep in sync with CMake's -DANDROID_STL=c++_shared
   export LDFLAGS="$LDFLAGS -Wl,-lc++_shared"
 
