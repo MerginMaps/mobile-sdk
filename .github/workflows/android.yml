@@ -24,7 +24,7 @@ jobs:
       SDK_BUILD_TOOLS: 31.0.0
       CACHE_VERSION: 0
       ARCHES: "armeabi-v7a arm64-v8a"
-      XC_VERSION: ${{ '14.3' }}
+      XC_VERSION: ${{ '14.2' }}
       
     steps:
       - uses: actions/checkout@v2

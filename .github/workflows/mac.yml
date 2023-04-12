@@ -19,7 +19,7 @@ jobs:
       ARCHES: 'mac'
       CACHE_VERSION: 0
       MACOSX_DEPLOYMENT_TARGET: 10.15.0
-      XC_VERSION: ${{ '14.3' }}
+      XC_VERSION: ${{ '14.2' }}
       
     steps:
       - uses: actions/checkout@v2
