@@ -50,7 +50,9 @@ function build_postgresql() {
   try cp -v $BUILD_postgresql/src/interfaces/libpq/libpq-fe.h $STAGE_PATH/include
   try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/include/pg_config_ext.h $STAGE_PATH/include/
   try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/interfaces/libpq/libpq.a $STAGE_PATH/lib/
-
+  try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/common/libpgcommon.a $STAGE_PATH/lib/
+  try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/port/libpgport.a $STAGE_PATH/lib/
+  
   pop_arm
 }
 

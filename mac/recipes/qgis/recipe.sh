@@ -45,7 +45,7 @@ function build_qgis() {
  
   # we want to produce CRSSYNC database here (at least somewhere)
   # so we can add it to release artefacts
-  export LDFLAGS="$LDFLAGS -L$STAGE_PATH/lib -lgeodiff  -lproj -lZXing -lqt6keychain -lqca-qt6 -lgdal -lpq -lspatialite -lcharset -lxml2 -ltasn1 -lbz2 -lproj -lspatialindex -lgeos -lgeos_c -lprotobuf-lite -lexpat -lfreexl -lexiv2 -lexiv2-xmp -ltiff -lsqlite3 -liconv -lz -lzip -lwebp -ljpeg -lcurl -framework Security -framework CoreFoundation -framework SystemConfiguration"
+  export LDFLAGS="$LDFLAGS -L$STAGE_PATH/lib -lgeodiff  -lproj -lZXing -lqt6keychain -lqca-qt6 -lgdal -lpgport -lpgcommon -lpq -lpgport -lpgcommon -lspatialite -lcharset -lxml2 -ltasn1 -lbz2 -lproj -lspatialindex -lgeos -lgeos_c -lprotobuf-lite -lexpat -lfreexl -lexiv2 -lexiv2-xmp -ltiff -lsqlite3 -liconv -lz -lzip -lwebp -ljpeg -lcurl -framework Security -framework CoreFoundation -framework SystemConfiguration"
   
   try ${CMAKECMD} \
     -DBUILD_WITH_QT6=ON \

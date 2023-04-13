@@ -1,5 +1,5 @@
---- configure.orig	2023-04-13 10:16:37
-+++ configure	2023-04-13 10:17:16
+--- a/configure	
++++ b/configure	
 @@ -12906,7 +12906,7 @@ _ACEOF
    return 0;
  }
