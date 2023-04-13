@@ -18,8 +18,6 @@ function shouldbuild_openssl() {
   if [ $STAGE_PATH/lib/libssl_3.so -nt $BUILD_openssl/.patched ]; then
     DO_BUILD=0
   fi
-  
-  DO_BUILD=1
 }
 
 # function called to build the source code

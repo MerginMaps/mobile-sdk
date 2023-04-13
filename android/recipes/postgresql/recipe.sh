@@ -15,7 +15,7 @@ RECIPE_postgresql=$RECIPES_PATH/postgresql
 # (you can apply patch etc here.)
 function prebuild_postgresql() {
   cd $BUILD_postgresql
-
+  
   # check marker
   if [ -f .patched ]; then
     return
@@ -23,11 +23,14 @@ function prebuild_postgresql() {
 
   try cp $ROOT_OUT_PATH/.packages/config.sub $BUILD_postgresql/conftools
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_postgresql/conftools
-  try patch -p1 < $RECIPE_postgresql/patches/libpq.patch
-  try patch -p2 < $RECIPE_postgresql/patches/stdlib.patch
-  if [ $ANDROIDAPI -lt 26 ]; then
-    try patch -p1 < $RECIPE_postgresql/patches/langinfo.patch
-  fi
+  
+  try patch -p1 < $RECIPE_postgresql/patches/configure.patch
+  
+  # try patch -p1 < $RECIPE_postgresql/patches/libpq.patch
+  # try patch -p2 < $RECIPE_postgresql/patches/stdlib.patch
+  # if [ $ANDROIDAPI -lt 26 ]; then
+  #    try patch -p1 < $RECIPE_postgresql/patches/langinfo.patch
+  # fi
 
   touch .patched
 }
@@ -64,7 +67,8 @@ function build_postgresql() {
   try cp -v $BUILD_postgresql/src/interfaces/libpq/libpq-fe.h $STAGE_PATH/include
   try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/include/pg_config_ext.h $STAGE_PATH/include/
   try cp -v $BUILD_PATH/postgresql/build-$ARCH/src/interfaces/libpq/libpq.a $STAGE_PATH/lib/
-
+  # try $MAKE install 
+  
   pop_arm
 }
 
