@@ -52,6 +52,9 @@ function build_curl() {
     -DUSE_NGTCP2=OFF \
     -DUSE_NGHTTP2=OFF \
     -DUSE_ZLIB=OFF \
+    -DOPENSSL_SSL_LIBRARY=$STAGE_PATH/lib/libssl_3.so \
+    -DOPENSSL_CRYPTO_LIBRARY=$STAGE_PATH/lib/libcrypto_3.so \
+    -DOPENSSL_INCLUDE_DIR=$STAGE_PATH/include \
     $BUILD_curl
   
   try $MAKESMP

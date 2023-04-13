@@ -35,8 +35,7 @@ jobs:
       - run: Get-PSDrive
       
       - uses: actions/checkout@v2
- 
- 
+
       - name: Prepare vars
         id: vars
         shell: bash
@@ -165,12 +164,23 @@ jobs:
           timeZone: 8
           format: 'YYYYMMDD'
 
+      - name: Prepare pac
+        shell: bash
+        run: |
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          git checkout $VCPKG_BASELINE
+
+
       - name: Create package
-        uses: vimtor/action-zip@v1
+        uses: thedoctor0/zip-release@0.7.1
         with:
-          files: build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
-          recursive: true
-          dest: input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          type: 'zip'
+          directory: build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
+          filename: ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
