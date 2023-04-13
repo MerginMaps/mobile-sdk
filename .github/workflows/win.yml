@@ -164,17 +164,6 @@ jobs:
           timeZone: 8
           format: 'YYYYMMDD'
 
-      - name: Prepare pac
-        shell: bash
-        run: |
-          mkdir -p "${{ env.VCPKG_ROOT }}"
-          cd "${{ env.VCPKG_ROOT }}"
-          git init
-          git remote add origin https://github.com/microsoft/vcpkg.git
-          git pull origin master
-          git checkout $VCPKG_BASELINE
-
-
       - name: Create package
         uses: thedoctor0/zip-release@0.7.1
         with:
