@@ -5,7 +5,7 @@
  else
    ac_check_lib_save_LIBS=$LIBS
 -LIBS="-lcurl `$LIBCURL_CONFIG --libs` $LIBS"
-+LIBS="-lcurl -lssl -lcrypto `$LIBCURL_CONFIG --libs` $LIBS"
++LIBS="-lcurl -lssl_3 -lcrypto_3 `$LIBCURL_CONFIG --libs` $LIBS"
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
 

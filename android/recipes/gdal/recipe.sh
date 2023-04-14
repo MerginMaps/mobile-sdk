@@ -52,7 +52,7 @@ function build_gdal() {
   export CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration"
   
   # so the configure script can check that static libraries linkage is ok
-  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos -lcurl -lssl -lcrypto"
+  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos -lcurl -lssl_3 -lcrypto_3"
   export LDFLAGS="$LDFLAGS -ltiff -lwebp -ljpeg" 
   
   # We have external JPEG, but still with renamed symbols
@@ -79,7 +79,6 @@ function build_gdal() {
     --with-rename-internal-shapelib-symbols=yes \
     --with-proj-extra-lib-for-test="-ltiff -lwebp -ljpeg" \
     --with-poppler=no \
-    --with-libxml2=no \
     --with-zstd=no \
     --with-pcre=no \
     --with-lz4=no \
