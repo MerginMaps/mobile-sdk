@@ -168,9 +168,8 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          path: build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
-          directory: ${{ steps.vars.outputs.WORKSPACE_DIR }}
-          filename: input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          directory: build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
+          filename: ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
           
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
