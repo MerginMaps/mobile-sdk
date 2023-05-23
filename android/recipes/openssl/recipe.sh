@@ -22,7 +22,6 @@ function shouldbuild_openssl() {
 
 # function called to build the source code
 function build_openssl() {
-
   # Setup compiler toolchain based on CPU architecture
   if [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
       export SSL_ARCH=android-arm
@@ -53,10 +52,11 @@ function build_openssl() {
   rm libcrypto.a
   rm libssl.a
   
-  
+  $STRIP --strip-all libcrypto.so
   mv libcrypto.so libcrypto_3.so
   try patchelf --set-soname libcrypto_3.so libcrypto_3.so
   
+  $STRIP --strip-all libssl.so
   mv libssl.so libssl_3.so
   try patchelf --set-soname libssl_3.so libssl_3.so
   
