@@ -43,7 +43,7 @@ function build_libspatialite() {
   push_arm
 
   # so the configure script can check that geos library is ok
-  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos"
+  export LDFLAGS="$LDFLAGS -lgeos_c -lgeos -liconv"
   export LDFLAGS="$LDFLAGS -lproj -ltiff -lwebp -ljpeg"
   
   rm $BUILD_libspatialite/config.h

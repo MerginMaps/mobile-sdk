@@ -17,7 +17,7 @@ jobs:
     env:
       ARCH: 'linux-x86_64'
       UBUNTU_VERSION: 2204
-      QT_VERSION: '6.5.0'
+      QT_VERSION: '6.5.1'
       CACHE_VERSION: 0
 
     steps:
