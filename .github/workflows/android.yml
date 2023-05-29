@@ -21,7 +21,7 @@ jobs:
       NDK_VERSION_FULL: r25b
       JDK_VERSION: 11
       SDK_PLATFORM: android-33
-      SDK_BUILD_TOOLS: 31.0.1
+      SDK_BUILD_TOOLS: 33.0.1
       CACHE_VERSION: 0
       ARCHES: "armeabi-v7a arm64-v8a"
       XC_VERSION: ${{ '14.2' }}

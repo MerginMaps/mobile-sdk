@@ -6,13 +6,13 @@ vcpkg_from_github(
     REPO qgis/QGIS
     REF ${QGIS_REF}
     SHA512 ${QGIS_SHA512}
-    PATCHES
-        gdal.patch
-        keychain.patch
-        libxml2.patch
-        exiv2.patch
-        crssync.patch
-        bigobj.patch
+    # PATCHES
+        # gdal.patch
+        # keychain.patch
+        # libxml2.patch
+        # exiv2.patch
+        # crssync.patch
+        # bigobj.patch
 )
 
 file(REMOVE ${SOURCE_PATH}/cmake/FindQtKeychain.cmake)
