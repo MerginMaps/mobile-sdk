@@ -1,18 +1,20 @@
-set(QGIS_REF ab98551fec7e8f34079e345d5643a5c40af2ee18)
-set(QGIS_SHA512 4b7b05d2486925198e930957c6bc622779cd231c3d785e1130a1109bcd1aa40b724bf817de4944bf9813e9312858934433642fbe90e0bf02a6da1e82a49bb3f9)
+set(QGIS_REF final-3_28_5)
+set(QGIS_SHA512 5fc375bb9c7e0a4fe19688c6c44deaff1aa4b6e0c8de0bf23b21011199030bd101f62335d71da153ed3e7f169ee67ae08a04f6bf8bc3f6f86c9c5818d8039d86)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO qgis/QGIS
     REF ${QGIS_REF}
     SHA512 ${QGIS_SHA512}
-    # PATCHES
-        # gdal.patch
-        # keychain.patch
-        # libxml2.patch
-        # exiv2.patch
-        # crssync.patch
-        # bigobj.patch
+    PATCHES
+        gdal.patch
+        keychain.patch
+        libxml2.patch
+        exiv2.patch
+        crssync.patch
+        bigobj.patch
+        qt640.patch
+        geonode.patch
 )
 
 file(REMOVE ${SOURCE_PATH}/cmake/FindQtKeychain.cmake)
@@ -61,9 +63,10 @@ list(APPEND QGIS_OPTIONS -DWITH_QWTPOLAR=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_GUI=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_APIDOC=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_ASTYLE=OFF)
-list(APPEND QGIS_OPTIONS -DWITH_QTSERIALPORT=OFF)
+list(APPEND QGIS_OPTIONS -DWITH_QT5SERIALPORT=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_QUICK:BOOL=OFF)
-list(APPEND QGIS_OPTIONS -DQGIS_MACAPP_FRAMEWORK=OFF)
+list(APPEND QGIS_OPTIONS -DQGIS_MACAPP_FRAMEWORK=FALSE)
+list(APPEND QGIS_OPTIONS -DWITH_QTSERIALPORT=FALSE)
 
 # Configure debug and release library paths
 macro(FIND_LIB_OPTIONS basename relname debname suffix libsuffix)

@@ -20,6 +20,12 @@ function prebuild_qgis() {
     return
   fi
 
+  # remove when https://github.com/qgis/QGIS/pull/50866 is merged
+  try patch -p1 < $RECIPE_qgis/patches/qt640.patch
+  
+  # remove when using qgis 3.30+
+  try patch -p1 < $RECIPE_qgis/patches/geonode.patch
+  
   touch .patched
 }
 
@@ -44,7 +50,6 @@ function build_qgis() {
     -DDISABLE_DEPRECATED=ON \
     -DWITH_QTWEBKIT=OFF \
     -DWITH_EPT=OFF \
-    -DWITH_3D=OFF \
     -DWITH_COPC=OFF \
     -DWITH_PDAL=OFF \
     -DFORCE_STATIC_LIBS=TRUE \
@@ -92,7 +97,8 @@ function build_qgis() {
     -DWITH_INTERNAL_POLY2TRI=FALSE \
     -DPoly2Tri_INCLUDE_DIR=$STAGE_PATH/include/poly2tri \
     -DPoly2Tri_LIBRARY=${QT_PATH}/lib/libQt6Bundled_Poly2Tri.a \
-    -DWITH_QT5SERIALPORT=OFF \
+    -DWITH_QTSERIALPORT=OFF \
+    -DWITH_3D=OFF \
     -DWITH_BINDINGS=OFF \
     -DWITH_INTERNAL_SPATIALITE=OFF \
     -DWITH_ANALYSIS=OFF \
@@ -128,7 +134,6 @@ function build_qgis() {
     -DWITH_AUTH=ON \
     -DQGIS_MACAPP_BUNDLE=-1 \
     -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
-    -DWITH_QTSERIALPORT=OFF \
     $BUILD_qgis
 
   try $MAKESMP install

@@ -19,6 +19,12 @@ function prebuild_qgis() {
   if [ -f .patched ]; then
     return
   fi
+    
+  # remove when https://github.com/qgis/QGIS/pull/50866 is merged
+  try patch -p1 < $RECIPE_qgis/patches/qt640.patch
+  
+  # remove when using qgis 3.30+
+  try patch -p1 < $RECIPE_qgis/patches/geonode.patch
   
   touch .patched
 }
@@ -52,7 +58,6 @@ function build_qgis() {
       -DWITH_GUI=OFF \
       -DWITH_APIDOC=OFF \
       -DWITH_ASTYLE=OFF \
-      -DWITH_QT5SERIALPORT=OFF \
       -DWITH_QSPATIALITE=OFF \
       -DWITH_3D=FALSE \
       -DWITH_QGIS_PROCESS=OFF \

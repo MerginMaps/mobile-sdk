@@ -1,0 +1,11 @@
+--- a/src/core/geocms/geonode/qgsgeonoderequest.cpp
++++ b/src/core/geocms/geonode/qgsgeonoderequest.cpp
+@@ -426,7 +426,7 @@ QgsGeoNodeStyle QgsGeoNodeRequest::retrieveStyle( cons
+     return geoNodeStyle;
+   }
+ 
+-  success = geoNodeStyle.body.setContent( this->lastResponse() );
++  success = bool(geoNodeStyle.body.setContent( this->lastResponse() ));
+   if ( !success )
+   {
+     return geoNodeStyle;

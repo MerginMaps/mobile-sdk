@@ -17,7 +17,13 @@ function prebuild_qgis() {
     if [ -f .patched ]; then
       return
     fi
-
+    
+    # remove when https://github.com/qgis/QGIS/pull/50866 is merged
+    try patch -p1 < $RECIPE_qgis/patches/qt640.patch
+    
+    # remove when using qgis 3.30+
+    try patch -p1 < $RECIPE_qgis/patches/geonode.patch
+    
     touch .patched
 }
 
@@ -39,7 +45,6 @@ function build_qgis() {
     -DWITH_DESKTOP=OFF \
     -DWITH_EPT=OFF \
     -DWITH_PDAL=OFF \
-    -DWITH_3D=OFF \
     -DWITH_COPC=OFF \
     -DWITH_ANALYSIS=OFF \
     -DDISABLE_DEPRECATED=ON \
@@ -90,7 +95,8 @@ function build_qgis() {
     -DWITH_APIDOC=OFF \
     -DWITH_ASTYLE=OFF \
     -DWITH_QUICK=OFF \
-    -DWITH_QT5SERIALPORT=OFF \
+    -DWITH_QTSERIALPORT=OFF \
+    -DWITH_3D=OFF \
     -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     -DWITH_QGIS_PROCESS=OFF \
     -DProtobuf_PROTOC_EXECUTABLE:FILEPATH=$NATIVE_STAGE_PATH/bin/protoc \
@@ -99,7 +105,6 @@ function build_qgis() {
     -DProtobuf_LITE_LIBRARY=$STAGE_PATH/lib/libprotobuf-lite.a \
     -DProtobuf_PROTOC_LIBRARY=$STAGE_PATH/lib/libprotoc.a \
     -DWITH_QSPATIALITE=OFF \
-    -DWITH_QTSERIALPORT=OFF \
     $BUILD_qgis
 
   try $MAKESMP VERBOSE=1
