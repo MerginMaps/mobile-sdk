@@ -20,11 +20,6 @@ function prebuild_qtkeychain() {
     return
   fi
 
-  try patch -p1 < $RECIPE_qtkeychain/patches/androidkeystore.patch
-  try patch -p1 < $RECIPE_qtkeychain/patches/androidkeystore_p.patch
-  try patch -p1 < $RECIPE_qtkeychain/patches/cmake.patch
-  try patch -p1 < $RECIPE_qtkeychain/patches/keychain_android.patch
-  
   touch .patched
 }
 

@@ -8,7 +8,7 @@ export ANDROIDAPI=28 # == CMake's ANDROID_NATIVE_API_LEVEL == gradle's minSdkVer
 #### PATHS ####
 export ANDROIDSDK="/path/to/android-sdk"
 export ANDROIDNDK="/path/to/android-ndk"
-export QT_ANDROID_BASE="/path/to/qt/sdk/Qt/6.5.0"
+export QT_ANDROID_BASE="/path/to/qt/sdk/Qt/6.5.1"
 
 # For example:
 # export ANDROIDSDK="/opt/android/sdk"
