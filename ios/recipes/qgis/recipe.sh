@@ -98,6 +98,7 @@ function build_qgis() {
     -DPoly2Tri_INCLUDE_DIR=$STAGE_PATH/include/poly2tri \
     -DPoly2Tri_LIBRARY=${QT_PATH}/lib/libQt6Bundled_Poly2Tri.a \
     -DWITH_QTSERIALPORT=OFF \
+    -DWITH_QT5SERIALPORT=OFF \
     -DWITH_3D=OFF \
     -DWITH_BINDINGS=OFF \
     -DWITH_INTERNAL_SPATIALITE=OFF \

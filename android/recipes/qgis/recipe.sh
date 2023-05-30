@@ -96,6 +96,7 @@ function build_qgis() {
     -DWITH_ASTYLE=OFF \
     -DWITH_QUICK=OFF \
     -DWITH_QTSERIALPORT=OFF \
+    -DWITH_QT5SERIALPORT=OFF \
     -DWITH_3D=OFF \
     -DNATIVE_CRSSYNC_BIN=/usr/bin/true \
     -DWITH_QGIS_PROCESS=OFF \

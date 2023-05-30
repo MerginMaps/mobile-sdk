@@ -64,6 +64,7 @@ function build_qgis() {
       -DFORCE_STATIC_LIBS=TRUE \
       -DUSE_OPENCL=OFF \
       -DWITH_QTSERIALPORT=OFF \
+      -DWITH_QT5SERIALPORT=OFF \
       -DGDAL_CONFIG=$STAGE_PATH/bin/gdal-config \
     $BUILD_qgis
   

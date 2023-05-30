@@ -70,6 +70,7 @@ function build_qgis() {
     -DFORCE_STATIC_LIBS=TRUE \
     -DUSE_OPENCL=OFF \
     -DWITH_QTSERIALPORT=OFF \
+    -DWITH_QT5SERIALPORT=OFF \
     -DPOSTGRES_INCLUDE_DIR=$STAGE_PATH/include \
     -DPOSTGRES_LIBRARY=$STAGE_PATH/lib/libpq.a \
     $BUILD_qgis
