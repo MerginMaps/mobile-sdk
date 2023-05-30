@@ -15,14 +15,14 @@ jobs:
   android_build:
     runs-on: macos-12
     env:
-      QT_VERSION: '6.5.0'
-      ANDROIDAPI: 24
+      QT_VERSION: '6.5.1'
+      ANDROIDAPI: 28
       NDK_VERSION: r25b
       NDK_VERSION_FULL: r25b
       JDK_VERSION: 11
-      SDK_PLATFORM: android-31
-      SDK_BUILD_TOOLS: 31.0.0
-      CACHE_VERSION: 4
+      SDK_PLATFORM: android-33
+      SDK_BUILD_TOOLS: 33.0.1
+      CACHE_VERSION: 0
       ARCHES: "armeabi-v7a arm64-v8a"
       XC_VERSION: ${{ '14.2' }}
       

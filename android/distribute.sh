@@ -340,7 +340,7 @@ function push_arm() {
   export AR="$TOOLCHAIN_SHORT_PREFIX-ar"
   export RANLIB="$TOOLCHAIN_SHORT_PREFIX-ranlib"
   export LD="$TOOLCHAIN_SHORT_PREFIX-ld"
-  export STRIP="$TOOLCHAIN_SHORT_PREFIX-strip --strip-unneeded"
+  export STRIP="$TOOLCHAIN_SHORT_PREFIX-strip"
   export MAKESMP="make -j$CORES"
   export MAKE="make"
   export READELF="$TOOLCHAIN_SHORT_PREFIX-readelf"

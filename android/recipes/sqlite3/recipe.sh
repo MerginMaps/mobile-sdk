@@ -3,7 +3,7 @@
 # version of your package in ../../../versions.conf
 
 # dependencies of this recipe
-DEPS_sqlite3=()
+DEPS_sqlite3=(openssl)
 
 # default build path
 BUILD_sqlite3=$BUILD_PATH/sqlite3/sqlite-autoconf-$URL_sqlite3_BASE

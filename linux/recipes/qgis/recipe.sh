@@ -58,12 +58,12 @@ function build_qgis() {
       -DWITH_GUI=OFF \
       -DWITH_APIDOC=OFF \
       -DWITH_ASTYLE=OFF \
-      -DWITH_QT5SERIALPORT=OFF \
       -DWITH_QSPATIALITE=OFF \
       -DWITH_3D=FALSE \
       -DWITH_QGIS_PROCESS=OFF \
       -DFORCE_STATIC_LIBS=TRUE \
       -DUSE_OPENCL=OFF \
+      -DWITH_QTSERIALPORT=OFF \
       -DWITH_QT5SERIALPORT=OFF \
       -DGDAL_CONFIG=$STAGE_PATH/bin/gdal-config \
     $BUILD_qgis
