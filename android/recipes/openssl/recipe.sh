@@ -22,43 +22,13 @@ function shouldbuild_openssl() {
 
 # function called to build the source code
 function build_openssl() {
-  # Setup compiler toolchain based on CPU architecture
-  if [ "X${ARCH}" == "Xarmeabi-v7a" ]; then
-      export SSL_ARCH=android-arm
-  elif [ "X${ARCH}" == "Xarm64-v8a" ]; then
-      export SSL_ARCH=android-arm64
-  else
-      echo "Error: Please report issue to enable support for arch (${ARCH})."
-      exit 1
-  fi
-
-  push_arm
-  # export CC=$TOOLCHAIN_FULL_PREFIX-clang
-  # export CFLAGS=""
-  export ANDROID_NDK_HOME="$ANDROIDNDK"
-  
-  try $BUILD_openssl/Configure shared ${SSL_ARCH} -D__ANDROID_API__=$ANDROIDAPI --prefix=/
-  ${MAKE} depend
-  ${MAKE} DESTDIR=${STAGE_PATH} SHLIB_VERSION_NUMBER= build_libs
-
-  # install
-  try ${MAKE} SHLIB_VERSION_NUMBER= DESTDIR=$STAGE_PATH install_dev
-  
-  cd $STAGE_PATH/lib
-  rm libcrypto.a
-  rm libssl.a
-  
-  $STRIP --strip-all libcrypto.so
-  mv libcrypto.so libcrypto_3.so
-  try patchelf --set-soname libcrypto_3.so libcrypto_3.so
-  
-  $STRIP --strip-all libssl.so
-  mv libssl.so libssl_3.so
-  try patchelf --set-soname libssl_3.so libssl_3.so
-  
-  try patchelf --replace-needed libcrypto.so libcrypto_3.so libssl_3.so
-
-  pop_arm
+    cd $BUILD_openssl
+    try mkdir -p ${STAGE_PATH}/include/openssl
+    try mkdir -p ${STAGE_PATH}/lib
+        
+    try cp ssl_3/include/openssl/* ${STAGE_PATH}/include/openssl/
+    try cp ssl_3/${ARCH}/libssl_3.so ${STAGE_PATH}/lib/
+    try cp ssl_3/${ARCH}/libcrypto_3.so ${STAGE_PATH}/lib/
 }
 
 # function called after all the compile have been done

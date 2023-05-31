@@ -25,6 +25,13 @@ function prebuild_postgresql() {
   try cp $ROOT_OUT_PATH/.packages/config.guess $BUILD_postgresql/conftools
   
   try patch -p1 < $RECIPE_postgresql/patches/configure.patch
+  if [ $ANDROIDAPI -ge 26 ]; then
+       # remove langinfo.h removal from configure
+       # nl_langinfo introduced in ANDROIDAPI >= 26
+       # https://github.com/KhronosGroup/SPIRV-Cross/issues/891
+       echo "check postgresql recipe"
+       exit 1
+  fi
   
   touch .patched
 }
