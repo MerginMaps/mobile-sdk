@@ -1,6 +1,6 @@
 {
     "name": "input-sdk-vcpkg-test",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "dependencies": [
         {
             "name": "sqlite3",
@@ -190,7 +190,7 @@
         },
         {
             "name": "qgis-qt6",
-            "version": "3.28.5#1"
+            "version": "3.32.1"
         },
         {
             "name": "qtkeychain-qt6",
@@ -202,7 +202,7 @@
         },
         {
             "name": "qt6",
-            "version": "6.5.1"
+            "version": "6.5.2"
         },
         {
             "name": "libpng",

@@ -15,7 +15,7 @@ jobs:
   android_build:
     runs-on: macos-12
     env:
-      QT_VERSION: '6.5.1'
+      QT_VERSION: '6.5.2'
       ANDROIDAPI: 24
       NDK_VERSION: r25b
       NDK_VERSION_FULL: r25b
