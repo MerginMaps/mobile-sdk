@@ -86,6 +86,7 @@ function build_gdal() {
     --with-poppler=no \
     --with-podofo=no \
     --with-pdfium=no \
+    --with-crypto=no \
     --with-proj=$STAGE_PATH \
     --with-jpeg=$STAGE_PATH \
     --disable-driver-mrf \

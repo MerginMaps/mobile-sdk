@@ -85,6 +85,7 @@ function build_gdal() {
     --with-pcre2=no \
     --with-heif=no \
     --with-exr=no \
+    --with-crypto=no \
     --with-jpeg=$STAGE_PATH \
     --disable-driver-mrf \
     $GDAL_FLAGS
