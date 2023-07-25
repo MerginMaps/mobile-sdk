@@ -43,6 +43,7 @@ function build_qca() {
      -DBUILD_TESTS=OFF \
      -DBUILD_TOOLS=OFF \
      -DWITH_nss_PLUGIN=OFF \
+     -DWITH_ossl_PLUGIN=OFF \
      -DWITH_pkcs11_PLUGIN=OFF \
      -DWITH_gnupg_PLUGIN=OFF \
      -DWITH_gcrypt_PLUGIN=OFF \

@@ -15,9 +15,9 @@ jobs:
     runs-on: macos-12
     if: github.repository == 'merginmaps/input-sdk'
     env:
-      QT_VERSION: 6.5.1
+      QT_VERSION: 6.5.2
       ARCHES: 'mac'
-      CACHE_VERSION: 0
+      CACHE_VERSION: 1
       MACOSX_DEPLOYMENT_TARGET: 10.15.0
       XC_VERSION: ${{ '14.2' }}
       

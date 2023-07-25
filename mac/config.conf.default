@@ -1,5 +1,5 @@
 #### PATHS ####
-export QT_VER="6.5.0"
+export QT_VER="6.5.2"
 export MACOSX_DEPLOYMENT_TARGET=10.15.0
 export ROOT_OUT_PATH=/Users/$USER/Projects/input-sdk/build/macos
 
