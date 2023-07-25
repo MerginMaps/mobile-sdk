@@ -16,7 +16,7 @@ find_package(Protobuf REQUIRED)
 
 add_executable(inputsdktest main.cpp)
 
-target_link_libraries(inputsdktest PRIVATE Protobuf::Protobuf-lite)
+target_link_libraries(inputsdktest PRIVATE protobuf::libprotobuf-lite)
 target_link_libraries(inputsdktest PRIVATE unofficial::sqlite3::sqlite3)
 target_link_libraries(inputsdktest PRIVATE Qt6::Core Qt6::Gui Qt6::Network)
 target_link_libraries(inputsdktest PRIVATE PROJ::proj)
