@@ -20,7 +20,8 @@ find_package(Qt6 COMPONENTS
     Core
     Core5Compat
     Multimedia 
-    Widgets 
+    Widgets
+    PrintSupport
     REQUIRED
 )
 find_package(GDAL REQUIRED)
@@ -32,6 +33,9 @@ find_package(Qca CONFIG REQUIRED)
 find_package(Qt6Keychain CONFIG REQUIRED)
 find_package(ZXing CONFIG REQUIRED)
 find_package(PostgreSQL REQUIRED)
+find_package(libspatialindex REQUIRED)
+find_package(Exiv2 REQUIRED)
+
 
 add_executable(inputsdktest main.cpp)
 
@@ -51,8 +55,12 @@ target_link_libraries(inputsdktest PRIVATE
     Qt6::Core5Compat
     Qt6::Multimedia 
     Qt6::Widgets
+    Qt6::PrintSupport
  )
-target_link_libraries(inputsdktest PRIVATE qca)
+
+target_link_libraries(inputsdktest PRIVATE qca) 
+target_link_libraries(inputsdktest PRIVATE exiv2lib exiv2-xmp) 
+target_link_libraries(inputsdktest PRIVATE Spatialindex::Spatialindex)
 target_link_libraries(inputsdktest PRIVATE ZXing::Core ZXing::ZXing)
 target_link_libraries(inputsdktest PRIVATE PostgreSQL::PostgreSQL)
 target_link_libraries(inputsdktest PRIVATE Qt6Keychain::Qt6Keychain)
