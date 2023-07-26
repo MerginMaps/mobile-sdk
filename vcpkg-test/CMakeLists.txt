@@ -33,7 +33,6 @@ find_package(Qca CONFIG REQUIRED)
 find_package(Qt6Keychain CONFIG REQUIRED)
 find_package(ZXing CONFIG REQUIRED)
 find_package(PostgreSQL REQUIRED)
-find_package(Spatialindex REQUIRED)
 find_package(Exiv2 REQUIRED)
 
 
@@ -60,7 +59,7 @@ target_link_libraries(inputsdktest PRIVATE
 
 target_link_libraries(inputsdktest PRIVATE qca) 
 target_link_libraries(inputsdktest PRIVATE exiv2lib exiv2-xmp) 
-target_link_libraries(inputsdktest PRIVATE Spatialindex::Spatialindex)
+target_link_libraries(inputsdktest PRIVATE spatialindex-64)
 target_link_libraries(inputsdktest PRIVATE ZXing::Core ZXing::ZXing)
 target_link_libraries(inputsdktest PRIVATE PostgreSQL::PostgreSQL)
 target_link_libraries(inputsdktest PRIVATE Qt6Keychain::Qt6Keychain)
