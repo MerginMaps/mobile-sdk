@@ -33,7 +33,7 @@ find_package(Qca CONFIG REQUIRED)
 find_package(Qt6Keychain CONFIG REQUIRED)
 find_package(ZXing CONFIG REQUIRED)
 find_package(PostgreSQL REQUIRED)
-find_package(libspatialindex REQUIRED)
+find_package(Spatialindex REQUIRED)
 find_package(Exiv2 REQUIRED)
 
 
