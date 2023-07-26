@@ -8,19 +8,54 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(unofficial-sqlite3 CONFIG REQUIRED)
 find_package(libzip CONFIG REQUIRED)
 find_package(GEOS CONFIG REQUIRED)
-find_package(Qt6 COMPONENTS Core Gui Network Xml Widgets REQUIRED)
+find_package(Qt6 COMPONENTS 
+    Qml
+    Xml
+    Concurrent
+    Positioning
+    Sensors
+    Network
+    Svg
+    Sql
+    Core
+    Core5Compat
+    Multimedia 
+    Widgets 
+    REQUIRED
+)
 find_package(GDAL REQUIRED)
 find_package(PROJ CONFIG REQUIRED)
 find_package(QGIS COMPONENTS Core REQUIRED)
 find_package(GEODIFF REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(Qca CONFIG REQUIRED)
+find_package(Qt6Keychain CONFIG REQUIRED)
+find_package(ZXing CONFIG REQUIRED)
+find_package(PostgreSQL REQUIRED)
 
 add_executable(inputsdktest main.cpp)
 
 target_link_libraries(inputsdktest PRIVATE libzip::zip)
 target_link_libraries(inputsdktest PRIVATE protobuf::libprotobuf-lite)
 target_link_libraries(inputsdktest PRIVATE unofficial::sqlite3::sqlite3)
-target_link_libraries(inputsdktest PRIVATE Qt6::Core Qt6::Gui Qt6::Network Qt6::Xml Qt6::Widgets)
+target_link_libraries(inputsdktest PRIVATE
+    Qt6::Qml
+    Qt6::Xml
+    Qt6::Concurrent
+    Qt6::Positioning
+    Qt6::Sensors
+    Qt6::Network
+    Qt6::Svg
+    Qt6::Sql
+    Qt6::Core
+    Qt6::Core5Compat
+    Qt6::Multimedia 
+    Qt6::Widgets
+ )
+target_link_libraries(inputsdktest PRIVATE qca)
+target_link_libraries(inputsdktest PRIVATE ZXing::Core ZXing::ZXing)
+target_link_libraries(main PRIVATE PostgreSQL::PostgreSQL)
+target_link_libraries(inputsdktest PRIVATE Qt6Keychain::Qt6Keychain)
 target_link_libraries(inputsdktest PRIVATE PROJ::proj)
 target_link_libraries(inputsdktest PRIVATE GEOS::geos_c)
 target_include_directories(inputsdktest PRIVATE ${GDAL_INCLUDE_DIRS})
