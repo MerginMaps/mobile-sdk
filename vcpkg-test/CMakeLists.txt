@@ -66,8 +66,10 @@ target_link_libraries(inputsdktest PRIVATE PostgreSQL::PostgreSQL)
 target_link_libraries(inputsdktest PRIVATE Qt6Keychain::Qt6Keychain)
 target_link_libraries(inputsdktest PRIVATE PROJ::proj)
 target_link_libraries(inputsdktest PRIVATE GEOS::geos_c)
+
 target_include_directories(inputsdktest PRIVATE ${GDAL_INCLUDE_DIRS})
 target_link_libraries(inputsdktest PRIVATE ${GDAL_LIBRARIES})
 target_include_directories(inputsdktest PRIVATE ${GEODIFF_INCLUDE_DIRS})
 target_link_libraries(inputsdktest PRIVATE ${GEODIFF_LIBRARIES})
+
 target_link_libraries(inputsdktest PRIVATE QGIS::Core)
