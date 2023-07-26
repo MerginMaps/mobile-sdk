@@ -54,7 +54,7 @@ target_link_libraries(inputsdktest PRIVATE
  )
 target_link_libraries(inputsdktest PRIVATE qca)
 target_link_libraries(inputsdktest PRIVATE ZXing::Core ZXing::ZXing)
-target_link_libraries(main PRIVATE PostgreSQL::PostgreSQL)
+target_link_libraries(inputsdktest PRIVATE PostgreSQL::PostgreSQL)
 target_link_libraries(inputsdktest PRIVATE Qt6Keychain::Qt6Keychain)
 target_link_libraries(inputsdktest PRIVATE PROJ::proj)
 target_link_libraries(inputsdktest PRIVATE GEOS::geos_c)
