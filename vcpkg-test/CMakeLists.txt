@@ -34,9 +34,19 @@ find_package(Qt6Keychain CONFIG REQUIRED)
 find_package(ZXing CONFIG REQUIRED)
 find_package(PostgreSQL REQUIRED)
 find_package(Exiv2 REQUIRED)
+find_package(expat CONFIG REQUIRED)
+find_package(CURL CONFIG REQUIRED)
+find_package(Iconv)
+find_package(WebP CONFIG REQUIRED)
+find_package(PNG REQUIRED)
 
 find_path(SPATIALINDEX_INCLUDE_DIR spatialindex/RTree.h HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET})
 find_library(SPATIALINDEX_LIBRARY spatialindex_i spatialindex spatialindex-64 HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET})
+
+find_path(SPATIALITE_INCLUDE_DIR spatialite.h HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET})
+find_library(SPATIALITE_LIBRARY spatialite HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET})
+
+find_library(ZLIB_LIBRARY z HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET})
 
 add_executable(inputsdktest main.cpp)
 
@@ -67,6 +77,13 @@ target_link_libraries(inputsdktest PRIVATE PostgreSQL::PostgreSQL)
 target_link_libraries(inputsdktest PRIVATE Qt6Keychain::Qt6Keychain)
 target_link_libraries(inputsdktest PRIVATE PROJ::proj)
 target_link_libraries(inputsdktest PRIVATE GEOS::geos_c)
+target_link_libraries(inputsdktest PRIVATE CURL::libcurl)
+target_link_libraries(inputsdktest PRIVATE expat::expat)
+target_link_libraries(inputsdktest PRIVATE Iconv::Iconv)
+target_link_libraries(inputsdktest PRIVATE WebP::webp WebP::webpdemux WebP::libwebpmux WebP::webpdecoder)
+target_link_libraries(inputsdktest PRIVATE PNG::PNG)
+
+target_link_libraries(inputsdktest PRIVATE ${ZLIB_LIBRARY})
 
 target_include_directories(inputsdktest PRIVATE ${GDAL_INCLUDE_DIRS})
 target_link_libraries(inputsdktest PRIVATE ${GDAL_LIBRARIES})
@@ -76,4 +93,24 @@ target_link_libraries(inputsdktest PRIVATE ${GEODIFF_LIBRARIES})
 target_include_directories(inputsdktest PRIVATE ${SPATIALINDEX_INCLUDE_DIR})
 target_link_libraries(inputsdktest PRIVATE ${SPATIALINDEX_LIBRARY})
 
+target_include_directories(inputsdktest PRIVATE ${SPATIALITE_INCLUDE_DIR})
+target_link_libraries(inputsdktest PRIVATE ${SPATIALITE_LIBRARY})
+
 target_link_libraries(inputsdktest PRIVATE QGIS::Core)
+# target_link_libraries(inputsdktest PRIVATE 
+#         QGIS::authmethod_basic
+#         QGIS::authmethod_esritoken
+#         QGIS::authmethod_identcert
+#         QGIS::authmethod_oauth2
+#         QGIS::authmethod_pkcs12
+#         QGIS::authmethod_pkipaths
+#         QGIS::provider_arcgisfeatureserver
+#         QGIS::provider_arcgismapserver
+#         QGIS::provider_delimitedtext
+#         QGIS::provider_spatialite
+#         QGIS::provider_virtuallayer
+#         QGIS::provider_wcs
+#         QGIS::provider_wfs
+#         QGIS::provider_wms
+#         QGIS::provider_postgres
+#)
