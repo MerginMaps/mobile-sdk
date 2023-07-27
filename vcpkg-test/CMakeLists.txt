@@ -34,7 +34,7 @@ find_package(Qt6Keychain CONFIG REQUIRED)
 find_package(ZXing CONFIG REQUIRED)
 find_package(PostgreSQL REQUIRED)
 find_package(Exiv2 REQUIRED)
-find_package(spatialindex CONFIG REQUIRED)
+
 find_path(SPATIALINDEX_INCLUDE_DIR spatialindex/SpatialIndex.h)
 find_library(SPATIALINDEX_LIBRARY spatialindex_i spatialindex spatialindex-64)
 
