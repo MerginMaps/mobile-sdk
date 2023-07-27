@@ -34,7 +34,9 @@ find_package(Qt6Keychain CONFIG REQUIRED)
 find_package(ZXing CONFIG REQUIRED)
 find_package(PostgreSQL REQUIRED)
 find_package(Exiv2 REQUIRED)
-find_package(libspatialindex CONFIG REQUIRED)
+find_package(spatialindex CONFIG REQUIRED)
+find_path(SPATIALINDEX_INCLUDE_DIR spatialindex/SpatialIndex.h)
+find_library(SPATIALINDEX_LIBRARY spatialindex_i spatialindex spatialindex-64)
 
 add_executable(inputsdktest main.cpp)
 
@@ -70,6 +72,8 @@ target_include_directories(inputsdktest PRIVATE ${GDAL_INCLUDE_DIRS})
 target_link_libraries(inputsdktest PRIVATE ${GDAL_LIBRARIES})
 target_include_directories(inputsdktest PRIVATE ${GEODIFF_INCLUDE_DIRS})
 target_link_libraries(inputsdktest PRIVATE ${GEODIFF_LIBRARIES})
-target_link_libraries(inputsdktest PRIVATE spatialindex-64)
+
+target_include_directories(inputsdktest PRIVATE ${SPATIALINDEX_INCLUDE_DIR})
+target_link_libraries(inputsdktest PRIVATE ${SPATIALINDEX_LIBRARY})
 
 target_link_libraries(inputsdktest PRIVATE QGIS::Core)
