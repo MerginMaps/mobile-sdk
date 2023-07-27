@@ -122,7 +122,7 @@ foreach (provider ${QGIS_PROVIDERS_LIST})
     NAMES ${provider}_a
     HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}
   )
-  target_link_libraries(inputsdktest PRIVATE ${QGIS_${provider}_LIBRARY}})
+  target_link_libraries(inputsdktest PRIVATE ${QGIS_${provider}_LIBRARY})
 
 endforeach ()
 
