@@ -35,8 +35,8 @@ find_package(ZXing CONFIG REQUIRED)
 find_package(PostgreSQL REQUIRED)
 find_package(Exiv2 REQUIRED)
 
-find_path(SPATIALINDEX_INCLUDE_DIR spatialindex/SpatialIndex.h)
-find_library(SPATIALINDEX_LIBRARY spatialindex_i spatialindex spatialindex-64)
+find_path(SPATIALINDEX_INCLUDE_DIR spatialindex/RTree.h HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET})
+find_library(SPATIALINDEX_LIBRARY spatialindex_i spatialindex spatialindex-64 HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET})
 
 add_executable(inputsdktest main.cpp)
 
