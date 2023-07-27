@@ -50,6 +50,8 @@ find_library(ZLIB_LIBRARY z HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}
 
 add_executable(inputsdktest main.cpp)
 
+target_link_libraries(inputsdktest PRIVATE QGIS::Core)
+
 target_link_libraries(inputsdktest PRIVATE libzip::zip)
 target_link_libraries(inputsdktest PRIVATE protobuf::libprotobuf-lite)
 target_link_libraries(inputsdktest PRIVATE unofficial::sqlite3::sqlite3)
@@ -96,21 +98,32 @@ target_link_libraries(inputsdktest PRIVATE ${SPATIALINDEX_LIBRARY})
 target_include_directories(inputsdktest PRIVATE ${SPATIALITE_INCLUDE_DIR})
 target_link_libraries(inputsdktest PRIVATE ${SPATIALITE_LIBRARY})
 
+set(QGIS_PROVIDERS_LIST
+    authmethod_basic
+    authmethod_esritoken
+    authmethod_identcert
+    authmethod_oauth2
+    authmethod_pkcs12
+    authmethod_pkipaths
+    provider_arcgisfeatureserver
+    provider_arcgismapserver
+    provider_delimitedtext
+    provider_spatialite
+    provider_virtuallayer
+    provider_wcs
+    provider_wfs
+    provider_wms
+    provider_postgres
+)
+
+foreach (provider ${QGIS_PROVIDERS_LIST})
+  find_library(
+    QGIS_${provider}_LIBRARY
+    NAMES ${provider}_a
+    HINTS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}
+  )
+  target_link_libraries(inputsdktest PRIVATE ${QGIS_${provider}_LIBRARY}})
+
+endforeach ()
+
 target_link_libraries(inputsdktest PRIVATE QGIS::Core)
-# target_link_libraries(inputsdktest PRIVATE 
-#         QGIS::authmethod_basic
-#         QGIS::authmethod_esritoken
-#         QGIS::authmethod_identcert
-#         QGIS::authmethod_oauth2
-#         QGIS::authmethod_pkcs12
-#         QGIS::authmethod_pkipaths
-#         QGIS::provider_arcgisfeatureserver
-#         QGIS::provider_arcgismapserver
-#         QGIS::provider_delimitedtext
-#         QGIS::provider_spatialite
-#         QGIS::provider_virtuallayer
-#         QGIS::provider_wcs
-#         QGIS::provider_wfs
-#         QGIS::provider_wms
-#         QGIS::provider_postgres
-#)
