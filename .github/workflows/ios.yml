@@ -24,7 +24,7 @@ jobs:
       ARCH: 'arm64'
       CACHE_VERSION: 0
       XC_VERSION: ${{ '14.2' }}
-      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # compatible with vcpkg.json baseline
+      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
       VCPKG_ROOT: "/Users/runner/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
 
     steps:
@@ -33,7 +33,7 @@ jobs:
       - name: Select latest Xcode
         run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
 
-      - uses: seanmiddleditch/gha-setup-ninja@master
+      - uses: lukka/get-cmake@latest # cmake & ninja
 
       - name: Restore cached QT
         id: cache-qt-restore
@@ -72,7 +72,7 @@ jobs:
         id: cache-vcpkg-restore
         uses: actions/cache/restore@v3
         with:
-          path: ${{ env.VCPKG_ROOT }}/${{ env.ARCH }}
+          path: ${{ env.VCPKG_ROOT }}
           key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
 
       - name: Clone vcpkg
@@ -111,7 +111,7 @@ jobs:
         if: always()
         id: cache-vcpkg-save
         with:
-          path: ${{ env.VCPKG_ROOT }}/${{ env.ARCH }}
+          path: ${{ env.VCPKG_ROOT }}
           key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
 
       - name: Build Test App
