@@ -35,38 +35,27 @@ jobs:
 
       - uses: lukka/get-cmake@latest # cmake & ninja
 
-      - name: Restore cached QT
-        id: cache-qt-restore
-        uses: actions/cache/restore@v3
+      - name: Install Qt (android)
+        uses: jurplel/install-qt-action@v3
         with:
-          path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v${{ env.QT_CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
-
-      - name: Install Qt
-        if: steps.cache-qt.outputs.cache-hit != 'true'
-        run: |
-          pip3 install -U pip
-          pip3 install aqtinstall
-        
-          python3 -m aqt install-qt \
-            mac ios ${{ env.QT_VERSION }} \
-            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
-            -O ${{ github.workspace }}/Qt
-            
-          python3 -m aqt install-qt \
-            mac desktop ${{ env.QT_VERSION }} \
-            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
-            -O ${{ github.workspace }}/Qt
-
-          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
-
-      - name: Save cached Qt
-        uses: actions/cache/save@v3
-        if: always()
-        id: cache-qt-save
+          version: ${{ env.QT_VERSION }}
+          setup-python: 'false'
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
+          dir: ${{ github.workspace }}
+          target: ios
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-ios
+          
+      - name: Install Qt (desktop)
+        uses: jurplel/install-qt-action@v3
         with:
-          path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v${{ env.QT_CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
+          version: ${{ env.QT_VERSION }}
+          setup-python: 'false'
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
+          dir: ${{ github.workspace }}
+          target: desktop
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-desktop
 
       - name: Restore cached vcpkg build folder
         id: cache-vcpkg-restore

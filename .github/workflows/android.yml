@@ -20,7 +20,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [arm, amd64]
+        include:
+          - arch: 'arm'
+            qt_arch: 'android_armv7'
+          - arch: 'amd64'
+            qt_arch: 'android_arm64_v8a'
+                
     runs-on: macos-12
     env:
       QT_VERSION: '6.5.2'
@@ -63,43 +68,28 @@ jobs:
         run: |
           sdkmanager --licenses && sdkmanager --verbose "platforms;${SDK_PLATFORM}" "build-tools;${SDK_BUILD_TOOLS}" tools platform-tools
 
-      - name: Restore cached QT
-        id: cache-qt-restore
-        uses: actions/cache/restore@v3
+      - name: Install Qt (android)
+        uses: jurplel/install-qt-action@v3
         with:
-          path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v${{ env.QT_CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
-
-      - name: Install Qt
-        if: steps.cache-qt.outputs.cache-hit != 'true'
-        run: |
-          pip3 install -U pip
-          pip3 install aqtinstall
-        
-          python3 -m aqt install-qt \
-            mac android ${{ env.QT_VERSION }} android_arm64_v8a \
-            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
-            -O ${{ github.workspace }}/Qt
-            
-          python3 -m aqt install-qt \
-            mac android ${{ env.QT_VERSION }} android_armv7 \
-            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
-            -O ${{ github.workspace }}/Qt
-        
-          python3 -m aqt install-qt \
-            mac desktop ${{ env.QT_VERSION }} \
-            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
-            -O ${{ github.workspace }}/Qt
+          version: ${{ env.QT_VERSION }}
+          setup-python: 'false'
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
+          dir: ${{ github.workspace }}
+          target: android
+          arch: ${{ matrix.qt_arch }}
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-android
           
-          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
-
-      - name: Save cached Qt
-        uses: actions/cache/save@v3
-        if: always()
-        id: cache-qt-save
+      - name: Install Qt (desktop)
+        uses: jurplel/install-qt-action@v3
         with:
-          path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v${{ env.QT_CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
+          version: ${{ env.QT_VERSION }}
+          setup-python: 'false'
+          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
+          dir: ${{ github.workspace }}
+          target: desktop
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-desktop
 
       - name: Restore cached vcpkg build folder
         id: cache-vcpkg-restore
