@@ -3,16 +3,24 @@ name: Build android (on MacOS)
 on:
   push:
     paths:
-      - 'android/**'
+      - 'vcpkg-test/**'
+      - 'vcpkg-overlay/**'
       - '.github/workflows/android.yml'
-      - 'versions.conf'
 
   release:
     types:
       - published
 
+concurrency:
+  group: ci-${{github.ref}}-android
+  cancel-in-progress: true
+  
 jobs:
   android_build:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [arm, amd64]
     runs-on: macos-12
     env:
       QT_VERSION: '6.5.2'
@@ -23,68 +31,19 @@ jobs:
       SDK_PLATFORM: android-33
       SDK_BUILD_TOOLS: 33.0.1
       CACHE_VERSION: 0
-      ARCHES: "armeabi-v7a arm64-v8a"
+      QT_CACHE_VERSION: 0
       XC_VERSION: ${{ '14.2' }}
+      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # compatible with vcpkg.json baseline
+      VCPKG_ROOT: "/Users/runner/vcpkg-root"
       
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Select latest Xcode
         run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
-        
-      - name: Check deps versions change
-        run: |
-          CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
-          echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
-      - name: Prepare build cache for branch/tag
-        # use a fork of actions/cache@v2 to upload cache even when the build or test failed
-        uses: pat-s/always-upload-cache@v2.1.5
-        with:
-          path: ${{ github.workspace }}/build
-          # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
-          
-      - name: Install Build Dependencies
-        run: |
-          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-          brew install bison flex automake shtool gtk-doc patchelf
-          echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
-          echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
-          pip3 install -U pip
-          pip3 install aqtinstall
+      - uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Cache Qt
-        id: cache-qt
-        uses: pat-s/always-upload-cache@v2.1.5
-        with:
-          path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v3-${{ env.QT_VERSION }}-android
-          
-      - name: Install Qt
-        if: steps.cache-qt.outputs.cache-hit != 'true'
-        run: |
-          python3 -m aqt install-qt \
-            mac android ${{ env.QT_VERSION }} android_arm64_v8a \
-            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
-            -O ${{ github.workspace }}/Qt
-            
-          python3 -m aqt install-qt \
-            mac android ${{ env.QT_VERSION }} android_armv7 \
-            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
-            -O ${{ github.workspace }}/Qt
-        
-          python3 -m aqt install-qt \
-            mac desktop ${{ env.QT_VERSION }} \
-            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
-            -O ${{ github.workspace }}/Qt
-          
-          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
-          
-       # Android SDK & NDK
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
@@ -104,27 +63,94 @@ jobs:
         run: |
           sdkmanager --licenses && sdkmanager --verbose "platforms;${SDK_PLATFORM}" "build-tools;${SDK_BUILD_TOOLS}" tools platform-tools
 
-      # Build SDK
-      - name: Export config.conf
-        run: |
-          touch ./android/config.conf
-          echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./android/config.conf
-          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./android/config.conf
-          echo -e "export ANDROIDSDK=${ANDROID_HOME}"  >> ./android/config.conf
-          echo -e "export ANDROIDNDK=${{ steps.setup-ndk.outputs.ndk-path }}"  >> ./android/config.conf
-          echo -e "export ANDROIDNDKVER=${{ env.NDK_VERSION }}"  >> ./android/config.conf
-          echo -e "export QT_ANDROID_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}"  >> ./android/config.conf
-          echo -e "export ANDROIDAPI=${{ env.ANDROIDAPI }}"  >> ./android/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./android/config.conf
-          cat ./android/config.conf
+      - name: Restore cached QT
+        id: cache-qt-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ github.workspace }}/Qt
+          key: ${{ runner.os }}-QtCache-v${{ env.QT_CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
 
-          echo "NDK: ${{ steps.setup-ndk.outputs.ndk-path }}"
-          ls ${{ steps.setup-ndk.outputs.ndk-path }}
-          echo "SDK: ${ANDROID_HOME}"
-
-      - name: Build Sdk
+      - name: Install Qt
+        if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
-          ./android/distribute.sh -mqgis
+          pip3 install -U pip
+          pip3 install aqtinstall
+        
+          python3 -m aqt install-qt \
+            mac android ${{ env.QT_VERSION }} android_arm64_v8a \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
+            -O ${{ github.workspace }}/Qt
+            
+          python3 -m aqt install-qt \
+            mac android ${{ env.QT_VERSION }} android_armv7 \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
+            -O ${{ github.workspace }}/Qt
+        
+          python3 -m aqt install-qt \
+            mac desktop ${{ env.QT_VERSION }} \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
+            -O ${{ github.workspace }}/Qt
+          
+          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
+
+      - name: Save cached Qt
+        uses: actions/cache/save@v3
+        if: always()
+        id: cache-qt-save
+        with:
+          path: ${{ github.workspace }}/Qt
+          key: ${{ runner.os }}-QtCache-v${{ env.QT_CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
+
+      - name: Restore cached vcpkg build folder
+        id: cache-vcpkg-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ env.VCPKG_ROOT }}/${{ matrix.arch }}
+          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
+
+      - name: Clone vcpkg
+        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          git checkout $VCPKG_BASELINE
+
+      - name: Build SDK ${{ matrix.arch }}-android
+        run: |
+          mkdir -p ${{ github.workspace }}/build/${{ matrix.arch }}
+          cd ${{ github.workspace }}/build/${{ matrix.arch }}
+          cmake -B ${{ github.workspace }}/build/${{ matrix.arch }} \
+                -S ${{ github.workspace }}/vcpkg-test \
+                -DCMAKE_MODULE_PATH:PATH="${{ github.workspace }}/vcpkg-test/cmake" \
+                -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
+                -G Ninja \
+                -DVCPKG_TARGET_TRIPLET=${{ matrix.arch }}-android \
+                -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
+                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports"
+
+      - name: Upload build logs on deps failure
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: build-logs-${{ matrix.arch }}-android
+          path: |
+            ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
+
+      - name: Save cached vcpkg build folder
+        uses: actions/cache/save@v3
+        if: always()
+        id: cache-vcpkg-save
+        with:
+          path: ${{ env.VCPKG_ROOT }}/${{ matrix.arch }}
+          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
+
+      - name: Build Test App
+        run: |
+          cd ${{ github.workspace }}/build/${{ matrix.arch }}
+          ninja
 
       - name: Get TimeStamp
         id: time
@@ -135,9 +161,9 @@ jobs:
 
       - name: Create package
         run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-android-${{ runner.os }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}-android-${{ runner.os }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
           echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd ${{ github.workspace }}/build/stage
+          cd ${{ github.workspace }}/${{ matrix.arch }}/vcpkg_installed/${{ matrix.arch }}-android/
           tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
@@ -149,7 +175,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: android-${{ runner.os }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: ${{ matrix.arch }}-android-${{ runner.os }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}

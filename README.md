@@ -6,27 +6,36 @@
 
 # input-sdk
 
-SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) for mobile devices
+SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) for mobile devices based on VCPG ecosystem
 
-Mergin Maps Input app makes surveying of geospatial data easy. You can design your survey project in QGIS with custom forms.
-
-Click here to download the app on your Android or iOS devices [merginmaps.com](http://merginmaps.com)
+[Mergin Maps](http://merginmaps.com) makes surveying of geospatial data easy and it is powered by QGIS.
 
 <div><img align="left" width="45" height="45" src="https://raw.githubusercontent.com/MerginMaps/docs/main/src/.vuepress/public/slack.svg"><a href="https://merginmaps.com/community/join">Join our community chat</a><br/>and ask questions!</div><br />
 
-# Tips
+# Usage
+
+Download, extract and use prebuild SDKs for various arch/platforms from Github Releases/Artefacts. 
+
+# Release 
+The release is automatically created from each build on master.
+
+# Development
+
+- Install Cmake, Vcpkg, Qt and compiler and other platform/arch prerequisities 
+- Run VCPKG to build dependancies (can take hours)
+- Run test app to verify your build
+
+## Tips
 
 - how to do diff `diff -rupN file.orig file`
 - how to do diff from GIT `git diff master`
-- find SHA512 hash (vcpkg): `shasum -a 512 myfile.tar.gz`
+- find SHA512 hash for vcpkg: `shasum -a 512 myfile.tar.gz`
 
-# Android 
+## Android 
 
-Download prebuild android SDKs from the GitHub Artifacts
+TODO
 
 # Windows
-
-You can download prebuild android SDKs from the GitHub Artifacts. If you want local build, you should:
 
 - install cmake, vcpkg, Visual Studio and Qt and add to PATH
 ```
@@ -52,50 +61,19 @@ cmake --build %BUILD_DIR% --config Release --verbose
 
 - the resulting build tree is then located at `%BUILD_DIR%\vcpkg_installed`
 
-# iOS
+##  iOS
 
-Download prebuild iOS SDKs from the GitHub Artifacts
+TODO 
 
-## Manual Build
-1. you need to have Qt installed
-2. copy and modify config.conf.default to config.conf with your setup
-3. run `distribute.sh -mqgis`
+## MacOS
 
-- if you want armv7 and different SDK, you may try to build QT yourself (not tested)
-- all libraries are STATIC, due to some limitation for iOS platform (distribution on AppStore, Qt
-distribution for iOS, etc.)
-- sometimes you need to debug from XCode (generated project); use RelWithDb, not full debug build
+TODO 
 
-# MacOS
+## Linux 
 
-Download prebuild mac SDKs from the GitHub Artifacts
-
-## Manual Build
-1. you need to have Qt installed (with Qt Connectivity, Qt Multimedia, Qt Positioning, Qt Sensort, Qt5 Compatibility Module)
-2. copy and modify config.conf.default to config.conf with your setup
-3. run `distribute.sh -mqgis`
-
-# Linux 
-
-We use Ubuntu LTS for building. Download prebuild ubuntu SDKs from the GitHub Artifacts
-
-## Manual Build
-1. you need to have Qt installed (with Qt Connectivity, Qt Multimedia, Qt Positioning, Qt Sensort, Qt5 Compatibility Module)
-2. Check `.github/workflows/linux.yml` for list of apt packages to install
-2. copy and modify config.conf.default to config.conf with your setup
-3. run `distribute.sh -mqgis`
-
-## CI
-
-the release is automatically created from each build on master. See tagged releases which have the SDK as artefact
+TODO 
 
 # License & Acknowledgement
 
-The project is originally based on https://github.com/opengisch/OSGeo4A
-and https://github.com/rabits/dockerfiles
-
-- [Dockerfiles](https://github.com/rabits/dockerfiles) Apache-2.0, rabits.org
-- [distribute.sh](https://github.com/opengisch/OSGeo4A/blob/master/LICENSE-for-distribute-sh) MIT license, Copyright (c) 2010-2013 Kivy Team and other contributors
-- [Dockerfiles & recipes](https://github.com/opengisch/OSGeo4A) MIT license
-- [iOS toolchain](https://github.com/leetal/ios-cmake/blob/)
-- [vcpkg](https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt) MIT License
+The project use [vcpkg](https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt) framework and build various open-source libraries to SDK as dependencies, 
+including QGIS core library, GDAL, proj, geos and others.

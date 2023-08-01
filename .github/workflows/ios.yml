@@ -3,66 +3,51 @@ name: Build ios
 on:
   push:
     paths:
-      - 'ios/**'
+      - 'vcpkg-test/**'
+      - 'vcpkg-overlay/**'
       - '.github/workflows/ios.yml'
-      - 'versions.conf'
+
   release:
     types:
       - published
 
+concurrency:
+  group: ci-${{github.ref}}-ios
+  cancel-in-progress: true
+  
 jobs:
   ios_build:
     runs-on: macos-12
     env:
       IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
       QT_VERSION: '6.5.2'
-      ARCHES: 'arm64'
-      CACHE_VERSION: 1
+      ARCH: 'arm64'
+      CACHE_VERSION: 0
       XC_VERSION: ${{ '14.2' }}
+      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # compatible with vcpkg.json baseline
+      VCPKG_ROOT: "/Users/runner/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Select latest Xcode
         run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
-        
-      - name: Check deps versions change
-        run: |
-          CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
-          echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
-      - name: Prepare build cache for branch/tag
-        # use a fork of actions/cache@v2 to upload cache even when the build or test failed
-        uses: pat-s/always-upload-cache@v2.1.5
-        with:
-          path: ${{ github.workspace }}/build
-          # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ env.IOS_MIN_SDK_VERSION }}-${{ github.sha }}
-          restore-keys: |
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ env.IOS_MIN_SDK_VERSION }}-
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-${{ env.IOS_MIN_SDK_VERSION }}-
+      - uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Install Build Dependencies
-        run: |
-          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-          brew install bison flex automake shtool gtk-doc cmake
-          echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
-          echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
-          pip3 install -U pip
-          pip3 install aqtinstall
-      
-      # cannot use install-qt-action@v3 due to missing input-sdk/Qt/6.3.x/macos/bin/qmake
-      # see also https://github.com/miurahr/aqtinstall/issues/503
-      - name: Cache Qt
-        id: cache-qt
-        uses: pat-s/always-upload-cache@v2.1.5
+      - name: Restore cached QT
+        id: cache-qt-restore
+        uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-ios
-          
+          key: ${{ runner.os }}-QtCache-v${{ env.QT_CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
+
       - name: Install Qt
         if: steps.cache-qt.outputs.cache-hit != 'true'
         run: |
+          pip3 install -U pip
+          pip3 install aqtinstall
+        
           python3 -m aqt install-qt \
             mac ios ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
@@ -72,28 +57,67 @@ jobs:
             mac desktop ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
             -O ${{ github.workspace }}/Qt
-            
-          ls -la ${{ github.workspace }}/Qt
-          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
-          
-      - name: Export config.conf
-        run: |
-          touch ./ios/config.conf
-          echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./ios/config.conf
-          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./ios/config.conf
-          echo -e "export IOS_MIN_SDK_VERSION=${{ env.IOS_MIN_SDK_VERSION }}"  >> ./ios/config.conf
-          echo -e "export QT_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}"  >> ./ios/config.conf
-          echo -e "export MACOSX_DEPLOYMENT_TARGET=${{ env.IOS_MIN_SDK_VERSION }}"  >> ./ios/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./ios/config.conf
-          cat ./ios/config.conf
-          
-          ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/ios/bin/qmake --version
-          which cmake 
-          cmake --version
 
-      - name: Build Sdk
+          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
+
+      - name: Save cached Qt
+        uses: actions/cache/save@v3
+        if: always()
+        id: cache-qt-save
+        with:
+          path: ${{ github.workspace }}/Qt
+          key: ${{ runner.os }}-QtCache-v${{ env.QT_CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
+
+      - name: Restore cached vcpkg build folder
+        id: cache-vcpkg-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ env.VCPKG_ROOT }}/${{ env.ARCH }}
+          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
+
+      - name: Clone vcpkg
+        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
         run: |
-          ./ios/distribute.sh -mqgis
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          git checkout $VCPKG_BASELINE
+
+      - name: Build SDK ${{ env.ARCH }}-ios
+        run: |
+          mkdir -p ${{ github.workspace }}/build/${{ env.ARCH }}
+          cd ${{ github.workspace }}/build/${{ env.ARCH }}
+          cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
+                -S ${{ github.workspace }}/vcpkg-test \
+                -DCMAKE_MODULE_PATH:PATH="${{ github.workspace }}/vcpkg-test/cmake" \
+                -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
+                -G Ninja \
+                -DVCPKG_TARGET_TRIPLET=${{ env.ARCH }}-ios \
+                -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
+                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports"
+
+      - name: Upload build logs on deps failure
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: build-logs-${{ env.ARCH }}-ios
+          path: |
+            ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
+
+      - name: Save cached vcpkg build folder
+        uses: actions/cache/save@v3
+        if: always()
+        id: cache-vcpkg-save
+        with:
+          path: ${{ env.VCPKG_ROOT }}/${{ env.ARCH }}
+          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
+
+      - name: Build Test App
+        run: |
+          cd ${{ github.workspace }}/build/${{ env.ARCH }}
+          ninja
 
       - name: Get TimeStamp
         id: time

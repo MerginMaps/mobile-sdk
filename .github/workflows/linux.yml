@@ -3,52 +3,34 @@ name: Build Linux
 on:
   push:
     paths:
-      - 'linux/**'
+      - 'vcpkg-test/**'
+      - 'vcpkg-overlay/**'
       - '.github/workflows/linux.yml'
-      - 'versions.conf'
+
   release:
     types:
       - published
 
+concurrency:
+  group: ci-${{github.ref}}-linux
+  cancel-in-progress: true
+  
 jobs:
   linux_build:
     runs-on: ubuntu-22.04
     if: github.repository == 'merginmaps/input-sdk'
     env:
-      ARCH: 'linux-x86_64'
+      ARCH: 'x64'
       UBUNTU_VERSION: 2204
       QT_VERSION: '6.5.2'
       CACHE_VERSION: 0
+      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # compatible with vcpkg.json baseline
+      VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Check deps versions change
-        run: |
-          CHECKSUM=$( md5sum versions.conf | cut -d ' ' -f1 )
-          echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
-
-      - name: Prepare build cache for branch/tag
-        # use a fork of actions/cache@v2 to upload cache even when the build or test failed
-        uses: pat-s/always-upload-cache@v2.1.5
-        with:
-          path: ${{ github.workspace }}/build
-          # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-refs/heads/master-
-
-      - name: Install Build Dependencies
-        run: |
-            echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-            sudo apt-get install -y bison ca-certificates ccache cmake cmake-curses-gui dh-python expect flex flip \
-                            git graphviz libexiv2-dev libexpat1-dev libfcgi-dev libgeos-dev \
-                            libgsl-dev libfreexl-dev libpq-dev libprotobuf-dev \
-                            libspatialindex-dev libsqlite3-dev libyaml-tiny-perl \
-                            libzip-dev libzstd-dev lighttpd locales ninja-build \
-                            pkg-config poppler-utils protobuf-compiler python3-all-dev \
-                            spawn-fcgi xauth xfonts-100dpi xfonts-75dpi xfonts-base xfonts-scalable xvfb
+      - uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
@@ -60,17 +42,62 @@ jobs:
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-lnx
 
-      - name: Export config.conf
-        run: |
-          touch ./linux/config.conf
-          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./linux/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCH }}"\"")"  >> ./linux/config.conf
-          cat ./linux/config.conf
+      - name: Restore cached vcpkg build folder
+        id: cache-vcpkg-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ env.VCPKG_ROOT }}/${{ env.ARCH }}
+          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
 
-      - name: Build Sdk
+      - name: Clone vcpkg
+        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
         run: |
-          ./linux/distribute.sh -mqgis
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          git checkout $VCPKG_BASELINE
 
+      - name: Build SDK ${{ env.ARCH }}-linux
+        run: |
+          mkdir -p ${{ github.workspace }}/build/${{ env.ARCH }}
+          cd ${{ github.workspace }}/build/${{ env.ARCH }}
+          cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
+                -S ${{ github.workspace }}/vcpkg-test \
+                -DCMAKE_MODULE_PATH:PATH="${{ github.workspace }}/vcpkg-test/cmake" \
+                -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
+                -G Ninja \
+                -DVCPKG_TARGET_TRIPLET=${{ env.ARCH }}-linux \
+                -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
+                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports"
+
+      - name: Upload build logs on deps failure
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: build-logs-${{ env.ARCH }}-linux
+          path: |
+            ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
+
+      - name: Save cached vcpkg build folder
+        uses: actions/cache/save@v3
+        if: always()
+        id: cache-vcpkg-save
+        with:
+          path: ${{ env.VCPKG_ROOT }}/${{ env.ARCH }}
+          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
+
+      - name: Build Test App
+        run: |
+          cd ${{ github.workspace }}/build/${{ env.ARCH }}
+          ninja
+
+      - name: Run Tests
+        run: |
+            cd ${{ github.workspace }}/build/${{ env.ARCH }}
+            ls -la
+            
       - name: Get TimeStamp
         id: time
         uses: nanzm/get-time-action@v1.1
