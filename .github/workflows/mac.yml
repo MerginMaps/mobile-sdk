@@ -26,11 +26,18 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: 10.15.0
       XC_VERSION: ${{ '14.2' }}
       VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
-      VCPKG_ROOT: "/Users/runner/vcpkg-root"
-      
+
     steps:
       - uses: actions/checkout@v3
-
+        with:
+          path: 'input'
+            
+      - uses: actions/checkout@v3
+        with:
+          repository: microsoft/vcpkg
+          ref: ${{ env.VCPKG_BASELINE }}
+          path: 'vcpkg'
+          
       - name: Select latest Xcode
         run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
 
@@ -46,25 +53,17 @@ jobs:
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-mac
 
-      - name: Restore cached vcpkg build folder
-        id: cache-vcpkg-restore
+      - name: Restore build folder
+        id: cache-build-restore
         uses: actions/cache/restore@v3
         with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
-
-      - name: Clone vcpkg
-        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p "${{ env.VCPKG_ROOT }}"
-          cd "${{ env.VCPKG_ROOT }}"
-          git init
-          git remote add origin https://github.com/microsoft/vcpkg.git
-          git pull origin master
-          git checkout $VCPKG_BASELINE
+          path: ${{ github.workspace }}/build
+          key: ${{ runner.os }}-build-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
 
       - name: Build SDK ${{ env.ARCH }}-osx
         run: |
+          mkdir -p ${{ github.workspace }}/build/vcpkg
+          
           mkdir -p ${{ github.workspace }}/build/${{ env.ARCH }}
           cd ${{ github.workspace }}/build/${{ env.ARCH }}
           cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
@@ -74,7 +73,8 @@ jobs:
                 -G Ninja \
                 -DVCPKG_TARGET_TRIPLET=${{ env.ARCH }}-osx \
                 -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
-                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports"
+                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports" \
+                -DVCPKG_INSTALL_OPTIONS="--x-buildtrees-root=${{ github.workspace }}/build/vcpkg"
 
       - name: Upload build logs on deps failure
         uses: actions/upload-artifact@v3
@@ -84,13 +84,13 @@ jobs:
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
 
-      - name: Save cached vcpkg build folder
+      - name: Save build folder
         uses: actions/cache/save@v3
         if: always()
-        id: cache-vcpkg-save
+        id: cache-build-save
         with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
+          path: ${{ github.workspace }}/build
+          key: ${{ runner.os }}-build-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
 
       - name: Build Test App
         run: |

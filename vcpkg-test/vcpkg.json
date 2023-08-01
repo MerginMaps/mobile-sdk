@@ -118,7 +118,7 @@
             "features": []
         }
     ],
-    "builtin-baseline": "d765306b074717dea8dc1c4723e1b025acb61c2d",
+    "builtin-baseline": "2f6176ce98fee807a207dc9e8fec213f111c291b",
     "overrides": [
         {
             "name": "tiff",

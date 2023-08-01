@@ -24,7 +24,7 @@ jobs:
       ARCH: 'arm64'
       CACHE_VERSION: 0
       XC_VERSION: ${{ '14.2' }}
-      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
+      VCPKG_BASELINE: "2f6176ce98fee807a207dc9e8fec213f111c291b" # use scripts/update_vcpkg_base.bash to change
       VCPKG_ROOT: "/Users/runner/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
 
     steps:
