@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: 'input'
+          path: 'input-sdk'
             
       - uses: actions/checkout@v3
         with:
@@ -67,7 +67,7 @@ jobs:
           mkdir -p ${{ github.workspace }}/build/${{ env.ARCH }}
           cd ${{ github.workspace }}/build/${{ env.ARCH }}
           cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
-                -S ${{ github.workspace }}/vcpkg-test \
+                -S ${{ github.workspace }}/input-sdk/vcpkg-test \
                 -DCMAKE_MODULE_PATH:PATH="${{ github.workspace }}/vcpkg-test/cmake" \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
                 -G Ninja \
