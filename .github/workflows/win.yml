@@ -22,7 +22,6 @@ jobs:
     
     env:
       QT_VERSION: '6.5.2'
-      CACHE_VERSION: 1
       ARCH: "win64"
       TRIPLET: "x64-windows"
       VS_VERSION: "2019"
@@ -31,6 +30,7 @@ jobs:
       QT_ARCH: "win64_msvc2019_64" # run: aqt list $QT_VERSION windows desktop
       VCPKG_BASELINE: "2f6176ce98fee807a207dc9e8fec213f111c291b" # use scripts/update_vcpkg_base.bash to change
       VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
+      CACHE_VERSION: 0
       
     steps:
       - run: Get-PSDrive
@@ -41,43 +41,24 @@ jobs:
         id: vars
         shell: bash
         run: |
-          # Check deps versions change          
-          DEPS_CHECKSUM=`md5sum vcpkg-test/vcpkg.json | cut -d\  -f1`
-          echo "::set-output name=DEPS_CHECKSUM::$DEPS_CHECKSUM"
-          echo "DEPS_CHECKSUM: $DEPS_CHECKSUM"
-          
           WORKSPACE_DIR=$(cygpath -m "${{ github.workspace }}")
           echo "::set-output name=WORKSPACE_DIR::$WORKSPACE_DIR"
           echo "WORKSPACE_DIR: $WORKSPACE_DIR"
 
-      - name: Clone vcpkg
-        shell: bash
-        run: |
-          mkdir -p "${{ env.VCPKG_ROOT }}"
-          cd "${{ env.VCPKG_ROOT }}"
-          git init
-          git remote add origin https://github.com/microsoft/vcpkg.git
-          git pull origin master
-          git checkout $VCPKG_BASELINE
-
-      - name: Cache vcpkg
-        id: cache-vcpkg-tool
-        uses: pat-s/always-upload-cache@v3.0.1
-        with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}
-          
-      - name: Prepare build cache for branch/tag
-        # use a fork of actions/cache@v2 to upload cache even when the build or test failed
-        uses: pat-s/always-upload-cache@v2.1.5
+      - name: Restore vcpkg folder
+        id: cache-build-restore
+        if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
+        uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/build
-          # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-${{ steps.vars.outputs.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            cache-${{ steps.vars.outputs.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
-            cache-${{ steps.vars.outputs.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
-          
+          key: VCPKG-${{ runner.os }}-${{ env.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
+
+      - uses: actions/checkout@v3
+        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
+        with:
+          repository: microsoft/vcpkg
+          path: ${ env.VCPKG_ROOT }
+ 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
@@ -93,11 +74,6 @@ jobs:
         shell: cmd
         run: |
             CALL "C:\Program Files (x86)\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
-
-      - name: check QT installation
-        shell: cmd
-        run: |
-            DIR /s /b ${{ env.Qt6_Dir }}\lib\cmake
 
       - name: Build Deps
         shell: pwsh
@@ -132,6 +108,14 @@ jobs:
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
 
+      - name: Save VCPKG folder
+        uses: actions/cache/save@v3
+        if: always() && ${{ github.ref != 'refs/heads/master' }} # do not use cache on master; save on error too
+        id: cache-build-save
+        with:
+          path: ${{ env.VCPKG_ROOT }}
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+          
       - name: Build Test App
         shell: pwsh
         run: |
@@ -156,7 +140,7 @@ jobs:
                 & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
                 if ($LastExitCode -ne 0) { exit $LastExitCode }
             }
-            exec { ${{ github.workspace }}\build\${{ env.ARCH }}\Release\inputsdktest.exe }
+            exec { ${{ github.workspace }}\build\${{ env.ARCH }}\Release\merginmapsinputsdk.exe }
          
       - name: Get TimeStamp
         id: time
@@ -165,17 +149,32 @@ jobs:
           timeZone: 8
           format: 'YYYYMMDD'
 
-      - name: Create package
+      - name: Create SDK data folder 
+        shell: bash
+        run: |
+            mkdir -p ${{ github.workspace }}/sdk
+            cp -R ${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/* ${{ github.workspace }}/sdk/*
+            rm -rf ${{ github.workspace }}/sdk/etc
+            rm -rf ${{ github.workspace }}/sdk/mkspecs
+            rm -rf ${{ github.workspace }}/sdk/share
+            rm -rf ${{ github.workspace }}/sdk/tools
+            
+            SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+            echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
+            
+            find ${{ github.workspace }}/sdk/bin/ | grep dll
+            
+      - name: Create ZIP package
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
-          filename: ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          directory: sdk/
+          filename: ${{ steps.vars.outputs.WORKSPACE_DIR }}/${{ env.SDK_TAR }}
           
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v2
         with:
-          path: ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          path: ${{ steps.vars.outputs.WORKSPACE_DIR }}/${{ env.SDK_TAR }}
           if-no-files-found: error
           
       - name: Create Release

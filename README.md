@@ -21,12 +21,9 @@ The release is automatically created from each build on master.
 
 # Development
 
-- Install Cmake, Vcpkg, Qt and compiler and other platform/arch prerequisities 
-- Run VCPKG to build dependancies (can take hours)
-- Run test app to verify your build
-
 ## Tips
 
+- look at `.github/workflows/<platform>.yml` to see how it is done in CI
 - how to do diff `diff -rupN file.orig file`
 - how to do diff from GIT `git diff master`
 - find SHA512 hash for vcpkg: `shasum -a 512 myfile.tar.gz`
@@ -67,7 +64,44 @@ TODO
 
 ## MacOS
 
-TODO 
+- Install Cmake, bison, flex, ...
+```
+  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
+  export PATH=$(brew --prefix bison)/bin:$PATH
+  export PATH=$(brew --prefix flex)/bin:$PATH
+```
+- Qt (version from `.github/workflows/mac.yml`) 
+- Install Vcpkg (git commit from `.github/workflows/mac.yml`)
+```
+  mkdir -p build
+  cd build
+  git clone https://github.com/microsoft/vcpkg.git
+  cd vcpkg 
+  git checkout <git_commit>
+  cd ..
+  ```
+- Download and prepare input-sdk
+```
+  git clone git@github.com:MerginMaps/input-sdk.git
+```
+- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+```
+  mkdir -p build/x64
+  cd build/x64
+  export Qt6_DIR=/opt/Qt/<ver>/macos
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -G Ninja \
+    -DVCPKG_TARGET_TRIPLET=x64-osx \
+    -DVCPK_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DCMAKE_BUILD_TYPE=Release
+```
+
+- Build and run test app to verify your build
+```
+  cmake --build . --config Release
+```
 
 ## Linux 
 

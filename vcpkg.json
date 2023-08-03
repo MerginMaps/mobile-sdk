@@ -1,0 +1,41 @@
+{
+    "name": "input-sdk",
+    "version": "1.0.0",
+    "dependencies": [
+        {
+            "name": "nu-book-zxing-cpp",
+            "default-features": false,
+            "features": []
+        },
+        {
+            "name": "geodiff"
+        },
+        {
+            "name": "gdal",
+            "default-features": false
+        },
+        {
+            "name": "gdal",
+            "default-features": false,
+            "features": ["tools"],
+            "platform": "osx"
+        },
+        {
+            "name": "gdal",
+            "default-features": false,
+            "platform": "!osx"
+        },
+        {
+            "name": "qgis-qt6"
+        },
+        {
+            "name": "qtkeychain-qt6"
+        },
+        {
+            "name": "qca-qt6"
+        },
+        {
+            "name": "qt6"
+        }
+    ]
+}
