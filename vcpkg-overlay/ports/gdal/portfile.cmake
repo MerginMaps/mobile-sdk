@@ -9,61 +9,63 @@ vcpkg_from_github(
         fix-gdal-target-interfaces.patch
         libkml.patch
 )
+
 # `vcpkg clean` stumbles over one subdir
 file(REMOVE_RECURSE "${SOURCE_PATH}/autotest")
 
-# Cf. cmake/helpers/CheckDependentLibraries.cmake
-# The default for all `GDAL_USE_<PKG>` dependencies is `OFF`.
-# Here, we explicitly control dependencies provided via vpcpkg.
-# "core" is used for a dependency which must be enabled to avoid vendored lib.
-vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
-    FEATURES
-        cfitsio          GDAL_USE_CFITSIO
-        curl             GDAL_USE_CURL
-        expat            GDAL_USE_EXPAT
-        freexl           GDAL_USE_FREEXL
-        geos             GDAL_USE_GEOS
-        core             GDAL_USE_GEOTIFF
-        gif              GDAL_USE_GIF
-        hdf5             GDAL_USE_HDF5
-        iconv            GDAL_USE_ICONV
-        jpeg             GDAL_USE_JPEG
-        core             GDAL_USE_JSONC
-        lerc             GDAL_USE_LERC
-        libkml           GDAL_USE_LIBKML
-        lzma             GDAL_USE_LIBLZMA
-        libxml2          GDAL_USE_LIBXML2
-        mysql-libmariadb GDAL_USE_MYSQL 
-        netcdf           GDAL_USE_NETCDF
-        odbc             GDAL_USE_ODBC
-        openjpeg         GDAL_USE_OPENJPEG
-        openssl          GDAL_USE_OPENSSL
-        pcre2            GDAL_USE_PCRE2
-        png              GDAL_USE_PNG
-        poppler          GDAL_USE_POPPLER
-        postgresql       GDAL_USE_POSTGRESQL
-        qhull            GDAL_USE_QHULL
-        #core             GDAL_USE_SHAPELIB  # https://github.com/OSGeo/gdal/issues/5711, https://github.com/microsoft/vcpkg/issues/16041
-        core             GDAL_USE_SHAPELIB_INTERNAL
-        libspatialite    GDAL_USE_SPATIALITE
-        sqlite3          GDAL_USE_SQLITE3
-        core             GDAL_USE_TIFF
-        webp             GDAL_USE_WEBP
-        core             GDAL_USE_ZLIB
-        zstd             GDAL_USE_ZSTD
-        tools            BUILD_APPS
-)
+# cannot use internal because we need it to WebP too
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_JPEG=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_JPEG_INTERNAL=ON)
+
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_PNG=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_PNG_INTERNAL=ON)
+
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_JSONC=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_JSONC_INTERNAL=ON)
+
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_GEOTIFF=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_GEOTIFF_INTERNAL=ON)
+
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_ICONV=ON)
 if(GDAL_USE_ICONV AND VCPKG_TARGET_IS_WINDOWS)
     list(APPEND FEATURE_OPTIONS -D_ICONV_SECOND_ARGUMENT_IS_NOT_CONST=ON)
 endif()
 
-if(VCPKG_TARGET_IS_IOS AND GDAL_USE_JPEG)
-    list(APPEND FEATURE_OPTIONS -DGDAL_USE_JPEG_INTERNAL=ON)
-endif()
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_TIFF=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_CURL=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_WEBP=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_SQLITE3=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_GEOS=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_GEOTIFF=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_SPATIALITE=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_EXPAT=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_ZLIB=ON)
+
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_POSTGRESQL=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_PCRE2=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_ZSTD=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_LIBXML2=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_GIF=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_OPENJPEG=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_ODBC=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_CFITSIO=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_HDF5=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_MYSQL=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_POPPLER=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_ODBC=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_MSSQL_ODBC=OFF)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_FREEXL=OFF)
 
 # Compatibility with older Android versions https://github.com/OSGeo/gdal/pull/5941
 if(VCPKG_TARGET_IS_ANDROID AND ANRDOID_PLATFORM VERSION_LESS 24 AND (VCPKG_TARGET_ARCHITECTURE STREQUAL "x86" OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm"))
     list(APPEND FEATURE_OPTIONS -DBUILD_WITHOUT_64BIT_OFFSET=ON)
+endif()
+
+
+if()
+    BUILD_APPS=OFF
+else()
+    BUILD_APPS=OFF
 endif()
 
 string(REPLACE "dynamic" "" qhull_target "Qhull::qhull${VCPKG_LIBRARY_LINKAGE}_r")
@@ -98,6 +100,7 @@ vcpkg_cmake_configure(
     MAYBE_UNUSED_VARIABLES
         QHULL_LIBRARY
 )
+
 vcpkg_cmake_install()
 vcpkg_copy_pdbs()
 vcpkg_fixup_pkgconfig()
@@ -114,34 +117,7 @@ if (BUILD_APPS)
     vcpkg_copy_tools(
         TOOL_NAMES
             gdalinfo
-            gdalbuildvrt
-            gdaladdo
-            gdal_grid
-            gdal_translate
-            gdal_rasterize
-            gdalsrsinfo
-            gdalenhance
-            gdalmanage
-            gdaltransform
-            gdaltindex
-            gdaldem
-            gdal_create
-            gdal_viewshed
-            nearblack
-            ogrlineref
-            ogrtindex
-            gdalwarp
-            gdal_contour
-            gdallocationinfo
             ogrinfo
-            ogr2ogr
-            ogrlineref
-            nearblack
-            gdalmdiminfo
-            gdalmdimtranslate
-            gnmanalyse
-            gnmmanage
-            sozip
         AUTO_CLEAN
     )
 endif()

@@ -27,6 +27,7 @@ The release is automatically created from each build on master.
 - how to do diff `diff -rupN file.orig file`
 - how to do diff from GIT `git diff master`
 - find SHA512 hash for vcpkg: `shasum -a 512 myfile.tar.gz`
+- vcpkg clean build - remove `vcpkg/buildtrees/`
 
 ## Android 
 

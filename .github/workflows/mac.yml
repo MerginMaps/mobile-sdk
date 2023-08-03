@@ -1,36 +1,30 @@
 name: Build macOS
 
-on:
-  push:
-    paths:
-      - 'vcpkg-test/**'
-      - 'vcpkg-overlay/**'
-      - '.github/workflows/mac.yml'
-
-  release:
-    types:
-      - published
+on: [push]
 
 concurrency:
   group: ci-${{github.ref}}-mac
   cancel-in-progress: true
-  
+
 jobs:
   mac_os_build:
     runs-on: macos-12
     if: github.repository == 'merginmaps/input-sdk'
+
     env:
-      QT_VERSION: 6.5.2
+      QT_VERSION: '6.5.2'
       ARCH: 'x64'
-      CACHE_VERSION: 0
+      TRIPLET: "x64-osx"
+      CMAKE_GENERATOR: "Ninja"
       MACOSX_DEPLOYMENT_TARGET: 10.15.0
       XC_VERSION: ${{ '14.2' }}
+      QT_ARCH: "desktop"
+      VCPKG_ROOT: "/Users/runner/vcpkg"
       VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
-
+      CACHE_VERSION: 0
+      
     steps:
       - uses: actions/checkout@v3
-        with:
-          path: 'input-sdk'
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:

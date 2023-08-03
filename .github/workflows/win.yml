@@ -1,25 +1,16 @@
 name: Build win64
 
-on:
-  push:
-    paths:
-      - 'vcpkg-test/**'
-      - 'vcpkg-overlay/**'
-      - '.github/workflows/win.yml'
-
-  release:
-    types:
-      - published
+on: [push]
  
 concurrency:
   group: ci-${{github.ref}}-windows
   cancel-in-progress: true
-  
+
 jobs:
   win64_build:
     if: ( github.repository == 'MerginMaps/input-sdk' )
     runs-on: windows-2019
-    
+
     env:
       QT_VERSION: '6.5.2'
       ARCH: "win64"
