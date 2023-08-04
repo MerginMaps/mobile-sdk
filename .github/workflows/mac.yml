@@ -1,6 +1,14 @@
 name: Build macOS
 
-on: [push]
+on:
+  push:
+    paths-ignore:
+      - '.github/workflows/android.yml'
+      - '.github/workflows/ios.yml'
+      - '.github/workflows/linux.yml'
+      - '.github/workflows/win.yml'
+      - 'LICENSE'
+      - 'README.md'
 
 concurrency:
   group: ci-${{github.ref}}-mac
@@ -13,7 +21,6 @@ jobs:
 
     env:
       QT_VERSION: '6.5.2'
-      ARCH: 'x64'
       TRIPLET: "x64-osx"
       CMAKE_GENERATOR: "Ninja"
       MACOSX_DEPLOYMENT_TARGET: 10.15.0
@@ -22,92 +29,90 @@ jobs:
       VCPKG_ROOT: "/Users/runner/vcpkg"
       VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
       CACHE_VERSION: 0
-      
+
     steps:
       - uses: actions/checkout@v3
-
-      - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ${{ env.XC_VERSION }}
+          path: input-sdk
 
-      - uses: actions/checkout@v3
-
+      - name: Prepare vars
+        id: vars
+        run: |
+          brew install automake bison flex gnu-sed autoconf-archive libtool
+          echo $(brew --prefix bison)/bin >> $GITHUB_PATH
+          echo $(brew --prefix flex)/bin >> $GITHUB_PATH
+          
       - uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
-          target: desktop
+          setup-python: 'false'
+          target: ${{ env.QT_ARCH }}
           dir: ${{ github.workspace }}
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-mac
 
-      - name: Prepare build env
-        run: |
-          brew install automake bison flex gnu-sed autoconf-archive libtool
-          echo $(brew --prefix bison)/bin >> $GITHUB_PATH
-          echo $(brew --prefix flex)/bin >> $GITHUB_PATH
+      - name: Setup compiler
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XC_VERSION }}
 
-      - name: Restore build folder
-        id: cache-build-restore
+      - name: Restore vcpkg folder
+        id: cache-vcpkg-restore
         if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
         uses: actions/cache/restore@v3
         with:
-          path: ${{ github.workspace }}/build
-          key: ${{ runner.os }}-build-VCPKG-${{ env.VCPKG_BASELINE }}-CACHE-v${{ env.CACHE_VERSION }}-QT-${{ env.QT_VERSION }}-${{ env.ARCH }}-gitref-${{ github.ref }}
+          path: ${{ env.VCPKG_ROOT }}
+          key: VCPKG-${{ runner.os }}-${{ env.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
 
-      - name: Build SDK ${{ env.ARCH }}-osx
+      - uses: actions/checkout@v3
+        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
+        with:
+          repository: microsoft/vcpkg
+          path: ${{ env.VCPKG_ROOT }}
+          ref: ${ env.VCPKG_BASELINE }
+
+      - name: Build Deps
         run: |
-          mkdir -p ${{ github.workspace }}/build/vcpkg
-          cd ${{ github.workspace }}/build/vcpkg
-          if [ "$(ls -A .)" ]; then
-              echo "vcpkg installed - skip download"
-          else
-              git init .
-              git remote add origin https://github.com/microsoft/vcpkg.git
-              git pull origin master
-              git checkout $VCPKG_BASELINE
-              ./bootstrap-vcpkg.sh
-          fi
-          
-          echo "PATH=${{ github.workspace }}/build/vcpkg:$PATH" >> $GITHUB_ENV
+          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
           which vcpkg
           
-          mkdir -p ${{ github.workspace }}/build/${{ env.ARCH }}
-          cd ${{ github.workspace }}/build/${{ env.ARCH }}
-          cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
-                -S ${{ github.workspace }}/input-sdk/vcpkg-test \
-                -DCMAKE_MODULE_PATH:PATH="${{ github.workspace }}/vcpkg-test/cmake" \
-                -DCMAKE_TOOLCHAIN_FILE:PATH="${{ github.workspace }}/build/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-                -G Ninja \
-                -DVCPKG_TARGET_TRIPLET=${{ env.ARCH }}-osx \
+          mkdir -p ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
+          cmake -B ${{ github.workspace }}/build \
+                -S ${{ github.workspace }}/input-sdk \
+                -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
+                -GNinja \
+                -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
                 -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
                 -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports" \
-                -DCMAKE_BUILD_TYPE=Release
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_MAKE_PROGRAM=ninja
 
       - name: Upload build logs on deps failure
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: build-logs-${{ env.ARCH }}-osx
+          name: build-logs-${{ env.TRIPLET }}
           path: |
-            ${{ github.workspace }}/build/vcpkg/buildtrees/**/*.log
+            ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
 
-      - name: Save build folder
+      - name: Save vcpkg folder
         uses: actions/cache/save@v3
         if: always() && ${{ github.ref != 'refs/heads/master' }} # do not use cache on master; save on error too
-        id: cache-build-save
+        id: cache-vcpkg-save
         with:
-          path: ${{ github.workspace }}/build
-          key: ${{ steps.cache-build-restore.outputs.cache-primary-key }}
+          path: ${{ env.VCPKG_ROOT }}
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build Test App
         run: |
-          cd ${{ github.workspace }}/build/${{ env.ARCH }}
+          cd ${{ github.workspace }}/build
           ninja
 
       - name: Run Tests
         run: |
-          cd ${{ github.workspace }}/build/${{ env.ARCH }}
+          cd ${{ github.workspace }}/build
           ./merginmapsinputsdk
 
       - name: Get TimeStamp
@@ -119,10 +124,10 @@ jobs:
 
       - name: Create GDAL supported formats 
         run: |
-            ${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/x64-osx/tools/gdal/gdalinfo --formats | tee -a ${{ github.workspace }}/supported_formats.log
-            ${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/x64-osx/tools/gdal/ogrinfo --formats | tee -a ${{ github.workspace }}/supported_formats.log
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/tools/gdal/gdalinfo --formats | tee -a ${{ github.workspace }}/supported_formats.log
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/tools/gdal/ogrinfo --formats | tee -a ${{ github.workspace }}/supported_formats.log
             
-            SUPPORTED_FORMATS="input-sdk-gdal-supported-formats-${{ steps.time.outputs.time }}-${{ github.run_number }}.log"
+            SUPPORTED_FORMATS="mergin-maps-input-sdk-gdal-supported-formats-${{ steps.time.outputs.time }}-${{ github.run_number }}.log"
             echo "SUPPORTED_FORMATS=${SUPPORTED_FORMATS}" >> $GITHUB_ENV
             
             cat ${{ github.workspace }}/supported_formats.log
@@ -132,13 +137,13 @@ jobs:
             mkdir -p ${{ github.workspace }}/proj-data
             echo ".. 1/2 qgis database"
             mkdir -p ${{ github.workspace }}/proj-data/resources
-            ${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/x64-osx/share/qgis/proj/qgis.db ${{ github.workspace }}/proj-data/resources/
-            ${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/x64-osx/share/qgis/proj/srs.db ${{ github.workspace }}/proj-data/resources/
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/proj/qgis.db ${{ github.workspace }}/proj-data/resources/
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/proj/srs.db ${{ github.workspace }}/proj-data/resources/
             echo ".. 2/2 proj resources"
             mkdir -p ${{ github.workspace }}/proj-data/proj
-            ${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/x64-osx/share/proj/* ${{ github.workspace }}/proj-data/proj/
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/proj/* ${{ github.workspace }}/proj-data/proj/
             
-            PROJ_TAR=input-sdk-proj-mac-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+            PROJ_TAR=mergin-maps-input-sdk-proj-mac-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
             echo "PROJ_TAR=${PROJ_TAR}" >> $GITHUB_ENV
             
             cd "${{ github.workspace }}/proj-data"
@@ -149,14 +154,14 @@ jobs:
       - name: Create SDK data folder 
         run: |
             mkdir -p ${{ github.workspace }}/sdk
-            cp -R ${{ github.workspace }}/build/${{ env.ARCH }}/vcpkg_installed/x64-osx/* ${{ github.workspace }}/sdk/*
+            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ github.workspace }}/sdk/*
             rm -rf ${{ github.workspace }}/sdk/debug
             rm -rf ${{ github.workspace }}/sdk/etc
             rm -rf ${{ github.workspace }}/sdk/mkspecs
             rm -rf ${{ github.workspace }}/sdk/share
             rm -rf ${{ github.workspace }}/sdk/tools
             
-            SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-mac-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+            SDK_TAR=mergin-maps-input-sdk-qt-${{ env.QT_VERSION }}-${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
             echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
             
             cd ${{ github.workspace }}/sdk/
@@ -185,7 +190,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: mac-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: ${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: "${{ env.SDK_TAR }},${{ env.SUPPORTED_FORMATS }},${{ env.PROJ_TAR }}"
           token: ${{ secrets.GITHUB_TOKEN }}

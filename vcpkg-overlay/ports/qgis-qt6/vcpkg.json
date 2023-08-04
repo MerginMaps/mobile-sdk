@@ -19,6 +19,10 @@
       "geos",
       "qt6",
       "qca-qt6",
-      "qtkeychain-qt6"
+      "qtkeychain-qt6",
+      {
+          "name": "libtasn1",
+          "platform": "osx | ios"
+      }
     ]
 }

@@ -2,14 +2,13 @@ name: Build ios
 
 on:
   push:
-    paths:
-      - 'vcpkg-test/**'
-      - 'vcpkg-overlay/**'
-      - '.github/workflows/ios.yml'
-
-  release:
-    types:
-      - published
+    paths-ignore:
+      - '.github/workflows/android.yml'
+      - '.github/workflows/linux.yml'
+      - '.github/workflows/mac.yml'
+      - '.github/workflows/win.yml'
+      - 'LICENSE'
+      - 'README.md'
 
 concurrency:
   group: ci-${{github.ref}}-ios
@@ -19,30 +18,42 @@ jobs:
   ios_build:
     runs-on: macos-12
     env:
-      IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
       QT_VERSION: '6.5.2'
-      ARCH: 'arm64'
-      CACHE_VERSION: 0
+      TRIPLET: "arm64-ios"
+      CMAKE_GENERATOR: "Ninja"
+      IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
       XC_VERSION: ${{ '14.2' }}
-      VCPKG_BASELINE: "2f6176ce98fee807a207dc9e8fec213f111c291b" # use scripts/update_vcpkg_base.bash to change
-      VCPKG_ROOT: "/Users/runner/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
+      QT_ARCH: "ios"
+      VCPKG_ROOT: "/Users/runner/vcpkg"
+      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
+      CACHE_VERSION: 0
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          path: input-sdk
 
       - name: Select latest Xcode
         run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
 
-      - uses: lukka/get-cmake@latest # cmake & ninja
+      - name: Prepare vars
+        id: vars
+        run: |
+          brew install automake bison flex gnu-sed autoconf-archive libtool
+          echo $(brew --prefix bison)/bin >> $GITHUB_PATH
+          echo $(brew --prefix flex)/bin >> $GITHUB_PATH
+          pip3 install -U pip
+          pip3 install aqtinstall
 
-      - name: Install Qt (android)
+      - name: Install Qt (ios)
         uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           setup-python: 'false'
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
-          target: ios
+          target: ${{ env.QT_ARCH }}
+          arch: ${{ matrix.qt_arch }}
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-ios
           
@@ -57,33 +68,30 @@ jobs:
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-desktop
 
-      - name: Restore cached vcpkg build folder
+      - name: Restore vcpkg folder
         id: cache-vcpkg-restore
+        if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
         uses: actions/cache/restore@v3
         with:
           path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
+          key: VCPKG-${{ runner.os }}-${{ env.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
 
-      - name: Clone vcpkg
+      - uses: actions/checkout@v3
         if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p "${{ env.VCPKG_ROOT }}"
-          cd "${{ env.VCPKG_ROOT }}"
-          git init
-          git remote add origin https://github.com/microsoft/vcpkg.git
-          git pull origin master
-          git checkout $VCPKG_BASELINE
+        with:
+          repository: microsoft/vcpkg
+          path: ${{ env.VCPKG_ROOT }}
+          ref: ${ env.VCPKG_BASELINE }
 
-      - name: Build SDK ${{ env.ARCH }}-ios
+      - name: Build Deps
         run: |
-          mkdir -p ${{ github.workspace }}/build/${{ env.ARCH }}
-          cd ${{ github.workspace }}/build/${{ env.ARCH }}
-          cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
-                -S ${{ github.workspace }}/vcpkg-test \
-                -DCMAKE_MODULE_PATH:PATH="${{ github.workspace }}/vcpkg-test/cmake" \
+          mkdir -p ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
+          cmake -B ${{ github.workspace }}/build \
+                -S ${{ github.workspace }}/input-sdk \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
                 -G Ninja \
-                -DVCPKG_TARGET_TRIPLET=${{ env.ARCH }}-ios \
+                -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
                 -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
                 -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports"
 
@@ -91,21 +99,21 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: build-logs-${{ env.ARCH }}-ios
+          name: build-logs-${{ env.TRIPLET }}
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
 
-      - name: Save cached vcpkg build folder
+      - name: Save vcpkg folder
         uses: actions/cache/save@v3
-        if: always()
+        if: always() && ${{ github.ref != 'refs/heads/master' }} # do not use cache on master; save on error too
         id: cache-vcpkg-save
         with:
           path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build Test App
         run: |
-          cd ${{ github.workspace }}/build/${{ env.ARCH }}
+          cd ${{ github.workspace }}/build
           ninja
 
       - name: Get TimeStamp
@@ -115,15 +123,25 @@ jobs:
           timeZone: 8
           format: 'YYYYMMDD'
 
-      - name: Create package
+      - name: Create SDK data folder 
         run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-ios-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
-          echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd "${{ github.workspace }}/build/stage"
-          tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./
+            mkdir -p ${{ github.workspace }}/sdk
+            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ github.workspace }}/sdk/*
+            rm -rf ${{ github.workspace }}/sdk/debug
+            rm -rf ${{ github.workspace }}/sdk/etc
+            rm -rf ${{ github.workspace }}/sdk/mkspecs
+            rm -rf ${{ github.workspace }}/sdk/share
+            rm -rf ${{ github.workspace }}/sdk/tools
+            
+            SDK_TAR=mergin-maps-input-sdk-qt-${{ env.QT_VERSION }}-${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+            echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
+            
+            cd ${{ github.workspace }}/sdk/
+            find libs/
+            tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
 
@@ -131,7 +149,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ios-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: ${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}

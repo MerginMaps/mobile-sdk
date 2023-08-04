@@ -27,7 +27,7 @@ The release is automatically created from each build on master.
 - how to do diff `diff -rupN file.orig file`
 - how to do diff from GIT `git diff master`
 - find SHA512 hash for vcpkg: `shasum -a 512 myfile.tar.gz`
-- vcpkg clean build - remove `vcpkg/buildtrees/`
+- vcpkg clean build - remove `rm -rf ./vcpkg/buildtrees/ ./vcpkg/packages/`
 
 ## Android 
 
@@ -68,8 +68,6 @@ TODO
 - Install Cmake, bison, flex, ...
 ```
   brew install cmake automake bison flex gnu-sed autoconf-archive libtool
-  export PATH=$(brew --prefix bison)/bin:$PATH
-  export PATH=$(brew --prefix flex)/bin:$PATH
 ```
 - Qt (version from `.github/workflows/mac.yml`) 
 - Install Vcpkg (git commit from `.github/workflows/mac.yml`)
@@ -89,14 +87,16 @@ TODO
 ```
   mkdir -p build/x64
   cd build/x64
-  export Qt6_DIR=/opt/Qt/<ver>/macos
+  export Qt6_DIR=/opt/Qt/6.5.2/macos;export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$PATH
+  
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=x64-osx \
     -DVCPK_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
     -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
-    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_MAKE_PROGRAM=ninja
 ```
 
 - Build and run test app to verify your build

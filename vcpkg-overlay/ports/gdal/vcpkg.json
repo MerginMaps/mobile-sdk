@@ -19,6 +19,8 @@
     "protobuf",
     "exiv2",
     "libiconv",
+    "libxml2",
+    "libgeotiff",
     "expat",
     {
       "name": "vcpkg-cmake",

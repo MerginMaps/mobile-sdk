@@ -2,14 +2,13 @@ name: Build Linux
 
 on:
   push:
-    paths:
-      - 'vcpkg-test/**'
-      - 'vcpkg-overlay/**'
-      - '.github/workflows/linux.yml'
-
-  release:
-    types:
-      - published
+    paths-ignore:
+      - '.github/workflows/android.yml'
+      - '.github/workflows/ios.yml'
+      - '.github/workflows/mac.yml'
+      - '.github/workflows/win.yml'
+      - 'LICENSE'
+      - 'README.md'
 
 concurrency:
   group: ci-${{github.ref}}-linux
@@ -19,56 +18,65 @@ jobs:
   linux_build:
     runs-on: ubuntu-22.04
     if: github.repository == 'merginmaps/input-sdk'
+    
     env:
-      ARCH: 'x64'
-      UBUNTU_VERSION: 2204
       QT_VERSION: '6.5.2'
+      TRIPLET: "x64-linux"
+      CMAKE_GENERATOR: "Ninja"
+      QT_ARCH: "desktop"
+      VCPKG_ROOT: "/home/runner/vcpkg"
+      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
       CACHE_VERSION: 0
-      VCPKG_BASELINE: "2f6176ce98fee807a207dc9e8fec213f111c291b" # use scripts/update_vcpkg_base.bash to change
-      VCPKG_ROOT: "/home/runner/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          path: input-sdk
 
-      - uses: lukka/get-cmake@latest # cmake & ninja
+      - name: Prepare vars
+        id: vars
+        run: |
+          sudo apt-get install -y \
+            bison flex \
+            cmake ninja-build
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+      - uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
+          target: ${{ env.QT_ARCH }}
           setup-python: 'false'
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-lnx
 
-      - name: Restore cached vcpkg build folder
+      - name: Restore vcpkg folder
         id: cache-vcpkg-restore
+        if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
         uses: actions/cache/restore@v3
         with:
           path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
+          key: VCPKG-${{ runner.os }}-${{ env.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
 
-      - name: Clone vcpkg
+      - uses: actions/checkout@v3
         if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p "${{ env.VCPKG_ROOT }}"
-          cd "${{ env.VCPKG_ROOT }}"
-          git init
-          git remote add origin https://github.com/microsoft/vcpkg.git
-          git pull origin master
-          git checkout $VCPKG_BASELINE
+        with:
+          repository: microsoft/vcpkg
+          path: ${{ env.VCPKG_ROOT }}
+          ref: ${ env.VCPKG_BASELINE }
 
-      - name: Build SDK ${{ env.ARCH }}-linux
+      - name: Build Deps
         run: |
-          mkdir -p ${{ github.workspace }}/build/${{ env.ARCH }}
-          cd ${{ github.workspace }}/build/${{ env.ARCH }}
-          cmake -B ${{ github.workspace }}/build/${{ env.ARCH }} \
-                -S ${{ github.workspace }}/vcpkg-test \
-                -DCMAKE_MODULE_PATH:PATH="${{ github.workspace }}/vcpkg-test/cmake" \
+          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
+          which vcpkg
+        
+          mkdir -p ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
+          cmake -B ${{ github.workspace }}/build \
+                -S ${{ github.workspace }}/input-sdk \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
                 -G Ninja \
-                -DVCPKG_TARGET_TRIPLET=${{ env.ARCH }}-linux \
+                -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
                 -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
                 -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports"
 
@@ -76,27 +84,27 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: build-logs-${{ env.ARCH }}-linux
+          name: build-logs-${{ env.TRIPLET }}
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
 
-      - name: Save cached vcpkg build folder
+      - name: Save vcpkg folder
         uses: actions/cache/save@v3
-        if: always()
+        if: always() && ${{ github.ref != 'refs/heads/master' }} # do not use cache on master; save on error too
         id: cache-vcpkg-save
         with:
           path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ env.ARCH }}
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build Test App
         run: |
-          cd ${{ github.workspace }}/build/${{ env.ARCH }}
+          cd ${{ github.workspace }}/build
           ninja
 
       - name: Run Tests
         run: |
-            cd ${{ github.workspace }}/build/${{ env.ARCH }}
-            ls -la
+            cd ${{ github.workspace }}/build
+            ./merginmapsinputsdk
             
       - name: Get TimeStamp
         id: time
@@ -105,15 +113,25 @@ jobs:
           timeZone: 8
           format: 'YYYYMMDD'
 
-      - name: Create package
+      - name: Create SDK data folder 
         run: |
-          SDK_TAR=input-sdk-ubuntu-${{ env.UBUNTU_VERSION }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
-          echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd "${{ github.workspace }}/build/stage/${{ env.ARCH }}"
-          tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
+            mkdir -p ${{ github.workspace }}/sdk
+            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ github.workspace }}/sdk/*
+            rm -rf ${{ github.workspace }}/sdk/debug
+            rm -rf ${{ github.workspace }}/sdk/etc
+            rm -rf ${{ github.workspace }}/sdk/mkspecs
+            rm -rf ${{ github.workspace }}/sdk/share
+            rm -rf ${{ github.workspace }}/sdk/tools
+            
+            SDK_TAR=mergin-maps-input-sdk-qt-${{ env.QT_VERSION }}-${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+            echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
+            
+            cd ${{ github.workspace }}/sdk/
+            find libs/
+            tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
 
@@ -121,7 +139,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ubuntu-${{ env.UBUNTU_VERSION }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: ${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -2,14 +2,13 @@ name: Build android (on MacOS)
 
 on:
   push:
-    paths:
-      - 'vcpkg-test/**'
-      - 'vcpkg-overlay/**'
-      - '.github/workflows/android.yml'
-
-  release:
-    types:
-      - published
+    paths-ignore:
+      - '.github/workflows/ios.yml'
+      - '.github/workflows/linux.yml'
+      - '.github/workflows/mac.yml'
+      - '.github/workflows/win.yml'
+      - 'LICENSE'
+      - 'README.md'
 
 concurrency:
   group: ci-${{github.ref}}-android
@@ -21,33 +20,43 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - arch: 'arm'
-            qt_arch: 'android_armv7'
-          - arch: 'amd64'
-            qt_arch: 'android_arm64_v8a'
+          - TRIPLET: 'arm-android'
+            QT_ARCH: 'android_armv7'
+          - TRIPLET: 'amd64-android'
+            QT_ARCH: 'android_arm64_v8a'
                 
     runs-on: macos-12
     env:
       QT_VERSION: '6.5.2'
+      CMAKE_GENERATOR: "Ninja"
       ANDROIDAPI: 24
       NDK_VERSION: r25b
       NDK_VERSION_FULL: r25b
       JDK_VERSION: 11
       SDK_PLATFORM: android-33
       SDK_BUILD_TOOLS: 33.0.1
-      CACHE_VERSION: 0
-      QT_CACHE_VERSION: 0
       XC_VERSION: ${{ '14.2' }}
-      VCPKG_BASELINE: "2f6176ce98fee807a207dc9e8fec213f111c291b" # use scripts/update_vcpkg_base.bash to change
-      VCPKG_ROOT: "/Users/runner/vcpkg-root"
-      
+      QT_ARCH: "android"
+      VCPKG_ROOT: "/Users/runner/vcpkg"
+      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
+      CACHE_VERSION: 0
+
     steps:
       - uses: actions/checkout@v3
+        with:
+          path: input-sdk
 
-      - name: Select latest Xcode
-        run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
+      - name: Prepare vars
+        id: vars
+        run: |
+          brew install automake bison flex gnu-sed autoconf-archive libtool
+          echo $(brew --prefix bison)/bin >> $GITHUB_PATH
+          echo $(brew --prefix flex)/bin >> $GITHUB_PATH
 
-      - uses: lukka/get-cmake@latest # cmake & ninja
+      - name: Setup compiler
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XC_VERSION }}
 
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
@@ -75,7 +84,7 @@ jobs:
           setup-python: 'false'
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
-          target: android
+          target: ${{ matrix.QT_ARCH }}
           arch: ${{ matrix.qt_arch }}
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-android
@@ -91,33 +100,31 @@ jobs:
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-desktop
 
-      - name: Restore cached vcpkg build folder
+      - name: Restore vcpkg folder
         id: cache-vcpkg-restore
+        if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
         uses: actions/cache/restore@v3
         with:
           path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
+          key: VCPKG-${{ runner.os }}-${{ matrix.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
 
-      - name: Clone vcpkg
+      - uses: actions/checkout@v3
         if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p "${{ env.VCPKG_ROOT }}"
-          cd "${{ env.VCPKG_ROOT }}"
-          git init
-          git remote add origin https://github.com/microsoft/vcpkg.git
-          git pull origin master
-          git checkout $VCPKG_BASELINE
+        with:
+          repository: microsoft/vcpkg
+          path: ${{ env.VCPKG_ROOT }}
+          ref: ${ env.VCPKG_BASELINE }
 
-      - name: Build SDK ${{ matrix.arch }}-android
+      - name: Build Deps
         run: |
-          mkdir -p ${{ github.workspace }}/build/${{ matrix.arch }}
-          cd ${{ github.workspace }}/build/${{ matrix.arch }}
+          mkdir -p ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
           cmake -B ${{ github.workspace }}/build/${{ matrix.arch }} \
-                -S ${{ github.workspace }}/vcpkg-test \
+                -S ${{ github.workspace }}/input-sdk \
                 -DCMAKE_MODULE_PATH:PATH="${{ github.workspace }}/vcpkg-test/cmake" \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
                 -G Ninja \
-                -DVCPKG_TARGET_TRIPLET=${{ matrix.arch }}-android \
+                -DVCPKG_TARGET_TRIPLET=${{ matrix.TRIPLET }} \
                 -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
                 -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports"
 
@@ -125,17 +132,17 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: build-logs-${{ matrix.arch }}-android
+          name: build-logs-${{ matrix.TRIPLET }}
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
 
-      - name: Save cached vcpkg build folder
+      - name: Save vcpkg folder
         uses: actions/cache/save@v3
-        if: always()
+        if: always() && ${{ github.ref != 'refs/heads/master' }} # do not use cache on master; save on error too
         id: cache-vcpkg-save
         with:
           path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-v${{ env.CACHE_VERSION }}-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build Test App
         run: |
@@ -149,15 +156,25 @@ jobs:
           timeZone: 8
           format: 'YYYYMMDD'
 
-      - name: Create package
+      - name: Create SDK data folder 
         run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-${{ matrix.arch }}-android-${{ runner.os }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
-          echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd ${{ github.workspace }}/${{ matrix.arch }}/vcpkg_installed/${{ matrix.arch }}-android/
-          tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./
+            mkdir -p ${{ github.workspace }}/sdk
+            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ matrix.TRIPLET }}/* ${{ github.workspace }}/sdk/*
+            rm -rf ${{ github.workspace }}/sdk/debug
+            rm -rf ${{ github.workspace }}/sdk/etc
+            rm -rf ${{ github.workspace }}/sdk/mkspecs
+            rm -rf ${{ github.workspace }}/sdk/share
+            rm -rf ${{ github.workspace }}/sdk/tools
+            
+            SDK_TAR=mergin-maps-input-sdk-qt-${{ env.QT_VERSION }}-${{ matrix.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+            echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
+            
+            cd ${{ github.workspace }}/sdk/
+            find libs/
+            tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
 
@@ -165,7 +182,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ matrix.arch }}-android-${{ runner.os }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: ${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}
