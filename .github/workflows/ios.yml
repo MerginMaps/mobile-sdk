@@ -42,6 +42,9 @@ jobs:
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
 
+          pip3 install -U pip
+          pip3 install aqtinstall
+
       - name: Cache Qt
         id: cache-qt
         uses: pat-s/always-upload-cache@v2.1.5
