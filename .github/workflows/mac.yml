@@ -22,7 +22,6 @@ jobs:
     env:
       QT_VERSION: '6.5.2'
       TRIPLET: "x64-osx"
-      CMAKE_GENERATOR: "Ninja"
       DEPLOYMENT_TARGET: 10.15.0
       XC_VERSION: ${{ '14.2' }}
       QT_ARCH: "desktop"
@@ -76,6 +75,7 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
+          ./bootstrap-vcpkg.sh
 
       - name: Build Deps
         run: |

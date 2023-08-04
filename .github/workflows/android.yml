@@ -28,7 +28,6 @@ jobs:
     runs-on: macos-12
     env:
       QT_VERSION: '6.5.2'
-      CMAKE_GENERATOR: "Ninja"
       ANDROIDAPI: 24
       NDK_VERSION: '25.1.8937393'
       NDK_VERSION_FULL: r25b
@@ -120,6 +119,7 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
+          ./bootstrap-vcpkg.sh
 
       - name: Build Deps
         run: |
@@ -139,7 +139,8 @@ jobs:
                 -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
                 -D CMAKE_PREFIX_PATH=${Qt6_DIR} \
                 -D QT_HOST_PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos \
-                -D QT_HOST_PATH_CMAKE_DIR:PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
+                -D QT_HOST_PATH_CMAKE_DIR:PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos \
+                -DCMAKE_MAKE_PROGRAM=ninja
 
       - name: Upload build logs on deps failure
         uses: actions/upload-artifact@v3

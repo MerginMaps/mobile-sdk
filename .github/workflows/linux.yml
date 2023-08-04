@@ -22,7 +22,6 @@ jobs:
     env:
       QT_VERSION: '6.5.2'
       TRIPLET: "x64-linux"
-      CMAKE_GENERATOR: "Ninja"
       QT_ARCH: "desktop"
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
       VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
@@ -70,6 +69,7 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
+          ./bootstrap-vcpkg.sh
 
       - name: Build Deps
         run: |
@@ -84,7 +84,8 @@ jobs:
                 -G Ninja \
                 -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
                 -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
-                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports"
+                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports"\
+                -DCMAKE_MAKE_PROGRAM=ninja
 
       - name: Upload build logs on deps failure
         uses: actions/upload-artifact@v3

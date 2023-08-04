@@ -54,11 +54,6 @@ jobs:
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-win
 
-      - name: Setup compiler
-        shell: cmd
-        run: |
-            CALL "C:\Program Files (x86)\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
-
       - name: Restore vcpkg folder
         id: cache-vcpkg-restore
         if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
@@ -77,7 +72,15 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
+          bootstrap-vcpkg.bat
 
+      - name: Setup compiler
+        shell: cmd
+        run: |
+            CALL "C:\Program Files (x86)\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
+            
+            cd 
+            
       - name: Build Deps
         shell: pwsh
         run: |

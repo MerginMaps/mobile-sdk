@@ -20,7 +20,6 @@ jobs:
     env:
       QT_VERSION: '6.5.2'
       TRIPLET: "arm64-ios"
-      CMAKE_GENERATOR: "Ninja"
       DEPLOYMENT_TARGET: '14.0' # iOS Deployment target 
       XC_VERSION: ${{ '14.2' }}
       QT_ARCH: "ios"
@@ -88,6 +87,7 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
+          ./bootstrap-vcpkg.sh
 
       - name: Build Deps
         run: |
@@ -105,7 +105,8 @@ jobs:
                 -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ env.DEPLOYMENT_TARGET }} \
                 -D ENABLE_BITCODE=OFF \
                 -D ENABLE_ARC=ON \
-                -D CMAKE_CXX_VISIBILITY_PRESET=hidden
+                -D CMAKE_CXX_VISIBILITY_PRESET=hidden \
+                -DCMAKE_MAKE_PROGRAM=ninja
                 
 
       - name: Upload build logs on deps failure
