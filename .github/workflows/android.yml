@@ -21,7 +21,9 @@ jobs:
       matrix:
         include:
           - TRIPLET: 'arm-android'
+            QT_ARCH: 'android_armv7'
           - TRIPLET: 'arm64-android'
+            QT_ARCH: 'android_arm64_v8a'
                 
     runs-on: macos-12
     env:
@@ -74,25 +76,27 @@ jobs:
         run: |
           sdkmanager --licenses && sdkmanager --verbose "platforms;${SDK_PLATFORM}" "build-tools;${SDK_BUILD_TOOLS}" tools platform-tools
 
-      - name: Install Qt (android)
-        uses: jurplel/install-qt-action@v3
+      - name: Cache Qt
+        id: cache-qt
+        uses: pat-s/always-upload-cache@v2.1.5
         with:
-          version: ${{ env.QT_VERSION }}
-          setup-python: 'false'
-          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
-          dir: ${{ github.workspace }}
-          target: android
-          arch: ${{ matrix.qt_arch }}
+          path: ${{ github.workspace }}/Qt
+          key: ${{ runner.os }}-QtCache-v3-${{ env.QT_VERSION }}-${{ matrix.QT_ARCH }}
           
-      - name: Install Qt (desktop)
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: ${{ env.QT_VERSION }}
-          setup-python: 'false'
-          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
-          dir: ${{ github.workspace }}
-          target: desktop
-          set-env: false
+      - name: Install Qt
+        if: steps.cache-qt.outputs.cache-hit != 'true'
+        run: |
+          python3 -m aqt install-qt \
+            mac android ${{ env.QT_VERSION }} ${{ matrix.QT_ARCH }} \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
+            -O ${{ github.workspace }}/Qt
+
+          python3 -m aqt install-qt \
+            mac desktop ${{ env.QT_VERSION }} \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
+            -O ${{ github.workspace }}/Qt
+          
+          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
 
       - name: Get vcpkg
         shell: bash
@@ -113,7 +117,8 @@ jobs:
 
       - name: Build Deps
         run: |
-          echo ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos 
+          echo ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
+          echo "Qt6_Dir=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/${{ matrix.QT_ARCH }}" >> $GITHUB_ENV
           echo "Qt6_HOST_Dir=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos" >> $GITHUB_ENV
           echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
           
@@ -122,7 +127,7 @@ jobs:
           
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
-          cmake -B ${{ github.workspace }}/build/${{ matrix.arch }} \
+          cmake -B ${{ github.workspace }}/build \
                 -S ${{ github.workspace }}/input-sdk \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
                 -G Ninja \

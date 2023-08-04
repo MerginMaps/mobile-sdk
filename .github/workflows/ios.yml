@@ -42,25 +42,27 @@ jobs:
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
 
-      - name: Install Qt (ios)
-        uses: jurplel/install-qt-action@v3
+      - name: Cache Qt
+        id: cache-qt
+        uses: pat-s/always-upload-cache@v2.1.5
         with:
-          version: ${{ env.QT_VERSION }}
-          setup-python: 'false'
-          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
-          dir: ${{ github.workspace }}
-          target: ${{ env.QT_ARCH }}
-          arch: ${{ matrix.qt_arch }}
+          path: ${{ github.workspace }}/Qt
+          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-ios
           
-      - name: Install Qt (desktop)
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: ${{ env.QT_VERSION }}
-          setup-python: 'false'
-          modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
-          dir: ${{ github.workspace }}
-          target: desktop
-          set-env: false
+      - name: Install Qt
+        if: steps.cache-qt.outputs.cache-hit != 'true'
+        run: |
+          python3 -m aqt install-qt \
+            mac ios ${{ env.QT_VERSION }} \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
+            -O ${{ github.workspace }}/Qt
+            
+          python3 -m aqt install-qt \
+            mac desktop ${{ env.QT_VERSION }} \
+            -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
+            -O ${{ github.workspace }}/Qt
+
+          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
 
       - name: Get vcpkg
         shell: bash
@@ -84,6 +86,7 @@ jobs:
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
           
+          echo "Qt6_Dir=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/ios" >> $GITHUB_ENV
           echo "Qt6_HOST_Dir=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos" >> $GITHUB_ENV
           echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
           

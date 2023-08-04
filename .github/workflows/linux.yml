@@ -47,7 +47,9 @@ jobs:
           setup-python: 'false'
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
-
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-lnx
+          
       - name: Get vcpkg
         shell: bash
         run: |
