@@ -49,7 +49,6 @@ jobs:
           dir: ${{ github.workspace }}
 
       - name: Get vcpkg
-        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
         shell: bash
         run: |
           mkdir -p "${{ env.VCPKG_ROOT }}"
@@ -59,7 +58,10 @@ jobs:
           git pull origin master
           git checkout $VCPKG_BASELINE
           
+      - name: Install vcpkg
+        run: |
           echo "install vcpkg"
+          cd "${{ env.VCPKG_ROOT }}"
           chmod +x ./bootstrap-vcpkg.sh
           ./bootstrap-vcpkg.sh
           ./vcpkg --version
