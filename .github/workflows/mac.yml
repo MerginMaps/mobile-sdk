@@ -23,13 +23,13 @@ jobs:
       QT_VERSION: '6.5.2'
       TRIPLET: "x64-osx"
       CMAKE_GENERATOR: "Ninja"
-      MACOSX_DEPLOYMENT_TARGET: 10.15.0
+      DEPLOYMENT_TARGET: 10.15.0
       XC_VERSION: ${{ '14.2' }}
       QT_ARCH: "desktop"
-      VCPKG_ROOT: "/Users/runner/vcpkg"
+      VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
       VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
-      CACHE_VERSION: 0
-
+      CACHE_VERSION: 1
+    
     steps:
       - uses: actions/checkout@v3
         with:
@@ -38,10 +38,11 @@ jobs:
       - name: Prepare vars
         id: vars
         run: |
-          brew install automake bison flex gnu-sed autoconf-archive libtool
+          brew install automake bison flex gnu-sed autoconf-archive libtool gettext
           echo $(brew --prefix bison)/bin >> $GITHUB_PATH
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
-          
+          echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
+
       - uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
@@ -65,12 +66,16 @@ jobs:
           path: ${{ env.VCPKG_ROOT }}
           key: VCPKG-${{ runner.os }}-${{ env.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
 
-      - uses: actions/checkout@v3
+      - name: Get vcpkg
         if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
-        with:
-          repository: microsoft/vcpkg
-          path: ${{ env.VCPKG_ROOT }}
-          ref: ${ env.VCPKG_BASELINE }
+        shell: bash
+        run: |
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          git checkout $VCPKG_BASELINE
 
       - name: Build Deps
         run: |

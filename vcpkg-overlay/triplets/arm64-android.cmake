@@ -9,4 +9,9 @@ set(VCPKG_CMAKE_CONFIGURE_OPTIONS -DANDROID_ABI=arm64-v8a)
 set(VCPKG_CXX_FLAGS "-fstack-protector-strong")
 set(VCPKG_C_FLAGS "-fstack-protector-strong")
 
+if(DEFINED ENV{ANDROIDAPI})
+  set(VCPKG_CMAKE_SYSTEM_VERSION $ENV{ANDROIDAPI})
+endif()
+
+
 set(VCPKG_ENV_PASSTHROUGH Qt6_DIR)

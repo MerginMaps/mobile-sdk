@@ -25,10 +25,10 @@ jobs:
       VS_VERSION: "2019"
       CMAKE_GENERATOR: "Visual Studio 16 2019" # see https://github.com/actions/runner-images/blob/main/images/win/Windows2019-Readme.md
       CMAKE_ARCH: "x64"
-      QT_ARCH: "win64_msvc2019_64" # run: aqt list $QT_VERSION windows desktop
+      QT_ARCH: "win64_msvc2019_64"
       VCPKG_BASELINE: "2f6176ce98fee807a207dc9e8fec213f111c291b" # use scripts/update_vcpkg_base.bash to change
       VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
-      CACHE_VERSION: 0
+      CACHE_VERSION: 1
       
     steps:
       - uses: actions/checkout@v3
@@ -67,12 +67,16 @@ jobs:
           path: ${ env.VCPKG_ROOT }
           key: VCPKG-${{ runner.os }}-${{ env.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
 
-      - uses: actions/checkout@v3
+      - name: Get vcpkg
         if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
-        with:
-          repository: microsoft/vcpkg
-          path: ${ env.VCPKG_ROOT }
-          ref: ${ env.VCPKG_BASELINE }
+        shell: bash
+        run: |
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          git checkout $VCPKG_BASELINE
 
       - name: Build Deps
         shell: pwsh

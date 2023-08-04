@@ -1,18 +1,19 @@
 cmake_minimum_required(VERSION 3.19)
 
-macro(unset_pc_spatialite)
+macro(unset_pc LIBNAME)
   # clean broken PC_SPATIALITE variables causing
   # clang: error: no such file or directory: 'Security'
   # clang: error: no such file or directory: 'CoreFoundation'
-  unset(PC_SPATIALITE_LDFLAGS_OTHER CACHE)
-  unset(PC_SPATIALITE_STATIC_LDFLAGS CACHE)
-  unset(PC_SPATIALITE_STATIC_LDFLAGS_OTHER CACHE)
-  unset(PC_SPATIALITE_LDFLAGS CACHE)
-  unset(PC_SPATIALITE_LIBRARY_DIRS CACHE)
-  unset(SPATIALITE_LIBRARY CACHE)
+  unset(PC_${LIBNAME}_LDFLAGS_OTHER CACHE)
+  unset(PC_${LIBNAME}_STATIC_LDFLAGS CACHE)
+  unset(PC_${LIBNAME}_STATIC_LDFLAGS_OTHER CACHE)
+  unset(PC_${LIBNAME}_LDFLAGS CACHE)
+  unset(PC_${LIBNAME}_LIBRARY_DIRS CACHE)
+  unset(${LIBNAME}_LIBRARY CACHE)
 endmacro()
 
-unset_pc_spatialite()
+unset_pc(SPATIALITE)
+unset_pc(FREEXL)
 
 project(MerginMapsInputSdk LANGUAGES CXX)
 
@@ -52,7 +53,9 @@ find_package(CURL CONFIG REQUIRED)
 find_package(Iconv)
 find_package(WebP CONFIG REQUIRED)
 
-unset_pc_spatialite()
+unset_pc(SPATIALITE)
+unset_pc(FREEXL)
+
 find_library(SPATIALINDEX_LIBRARY spatialindex_i spatialindex spatialindex-64 PATHS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib NO_DEFAULT_PATH REQUIRED)
 find_library(SPATIALITE_LIBRARY spatialite PATHS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib NO_DEFAULT_PATH REQUIRED)
 find_library(ZLIB_LIBRARY z PATHS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib NO_DEFAULT_PATH REQUIRED)

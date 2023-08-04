@@ -27,7 +27,9 @@ The release is automatically created from each build on master.
 - how to do diff `diff -rupN file.orig file`
 - how to do diff from GIT `git diff master`
 - find SHA512 hash for vcpkg: `shasum -a 512 myfile.tar.gz`
-- vcpkg clean build - remove `rm -rf ./vcpkg/buildtrees/ ./vcpkg/packages/`
+- vcpkg clean build: - remove `rm -rf ./vcpkg/buildtrees/ ./vcpkg/packages/`
+- list QT install options: `aqt list $QT_VERSION windows desktop`
+
 
 ## Android 
 
@@ -87,7 +89,7 @@ TODO
 ```
   mkdir -p build/x64
   cd build/x64
-  export Qt6_DIR=/opt/Qt/6.5.2/macos;export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$PATH
+  export Qt6_DIR=/opt/Qt/6.5.2/macos;export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
