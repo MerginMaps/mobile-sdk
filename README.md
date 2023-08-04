@@ -89,7 +89,7 @@ TODO
 ```
   mkdir -p build/x64
   cd build/x64
-  export Qt6_DIR=/opt/Qt/6.5.2/macos;export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
+  export Qt6_Dir=/opt/Qt/6.5.2/macos;export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \

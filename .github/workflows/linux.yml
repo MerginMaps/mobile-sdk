@@ -25,7 +25,6 @@ jobs:
       QT_ARCH: "desktop"
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
       VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
-      CACHE_VERSION: 1
 
     steps:
       - uses: actions/checkout@v3
@@ -48,16 +47,6 @@ jobs:
           setup-python: 'false'
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
-          cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-lnx
-
-      - name: Restore vcpkg folder
-        id: cache-vcpkg-restore
-        if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
-        uses: actions/cache/restore@v3
-        with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: VCPKG-${{ runner.os }}-${{ env.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
 
       - name: Get vcpkg
         if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
@@ -74,15 +63,15 @@ jobs:
           chmod +x ./bootstrap-vcpkg.sh
           ./bootstrap-vcpkg.sh
           ./vcpkg --version
-          
-          
+
       - name: Build Deps
         run: |
-          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
-          which vcpkg
-        
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
+
+          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
+          ./vcpkg --version
+
           cmake -B ${{ github.workspace }}/build \
                 -S ${{ github.workspace }}/input-sdk \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
@@ -99,14 +88,6 @@ jobs:
           name: build-logs-${{ env.TRIPLET }}
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
-
-      - name: Save vcpkg folder
-        uses: actions/cache/save@v3
-        if: always() && ${{ github.ref != 'refs/heads/master' }} # do not use cache on master; save on error too
-        id: cache-vcpkg-save
-        with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build Test App
         run: |

@@ -49,21 +49,11 @@ jobs:
           target: ${{ env.QT_ARCH }}
           dir: ${{ github.workspace }}
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
-          cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-mac
 
       - name: Setup compiler
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ env.XC_VERSION }}
-
-      - name: Restore vcpkg folder
-        id: cache-vcpkg-restore
-        if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
-        uses: actions/cache/restore@v3
-        with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: VCPKG-${{ runner.os }}-${{ env.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
 
       - name: Get vcpkg
         if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
@@ -83,11 +73,12 @@ jobs:
 
       - name: Build Deps
         run: |
-          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
-          which vcpkg
-          
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
+          
+          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
+          ./vcpkg --version
+          
           cmake -B ${{ github.workspace }}/build \
                 -S ${{ github.workspace }}/input-sdk \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
@@ -105,14 +96,6 @@ jobs:
           name: build-logs-${{ env.TRIPLET }}
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
-
-      - name: Save vcpkg folder
-        uses: actions/cache/save@v3
-        if: always() && ${{ github.ref != 'refs/heads/master' }} # do not use cache on master; save on error too
-        id: cache-vcpkg-save
-        with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build Test App
         run: |

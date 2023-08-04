@@ -12,4 +12,5 @@ set(VCPKG_BUILD_TYPE release)
 set(VCPKG_CXX_FLAGS "-fvisibility=hidden")
 set(VCPKG_C_FLAGS "-fvisibility=hidden")
 
-set(VCPKG_ENV_PASSTHROUGH Qt6_DIR)
+set(VCPKG_ENV_PASSTHROUGH Qt6_Dir)
+set(VCPKG_ENV_PASSTHROUGH Qt6_HOST_Dir)

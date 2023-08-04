@@ -28,8 +28,7 @@ jobs:
       QT_ARCH: "win64_msvc2019_64"
       VCPKG_BASELINE: "2f6176ce98fee807a207dc9e8fec213f111c291b" # use scripts/update_vcpkg_base.bash to change
       VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
-      CACHE_VERSION: 1
-      
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -51,16 +50,6 @@ jobs:
           arch: ${{ env.QT_ARCH }}
           dir: ${{ github.workspace }}
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
-          cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-win
-
-      - name: Restore vcpkg folder
-        id: cache-vcpkg-restore
-        if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
-        uses: actions/cache/restore@v3
-        with:
-          path: ${ env.VCPKG_ROOT }
-          key: VCPKG-${{ runner.os }}-${{ env.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
 
       - name: Get vcpkg
         if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
@@ -95,6 +84,7 @@ jobs:
               if ($LastExitCode -ne 0) { exit $LastExitCode }
           }
           $env:PATH="$env:VCPKG_ROOT;$env:PATH"
+
           cd $env:GITHUB_WORKSPACE
           mkdir ${{ github.workspace }}\build -ea 0
           exec { 
@@ -116,14 +106,6 @@ jobs:
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
 
-      - name: Save vcpkg folder
-        uses: actions/cache/save@v3
-        if: always() && ${{ github.ref != 'refs/heads/master' }} # do not use cache on master; save on error too
-        id: cache-build-save
-        with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
-          
       - name: Build Test App
         shell: pwsh
         run: |

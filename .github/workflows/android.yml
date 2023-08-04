@@ -21,7 +21,7 @@ jobs:
       matrix:
         include:
           - TRIPLET: 'arm-android'
-          - TRIPLET: 'amd64-android'
+          - TRIPLET: 'arm64-android'
                 
     runs-on: macos-12
     env:
@@ -36,7 +36,6 @@ jobs:
       QT_ARCH: "android"
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
       VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
-      CACHE_VERSION: 1
 
     steps:
       - uses: actions/checkout@v3
@@ -61,7 +60,6 @@ jobs:
         with:
           ndk-version: ${{ env.NDK_VERSION_FULL }}
           add-to-path: true
-          local-cache: true
 
       - name: Set up JDK
         uses: actions/setup-java@v2
@@ -85,8 +83,6 @@ jobs:
           dir: ${{ github.workspace }}
           target: android
           arch: ${{ matrix.qt_arch }}
-          cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v3-${{ env.QT_VERSION }}-android
           
       - name: Install Qt (desktop)
         uses: jurplel/install-qt-action@v3
@@ -96,16 +92,7 @@ jobs:
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
           target: desktop
-          cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v3-${{ env.QT_VERSION }}-desktop
-
-      - name: Restore vcpkg folder
-        id: cache-vcpkg-restore
-        if: ${{ github.ref != 'refs/heads/master' }} # do not use cache on master
-        uses: actions/cache/restore@v3
-        with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: VCPKG-${{ runner.os }}-${{ matrix.TRIPLET }}-v${{ env.CACHE_VERSION }}-ref-${{ github.ref }}
+          set-env: false
 
       - name: Get vcpkg
         if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
@@ -121,10 +108,16 @@ jobs:
           echo "install vcpkg"
           chmod +x ./bootstrap-vcpkg.sh
           ./bootstrap-vcpkg.sh
-          ./vcpkg --version
 
       - name: Build Deps
         run: |
+          echo ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos 
+          echo "Qt6_HOST_Dir=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos" >> $GITHUB_ENV
+          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
+          
+          ./vcpkg --version
+          ls -l ${Qt6_HOST_Dir}/../
+          
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
           cmake -B ${{ github.workspace }}/build/${{ matrix.arch }} \
@@ -138,9 +131,7 @@ jobs:
                 -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
                 -D ANDROID_NDK_VERSION="${{ env.NDK_VERSION }}" \
                 -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
-                -D CMAKE_PREFIX_PATH=${Qt6_DIR} \
-                -D QT_HOST_PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos \
-                -D QT_HOST_PATH_CMAKE_DIR:PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos \
+                -D CMAKE_PREFIX_PATH=${Qt6_DIR}
                 -DCMAKE_MAKE_PROGRAM=ninja
 
       - name: Upload build logs on deps failure
@@ -150,14 +141,6 @@ jobs:
           name: build-logs-${{ matrix.TRIPLET }}
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
-
-      - name: Save vcpkg folder
-        uses: actions/cache/save@v3
-        if: always() && ${{ github.ref != 'refs/heads/master' }} # do not use cache on master; save on error too
-        id: cache-vcpkg-save
-        with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
 
       - name: Build Test App
         run: |
