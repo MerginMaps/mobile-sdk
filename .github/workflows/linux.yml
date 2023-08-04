@@ -64,7 +64,6 @@ jobs:
           cd "${{ env.VCPKG_ROOT }}"
           chmod +x ./bootstrap-vcpkg.sh
           ./bootstrap-vcpkg.sh
-          ./vcpkg --version
 
       - name: Build Deps
         run: |
@@ -72,7 +71,7 @@ jobs:
           cd ${{ github.workspace }}/build
 
           echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
-          ./vcpkg --version
+          vcpkg --version
 
           cmake -B ${{ github.workspace }}/build \
                 -S ${{ github.workspace }}/input-sdk \

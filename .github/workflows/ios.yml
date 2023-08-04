@@ -42,9 +42,6 @@ jobs:
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
 
-          pip3 install -U pip
-          pip3 install aqtinstall
-
       - name: Install Qt (ios)
         uses: jurplel/install-qt-action@v3
         with:
@@ -81,7 +78,6 @@ jobs:
           cd "${{ env.VCPKG_ROOT }}"
           chmod +x ./bootstrap-vcpkg.sh
           ./bootstrap-vcpkg.sh
-          ./vcpkg --version
 
       - name: Build Deps
         run: |
@@ -91,7 +87,7 @@ jobs:
           echo "Qt6_HOST_Dir=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos" >> $GITHUB_ENV
           echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
           
-          ./vcpkg --version
+          vcpkg --version
           ls -l ${Qt6_HOST_Dir}/../
           
           cmake -B ${{ github.workspace }}/build \
