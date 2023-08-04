@@ -72,7 +72,12 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
-          bootstrap-vcpkg.bat
+
+      - name: Install vcpkg
+        if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
+        shell: cmd
+        run: |
+          CALL "C:\vcpkg-root\bootstrap-vcpkg.bat"
 
       - name: Setup compiler
         shell: cmd
@@ -99,8 +104,8 @@ jobs:
             -G "${{ env.CMAKE_GENERATOR }}" `
             -A ${{ env.CMAKE_ARCH }} `
             -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} `
-            -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/triplets" `
-            -DVCPKG_OVERLAY_PORTS="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/ports"
+            -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk/vcpkg-overlay/triplets" `
+            -DVCPKG_OVERLAY_PORTS="${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk/vcpkg-overlay/ports"
           }
 
       - name: Upload build logs on deps failure
@@ -155,17 +160,17 @@ jobs:
       - name: Create SDK data folder 
         shell: bash
         run: |
-            mkdir -p ${{ github.workspace }}/sdk
-            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ github.workspace }}/sdk/*
-            rm -rf ${{ github.workspace }}/sdk/etc
-            rm -rf ${{ github.workspace }}/sdk/mkspecs
-            rm -rf ${{ github.workspace }}/sdk/share
-            rm -rf ${{ github.workspace }}/sdk/tools
+            mkdir -p ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk
+            cp -R ${{ steps.vars.outputs.WORKSPACE_DIR }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/*
+            rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/etc
+            rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/mkspecs
+            rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/share
+            rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/tools
             
             SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
             echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
             
-            find ${{ github.workspace }}/sdk/bin/ | grep dll
+            find ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/bin/ | grep dll
             
       - name: Create ZIP package
         uses: thedoctor0/zip-release@0.7.1

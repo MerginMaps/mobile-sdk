@@ -117,7 +117,11 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
+
+          echo "install vcpkg"
+          chmod +x ./bootstrap-vcpkg.sh
           ./bootstrap-vcpkg.sh
+          ./vcpkg --version
 
       - name: Build Deps
         run: |
@@ -125,12 +129,11 @@ jobs:
           cd ${{ github.workspace }}/build
           cmake -B ${{ github.workspace }}/build/${{ matrix.arch }} \
                 -S ${{ github.workspace }}/input-sdk \
-                -DCMAKE_MODULE_PATH:PATH="${{ github.workspace }}/vcpkg-test/cmake" \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
                 -G Ninja \
                 -DVCPKG_TARGET_TRIPLET=${{ matrix.TRIPLET }} \
-                -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
-                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports" \
+                -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/input-sdk/vcpkg-overlay/triplets" \
+                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/input-sdk/vcpkg-overlay/ports" \
                 -D ANDROID_SDK=${ANDROID_HOME} \
                 -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
                 -D ANDROID_NDK_VERSION="${{ env.NDK_VERSION }}" \

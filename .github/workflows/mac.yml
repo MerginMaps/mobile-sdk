@@ -75,7 +75,11 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
+
+          echo "install vcpkg"
+          chmod +x ./bootstrap-vcpkg.sh
           ./bootstrap-vcpkg.sh
+          ./vcpkg --version
 
       - name: Build Deps
         run: |
@@ -89,8 +93,8 @@ jobs:
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
                 -GNinja \
                 -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
-                -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/vcpkg-overlay/triplets" \
-                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/vcpkg-overlay/ports" \
+                -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/input-sdk/vcpkg-overlay/triplets" \
+                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/input-sdk/vcpkg-overlay/ports" \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_MAKE_PROGRAM=ninja
 
