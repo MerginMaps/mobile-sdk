@@ -69,6 +69,7 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           git checkout $VCPKG_BASELINE
+          
           ./bootstrap-vcpkg.sh
 
       - name: Build Deps

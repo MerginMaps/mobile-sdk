@@ -21,9 +21,7 @@ jobs:
       matrix:
         include:
           - TRIPLET: 'arm-android'
-            QT_ARCH: 'android_armv7'
           - TRIPLET: 'amd64-android'
-            QT_ARCH: 'android_arm64_v8a'
                 
     runs-on: macos-12
     env:
@@ -48,7 +46,7 @@ jobs:
       - name: Prepare vars
         id: vars
         run: |
-          brew install automake bison flex gnu-sed autoconf-archive libtool gettext
+          brew install automake bison flex gnu-sed autoconf-archive libtool gettext cmake ninja
           echo $(brew --prefix bison)/bin >> $GITHUB_PATH
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
@@ -85,10 +83,10 @@ jobs:
           setup-python: 'false'
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
-          target: ${{ matrix.QT_ARCH }}
+          target: android
           arch: ${{ matrix.qt_arch }}
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-android
+          cache-key-prefix: ${{ runner.os }}-QtCache-v3-${{ env.QT_VERSION }}-android
           
       - name: Install Qt (desktop)
         uses: jurplel/install-qt-action@v3
@@ -99,7 +97,7 @@ jobs:
           dir: ${{ github.workspace }}
           target: desktop
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-desktop
+          cache-key-prefix: ${{ runner.os }}-QtCache-v3-${{ env.QT_VERSION }}-desktop
 
       - name: Restore vcpkg folder
         id: cache-vcpkg-restore

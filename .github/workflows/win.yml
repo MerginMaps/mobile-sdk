@@ -79,8 +79,6 @@ jobs:
         run: |
             CALL "C:\Program Files (x86)\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
             
-            cd 
-            
       - name: Build Deps
         shell: pwsh
         run: |
