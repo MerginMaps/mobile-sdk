@@ -1,23 +1,31 @@
 set(QT_MODULES
-    Qt6Bluetooth
-    Qt6BuildInternals
+    Qt6
+    Qt6Designer
     Qt6BundledFreetype
+    Qt6BuildInternals
+    Qt6Bundled_Clip2Tri
+    Qt6BundledPcre2
+    Qt6HostInfo
+    Qt6Linguist
+    Qt6QmlDomPrivate
+    Qt6QmlIntegration
+    Qt6Tools
+    Qt6UiPlugin
+    Qt6Bluetooth
     Qt6BundledLibjpeg
     Qt6BundledLibpng
-    Qt6Bundled_Clip2Tri
     Qt6Concurrent
+    Qt6EntryPointPrivate
     Qt6Core
     Qt6Core5Compat
     Qt6Gui
     Qt6Help
-    Qt6HostInfo
     Qt6LabsAnimation
     Qt6LabsFolderListModel
     Qt6LabsQmlModels
     Qt6LabsSettings
     Qt6LabsSharedImage
     Qt6LabsWavefrontMesh
-    Qt6Linguist
     Qt6Multimedia
     Qt6MultimediaWidgets
     Qt6Network
@@ -30,8 +38,6 @@ set(QT_MODULES
     Qt6PrintSupport
     Qt6Qml
     Qt6QmlCore
-    Qt6QmlDomPrivate
-    Qt6QmlIntegration
     Qt6QmlLocalStorage
     Qt6QmlModels
     Qt6QmlWorkerScript
@@ -50,30 +56,26 @@ set(QT_MODULES
     Qt6Svg
     Qt6SvgWidgets
     Qt6Test
-    Qt6Tools
-    Qt6UiPlugin
     Qt6UiTools
     Qt6Widgets
     Qt6Xml
 )
 
-if(NOT VCPKG_TARGET_IS_IOS)
-    set(QT_MODULES ${QT_MODULES} Qt6Designer)
-endif()
+set(Qt6_ROOT_DIR $ENV{Qt6_DIR}/lib/cmake)
 
-
-set(Qt6_DIR $ENV{Qt6_DIR}/lib/cmake)
-
-if(EXISTS ${Qt6_DIR})
-    MESSAGE("Using Qt6_DIR: ${Qt6_DIR}")
+if(EXISTS ${Qt6_ROOT_DIR})
+    MESSAGE(STATUS "Using Qt6 CMAKE dir: ${Qt6_ROOT_DIR}")
 else()
-    MESSAGE(FATAL_ERROR "Qt6 installation not found: ${Qt6_DIR}; Do you have Qt6_DIR environment variable set?")
+    MESSAGE(FATAL_ERROR "Qt6 installation not found: ${Qt6_ROOT_DIR}; Do you have Qt6_DIR environment variable set?")
 endif()
 
 foreach(MOD ${QT_MODULES})
-  set(${MOD}_DIR ${Qt6_DIR}/${MOD})
-  if(NOT EXISTS ${Qt6_DIR}/${MOD})
-      MESSAGE(FATAL_ERROR "Qt6 ${MOD} not found: ${Qt6_DIR}/${MOD}")
+  if(EXISTS ${Qt6_ROOT_DIR}/${MOD})
+      set(${MOD}_DIR ${Qt6_ROOT_DIR}/${MOD})
+      MESSAGE(STATUS "Qt6 ${MOD} found: ${Qt6_ROOT_DIR}/${MOD}")
+  else()
+      # Not all modules are on all platforms
+      MESSAGE(STATUS "Skipped -- Qt6 ${MOD}: ${Qt6_ROOT_DIR}/${MOD}")
   endif()
 endforeach()
 
@@ -86,21 +88,20 @@ set(QT_HOST_MODULES
     Qt6GuiTools
 )
 
-if(VCPKG_TARGET_IS_IOS OR VCPKG_TARGET_IS_ANDROID)
-  set(Qt6_HOST_DIR $ENV{Qt6_HOST_DIR}/lib/cmake)
-  if(EXISTS ${Qt6_HOST_DIR})
-      MESSAGE("Using Qt6_HOST_DIR: ${Qt6_HOST_DIR}")
-  else()
-      MESSAGE(FATAL_ERROR "Qt6 HOST installation not found: ${Qt6_HOST_DIR}; Do you have Qt6_HOST_DIR environment variable set (on android/iOS)?")
-  endif()
+set(Qt6_ROOT_HOST_DIR $ENV{Qt6_HOST_DIR}/lib/cmake)
+if(EXISTS ${Qt6_ROOT_HOST_DIR})
+  MESSAGE(STATUS "Using Qt6 host CMAKE dir from env. variable Qt6_HOST_DIR ${Qt6_ROOT_HOST_DIR}")
 else()
-  set(Qt6_HOST_DIR ${Qt6_DIR})
+  MESSAGE(STATUS "Using Qt6 host CMAKE dir from env. variable Qt6_DIR; for iOS or Android you need to set Qt6_HOST_DIR environment variable instead.")
+  set(Qt6_ROOT_HOST_DIR ${Qt6_ROOT_DIR})
 endif()
 
 foreach(MOD ${QT_HOST_MODULES})
-  set(${MOD}_DIR ${Qt6_HOST_DIR}/${MOD})
-  if(NOT EXISTS ${Qt6_HOST_DIR}/${MOD})
-      MESSAGE(FATAL_ERROR "Qt6 HOST ${MOD} not found: ${Qt6_HOST_DIR}/${MOD}")
+  if(EXISTS ${Qt6_ROOT_HOST_DIR}/${MOD})
+      set(${MOD}_DIR ${Qt6_ROOT_HOST_DIR}/${MOD})
+      MESSAGE(STATUS "Qt6 HOST ${MOD} found: ${Qt6_ROOT_DIR}/${MOD}")
+  else()
+      MESSAGE(STATUS "Skipped -- Qt6 HOST ${MOD} not found: ${Qt6_ROOT_HOST_DIR}/${MOD}")
   endif()
 endforeach()
 

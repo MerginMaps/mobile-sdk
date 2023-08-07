@@ -30,10 +30,11 @@ The release is automatically created from each build on master.
 - vcpkg clean build: - remove `rm -rf ./vcpkg/buildtrees/ ./vcpkg/packages/`
 - list QT install options: `aqt list $QT_VERSION windows desktop`
 
-
 ## Android 
 
 TODO
+
+- Repeat with other android triplet (`arm-android.cmake`)
 
 # Windows
 
@@ -63,11 +64,53 @@ cmake --build %BUILD_DIR% --config Release --verbose
 
 ##  iOS
 
-TODO 
+- Install XCode, Cmake, bison, flex, ...
+```
+  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
+```
+- Qt (version from `.github/workflows/ios.yml`); you need BOTH desktop (macos) and ios installation!
+- Install Vcpkg (git commit from `.github/workflows/ios.yml`)
+```
+  mkdir -p build
+  cd build
+  git clone https://github.com/microsoft/vcpkg.git
+  cd vcpkg 
+  git checkout <git_commit>
+  ./vcpkg/bootstrap-vcpkg.sh
+  cd ..
+  ```
+- Download and prepare input-sdk
+```
+  git clone git@github.com:MerginMaps/input-sdk.git
+```
+- Configure input-sdk test app (this runs VCPKG install - can take few hours) for particular triplet (`arm64-ios.cmake`)
+```
+  mkdir -p build/arm64-ios
+  cd build/arm64-ios
+  
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
+  export PATH=`pwd`/../vcpkg:$PATH
+  export Qt6_DIR=/opt/Qt/6.5.2/ios;export Qt6_HOST_DIR=/opt/Qt/6.5.2/macos
+  export DEPLOYMENT_TARGET=14.0
+
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -G Ninja \
+    -DVCPKG_TARGET_TRIPLET=arm64-ios \
+    -DVCPK_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_MAKE_PROGRAM=ninja
+```
+
+- Build 
+```
+  cmake --build . --config Release
+```
 
 ## MacOS
 
-- Install Cmake, bison, flex, ...
+- Install XCode, Cmake, bison, flex, ...
 ```
   brew install cmake automake bison flex gnu-sed autoconf-archive libtool
 ```
@@ -79,6 +122,7 @@ TODO
   git clone https://github.com/microsoft/vcpkg.git
   cd vcpkg 
   git checkout <git_commit>
+  ./vcpkg/bootstrap-vcpkg.sh
   cd ..
   ```
 - Download and prepare input-sdk
@@ -87,9 +131,12 @@ TODO
 ```
 - Configure input-sdk test app (this runs VCPKG install - can take few hours)
 ```
-  mkdir -p build/x64
-  cd build/x64
-  export Qt6_DIR=/opt/Qt/6.5.2/macos;export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
+  mkdir -p build/x64-osx
+  cd build/x64-osx
+  
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
+  export PATH=`pwd`/../vcpkg:$PATH
+  export Qt6_DIR=/opt/Qt/6.5.2/macos
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \

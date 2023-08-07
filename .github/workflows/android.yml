@@ -125,8 +125,6 @@ jobs:
           export PATH=${{ env.VCPKG_ROOT }}:$PATH
           
           vcpkg --version
-          ls -la ${{ github.workspace }}
-          ls -la ${{ github.workspace }}/Qt
           ls -la ${Qt6_DIR}/lib
           
           mkdir -p ${{ github.workspace }}/build
