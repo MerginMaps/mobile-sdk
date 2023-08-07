@@ -30,11 +30,63 @@ The release is automatically created from each build on master.
 - vcpkg clean build: - remove `rm -rf ./vcpkg/buildtrees/ ./vcpkg/packages/`
 - list QT install options: `aqt list $QT_VERSION windows desktop`
 
-## Android 
+## Android (on MacOS)
 
-TODO
+To build on Linux/Windows, adjust setup of deps from Linux build.
 
-- Repeat with other android triplet (`arm-android.cmake`)
+- Install SDK and NDK, Build Tools (version from `.github/workflows/android.yml`)
+- Install XCode, Cmake, bison, flex, ...
+```
+  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
+```
+- Qt (version from `.github/workflows/android.yml`); you need BOTH desktop (macos) and android installation!
+- Install Vcpkg (git commit from `.github/workflows/android.yml`)
+```
+  mkdir -p build
+  cd build
+  git clone https://github.com/microsoft/vcpkg.git
+  cd vcpkg 
+  git checkout <git_commit>
+  ./vcpkg/bootstrap-vcpkg.sh
+  cd ..
+  ```
+- Download and prepare input-sdk
+```
+  git clone git@github.com:MerginMaps/input-sdk.git
+```
+- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+```
+  mkdir -p build/arm64-android
+  cd build/arm64-android
+  
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
+  export PATH=`pwd`/../vcpkg:$PATH
+  export Qt6_DIR=/opt/Qt/6.5.2/android_arm64_v8a;export QT_HOST_PATH=/opt/Qt/6.5.2/macos
+  export ANDROIDAPI=21
+  export NDK_VERSION='25.1.8937393'
+  export ANDROID_BUILD_TOOLS_VERSION='33.0.1'
+  export ANDROID_HOME='/opt/Android/android-sdk/'
+  
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -G Ninja \
+    -DVCPKG_TARGET_TRIPLET=arm64-android \
+    -DVCPK_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DCMAKE_BUILD_TYPE=Release \
+    -D ANDROID_SDK=${ANDROID_HOME} \
+    -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
+    -D ANDROID_NDK_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
+    -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
+    -DCMAKE_MAKE_PROGRAM=ninja
+```
+
+- Build 
+```
+  cmake --build . --config Release
+```
+
+- Repeat with other android triplet (`arm-android.cmake` and QT installation `android_armv7`)
 
 # Windows
 
@@ -49,9 +101,18 @@ set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
 "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
 ```
 
-- run CMake to build deps and test project
+- run CMake to build deps (this runs VCPKG install - can take few hours)
 ```
-cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test "-DCMAKE_MODULE_PATH:PATH=%SOURCE_DIR%\vcpkg-test\cmake" "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" -G "Visual Studio 16 2019" -A x64 -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets -DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports
+cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test `
+"-DCMAKE_MODULE_PATH:PATH=%SOURCE_DIR%\vcpkg-test\cmake" `
+"-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" `
+-G "Visual Studio 16 2019" -A x64 -DVCPKG_TARGET_TRIPLET=x64-windows `
+-DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets `
+-DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports
+```
+
+- build executable
+```
 cmake --build %BUILD_DIR% --config Release --verbose
 ```
 
@@ -90,15 +151,15 @@ cmake --build %BUILD_DIR% --config Release --verbose
   
   export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
   export PATH=`pwd`/../vcpkg:$PATH
-  export Qt6_DIR=/opt/Qt/6.5.2/ios;export Qt6_HOST_DIR=/opt/Qt/6.5.2/macos
+  export Qt6_DIR=/opt/Qt/6.5.2/ios;export QT_HOST_PATH=/opt/Qt/6.5.2/macos
   export DEPLOYMENT_TARGET=14.0
 
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G Ninja \
-    -DVCPKG_TARGET_TRIPLET=arm64-ios \
-    -DVCPK_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
     -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DVCPKG_TARGET_TRIPLET=arm64-ios \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_MAKE_PROGRAM=ninja
 ```
@@ -129,7 +190,7 @@ cmake --build %BUILD_DIR% --config Release --verbose
 ```
   git clone git@github.com:MerginMaps/input-sdk.git
 ```
-- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+- Configure input-sdk test app (this runs VCPKG install - can take few hours) (for arm64 arch builds use `arm64-osx` TRIPLET)
 ```
   mkdir -p build/x64-osx
   cd build/x64-osx
@@ -142,7 +203,7 @@ cmake --build %BUILD_DIR% --config Release --verbose
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=x64-osx \
-    -DVCPK_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
     -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_MAKE_PROGRAM=ninja

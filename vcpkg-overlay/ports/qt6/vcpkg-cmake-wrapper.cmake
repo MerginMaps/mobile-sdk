@@ -1,9 +1,24 @@
 set(QT_MODULES
     Qt6
     Qt6Designer
+    Qt6BundledHarfbuzz
     Qt6BundledFreetype
     Qt6BuildInternals
     Qt6Bundled_Clip2Tri
+    Qt6BundledFreetype
+    Qt6BundledGlslang_Glslang
+    Qt6BundledGlslang_Oglcompiler
+    Qt6BundledGlslang_Osdependent
+    Qt6BundledGlslang_Spirv
+    Qt6BundledHarfbuzz
+    Qt6BundledLibjpeg
+    Qt6BundledLibpng
+    Qt6BundledPcre2
+    Qt6BundledResonanceAudio
+    Qt6BundledSpirv_Cross
+    Qt6Bundled_Clip2Tri
+    Qt6Bundled_Clipper
+    Qt6Bundled_Poly2Tri
     Qt6BundledPcre2
     Qt6HostInfo
     Qt6Linguist
@@ -88,11 +103,11 @@ set(QT_HOST_MODULES
     Qt6GuiTools
 )
 
-set(Qt6_ROOT_HOST_DIR $ENV{Qt6_HOST_DIR}/lib/cmake)
+set(Qt6_ROOT_HOST_DIR $ENV{QT_HOST_PATH}/lib/cmake)
 if(EXISTS ${Qt6_ROOT_HOST_DIR})
-  MESSAGE(STATUS "Using Qt6 host CMAKE dir from env. variable Qt6_HOST_DIR ${Qt6_ROOT_HOST_DIR}")
+  MESSAGE(STATUS "Using Qt6 host CMAKE dir from env. variable QT_HOST_PATH ${Qt6_ROOT_HOST_DIR}")
 else()
-  MESSAGE(STATUS "Using Qt6 host CMAKE dir from env. variable Qt6_DIR; for iOS or Android you need to set Qt6_HOST_DIR environment variable instead.")
+  MESSAGE(STATUS "Using Qt6 host CMAKE dir from env. variable Qt6_DIR; for iOS or Android you need to set QT_HOST_PATH environment variable instead.")
   set(Qt6_ROOT_HOST_DIR ${Qt6_ROOT_DIR})
 endif()
 

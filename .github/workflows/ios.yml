@@ -90,7 +90,7 @@ jobs:
           cd ${{ github.workspace }}/build
           
           export Qt6_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/ios
-          export Qt6_HOST_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
+          export QT_HOST_PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
           export PATH=${{ env.VCPKG_ROOT }}:$PATH
           
           vcpkg --version

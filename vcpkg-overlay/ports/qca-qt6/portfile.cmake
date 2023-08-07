@@ -1,6 +1,6 @@
 # This portfile adds the Qt Cryptographic Arcitecture
 # Changes to the original build:
-#   No -qt6 suffix, which is recommended just for Linux
+#   No -qt5 suffix, which is recommended just for Linux
 #   Output directories according to vcpkg
 #   Updated certstore. See certstore.pem in the output dirs
 #
@@ -47,25 +47,30 @@ vcpkg_execute_required_process(
 )
 message(STATUS "Importing certstore done")
 
+if(VCPKG_CROSSCOMPILING)
+   list(APPEND QCA_OPTIONS -DQT_HOST_PATH=${CURRENT_HOST_INSTALLED_DIR})
+   list(APPEND QCA_OPTIONS -DQT_ADDITIONAL_PACKAGES_PREFIX_PATH=${CURRENT_HOST_INSTALLED_DIR})
+   list(APPEND QCA_OPTIONS -DQT_HOST_PATH_CMAKE_DIR:PATH=${CURRENT_HOST_INSTALLED_DIR}/share)
+endif()
+ 
+list(APPEND QCA_OPTIONS -DWITH_gnupg_PLUGIN=no)
 # Configure and build
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
-      -DQT6=ON 
-      -DBUILD_TESTS=OFF
-      -DBUILD_TOOLS=OFF
-      -DWITH_nss_PLUGIN=OFF
-      -DWITH_pkcs11_PLUGIN=OFF
-      -DWITH_gnupg_PLUGIN=OFF
-      -DWITH_gcrypt_PLUGIN=OFF
-      -DWITH_botan_PLUGIN=OFF
-	  -DQCA_SUFFIX=OFF
-      -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE
-      -DQCA_FEATURE_INSTALL_DIR=share/qca/mkspecs/features
+        -DBUILD_WITH_QT6=ON
+        -DUSE_RELATIVE_PATHS=ON
+        -DBUILD_TESTS=OFF
+        -DBUILD_TOOLS=OFF
+        -DQCA_SUFFIX=OFF
+        -DQCA_FEATURE_INSTALL_DIR=share/qca/mkspecs/features
+        -DOSX_FRAMEWORK=OFF
+        -DQT6=ON
+        ${QCA_OPTIONS}
     OPTIONS_DEBUG
-      -DQCA_PLUGINS_INSTALL_DIR=${QCA_FEATURE_INSTALL_DIR_DEBUG}
+        -DQCA_PLUGINS_INSTALL_DIR=${QCA_FEATURE_INSTALL_DIR_DEBUG}
     OPTIONS_RELEASE
-      -DQCA_PLUGINS_INSTALL_DIR=${QCA_FEATURE_INSTALL_DIR_RELEASE}
+        -DQCA_PLUGINS_INSTALL_DIR=${QCA_FEATURE_INSTALL_DIR_RELEASE}
 )
 
 vcpkg_cmake_install()
