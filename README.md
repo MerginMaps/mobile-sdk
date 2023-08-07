@@ -161,7 +161,12 @@ cmake --build %BUILD_DIR% --config Release --verbose
     -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
     -DVCPKG_TARGET_TRIPLET=arm64-ios \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_MAKE_PROGRAM=ninja
+    -DCMAKE_MAKE_PROGRAM=ninja \
+    -D ENABLE_BITCODE=OFF \
+    -D ENABLE_ARC=ON \
+    -D CMAKE_SYSTEM_NAME=iOS \
+    -D CMAKE_SYSTEM_PROCESSOR=aarch64 \
+    -D CMAKE_CXX_VISIBILITY_PRESET=hidden
 ```
 
 - Build 
