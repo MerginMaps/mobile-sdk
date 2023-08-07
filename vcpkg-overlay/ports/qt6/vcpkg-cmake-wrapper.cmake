@@ -62,12 +62,12 @@ if(NOT VCPKG_TARGET_IS_IOS)
 endif()
 
 
-set(Qt6_DIR $ENV{Qt6_Dir}/lib/cmake)
+set(Qt6_DIR $ENV{Qt6_DIR}/lib/cmake)
 
 if(EXISTS ${Qt6_DIR})
     MESSAGE("Using Qt6_DIR: ${Qt6_DIR}")
 else()
-    MESSAGE(FATAL_ERROR "Qt6 installation not found: ${Qt6_DIR}; Do you have Qt6_Dir environment variable set?")
+    MESSAGE(FATAL_ERROR "Qt6 installation not found: ${Qt6_DIR}; Do you have Qt6_DIR environment variable set?")
 endif()
 
 foreach(MOD ${QT_MODULES})
@@ -87,11 +87,11 @@ set(QT_HOST_MODULES
 )
 
 if(VCPKG_TARGET_IS_IOS OR VCPKG_TARGET_IS_ANDROID)
-  set(Qt6_HOST_DIR $ENV{Qt6_HOST_Dir}/lib/cmake)
+  set(Qt6_HOST_DIR $ENV{Qt6_HOST_DIR}/lib/cmake)
   if(EXISTS ${Qt6_HOST_DIR})
       MESSAGE("Using Qt6_HOST_DIR: ${Qt6_HOST_DIR}")
   else()
-      MESSAGE(FATAL_ERROR "Qt6 HOST installation not found: ${Qt6_HOST_DIR}; Do you have Qt6_HOST_Dir environment variable set (on android/iOS)?")
+      MESSAGE(FATAL_ERROR "Qt6 HOST installation not found: ${Qt6_HOST_DIR}; Do you have Qt6_HOST_DIR environment variable set (on android/iOS)?")
   endif()
 else()
   set(Qt6_HOST_DIR ${Qt6_DIR})

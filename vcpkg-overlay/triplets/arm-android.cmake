@@ -13,5 +13,5 @@ endif()
 set(VCPKG_CXX_FLAGS "-fstack-protector-strong -lunwind -Wl,--exclude-libs=libunwind.a")
 set(VCPKG_C_FLAGS "-fstack-protector-strong -lunwind -Wl,--exclude-libs=libunwind.a")
 
-set(VCPKG_ENV_PASSTHROUGH Qt6_Dir)
-set(VCPKG_ENV_PASSTHROUGH Qt6_HOST_Dir)
+set(VCPKG_ENV_PASSTHROUGH Qt6_DIR)
+set(VCPKG_ENV_PASSTHROUGH Qt6_HOST_DIR)
