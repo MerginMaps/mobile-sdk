@@ -94,7 +94,9 @@ jobs:
           export PATH=${{ env.VCPKG_ROOT }}:$PATH
           
           vcpkg --version
-          ls -l ${Qt6_DIR}/lib
+          ${{ github.workspace }}
+          ls -la ${{ github.workspace }}/Qt
+          ls -la ${Qt6_DIR}/lib
           
           cmake -B ${{ github.workspace }}/build \
                 -S ${{ github.workspace }}/input-sdk \
