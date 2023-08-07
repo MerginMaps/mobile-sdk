@@ -22,7 +22,7 @@ jobs:
     env:
       QT_VERSION: '6.5.2'
       TRIPLET: "x64-osx"
-      DEPLOYMENT_TARGET: 10.15.0
+      DEPLOYMENT_TARGET: "10.15.0"
       XC_VERSION: ${{ '14.2' }}
       QT_ARCH: "desktop"
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
@@ -92,7 +92,8 @@ jobs:
                 -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/input-sdk/vcpkg-overlay/triplets" \
                 -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/input-sdk/vcpkg-overlay/ports" \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_MAKE_PROGRAM=ninja
+                -DCMAKE_MAKE_PROGRAM=ninja \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ env.DEPLOYMENT_TARGET }}
 
       - name: Upload build logs on deps failure
         uses: actions/upload-artifact@v3

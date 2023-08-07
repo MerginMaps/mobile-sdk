@@ -99,7 +99,7 @@ jobs:
           cmake -B ${{ github.workspace }}/build \
                 -S ${{ github.workspace }}/input-sdk \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
-                -G Ninja \
+                -G Xcode \
                 -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
                 -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/input-sdk/vcpkg-overlay/triplets" \
                 -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/input-sdk/vcpkg-overlay/ports" \
@@ -108,9 +108,7 @@ jobs:
                 -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ env.DEPLOYMENT_TARGET }} \
                 -D ENABLE_BITCODE=OFF \
                 -D ENABLE_ARC=ON \
-                -D CMAKE_CXX_VISIBILITY_PRESET=hidden \
-                -DCMAKE_MAKE_PROGRAM=ninja
-                
+                -D CMAKE_CXX_VISIBILITY_PRESET=hidden
 
       - name: Upload build logs on deps failure
         uses: actions/upload-artifact@v3

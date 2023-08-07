@@ -21,13 +21,12 @@ The release is automatically created from each build on master.
 
 # Development
 
-## Tips
+## Tips & Tricks
 
 - look at `.github/workflows/<platform>.yml` to see how it is done in CI
 - how to do diff `diff -rupN file.orig file`
 - how to do diff from GIT `git diff master`
 - find SHA512 hash for vcpkg: `shasum -a 512 myfile.tar.gz`
-- vcpkg clean build: - remove `rm -rf ./vcpkg/buildtrees/ ./vcpkg/packages/`
 - list QT install options: `aqt list $QT_VERSION windows desktop`
 
 ## Android (on MacOS)
@@ -66,6 +65,7 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   export NDK_VERSION='25.1.8937393'
   export ANDROID_BUILD_TOOLS_VERSION='33.0.1'
   export ANDROID_HOME='/opt/Android/android-sdk/'
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;export CMAKE_C_COMPILER_LAUNCHER=ccache
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
@@ -87,41 +87,6 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
 ```
 
 - Repeat with other android triplet (`arm-android.cmake` and QT installation `android_armv7`)
-
-# Windows
-
-- install cmake, vcpkg, Visual Studio and Qt and add to PATH
-```
-set ROOT_DIR=C:\Users\Peter\repo
-set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
-set SOURCE_DIR=%ROOT_DIR%\input-sdk
-set VCPKG_ROOT=%ROOT_DIR%\vcpkg
-set Qt6_DIR=C:\Qt\6.3.2\msvc2019_64
-set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
-"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
-```
-
-- run CMake to build deps (this runs VCPKG install - can take few hours)
-```
-cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test `
-"-DCMAKE_MODULE_PATH:PATH=%SOURCE_DIR%\vcpkg-test\cmake" `
-"-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" `
--G "Visual Studio 16 2019" -A x64 -DVCPKG_TARGET_TRIPLET=x64-windows `
--DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets `
--DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports
-```
-
-- build executable
-```
-cmake --build %BUILD_DIR% --config Release --verbose
-```
-
-- run tests 
-```
-%BUILD_DIR%\Release\inputsdktest.exe
-```
-
-- the resulting build tree is then located at `%BUILD_DIR%\vcpkg_installed`
 
 ##  iOS
 
@@ -149,30 +114,64 @@ cmake --build %BUILD_DIR% --config Release --verbose
   mkdir -p build/arm64-ios
   cd build/arm64-ios
   
-  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
-  export PATH=`pwd`/../vcpkg:$PATH
-  export Qt6_DIR=/opt/Qt/6.5.2/ios;export QT_HOST_PATH=/opt/Qt/6.5.2/macos
-  export DEPLOYMENT_TARGET=14.0
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH \
+  export PATH=`pwd`/../vcpkg:$PATH \
+  export Qt6_DIR=/opt/Qt/6.5.2/ios \
+  export QT_HOST_PATH=/opt/Qt/6.5.2/macos \
+  export DEPLOYMENT_TARGET=14.0 \
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+  export CMAKE_C_COMPILER_LAUNCHER=ccache
 
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
-    -G Ninja \
+    -G "Xcode" \
     -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
     -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
     -DVCPKG_TARGET_TRIPLET=arm64-ios \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_MAKE_PROGRAM=ninja \
     -D ENABLE_BITCODE=OFF \
     -D ENABLE_ARC=ON \
     -D CMAKE_SYSTEM_NAME=iOS \
     -D CMAKE_SYSTEM_PROCESSOR=aarch64 \
-    -D CMAKE_CXX_VISIBILITY_PRESET=hidden
+    -D CMAKE_CXX_VISIBILITY_PRESET=hidden \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET}
 ```
 
 - Build 
 ```
   cmake --build . --config Release
 ```
+
+## Windows
+
+- install cmake, vcpkg, Visual Studio and Qt and add to PATH
+```
+set ROOT_DIR=C:\Users\Peter\repo
+set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
+set SOURCE_DIR=%ROOT_DIR%\input-sdk
+set VCPKG_ROOT=%ROOT_DIR%\vcpkg
+set Qt6_DIR=C:\Qt\6.3.2\msvc2019_64
+set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
+```
+
+- run CMake to build deps (this runs VCPKG install - can take few hours)
+```
+cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test `
+"-DCMAKE_MODULE_PATH:PATH=%SOURCE_DIR%\vcpkg-test\cmake" `
+"-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" `
+-G "Visual Studio 16 2019" -A x64 -DVCPKG_TARGET_TRIPLET=x64-windows `
+-DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets `
+-DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports
+```
+
+- build executable and run tests 
+```
+cmake --build %BUILD_DIR% --config Release --verbose
+%BUILD_DIR%\Release\inputsdktest.exe
+```
+
+- the resulting build tree is then located at `%BUILD_DIR%\vcpkg_installed`
 
 ## MacOS
 
@@ -203,11 +202,57 @@ cmake --build %BUILD_DIR% --config Release --verbose
   export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
   export PATH=`pwd`/../vcpkg:$PATH
   export Qt6_DIR=/opt/Qt/6.5.2/macos
+  export DEPLOYMENT_TARGET=10.15.0
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=x64-osx \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_MAKE_PROGRAM=ninja \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET}
+```
+
+- Build and run test app to verify your build
+```
+  cmake --build . --config Release
+  ./merginmapsinputsdk
+```
+
+## Linux 
+
+- Install ninja, cmake, bison, flex, ...
+- Qt (version from `.github/workflows/linux.yml`) 
+- Install Vcpkg (git commit from `.github/workflows/linux.yml`)
+```
+  mkdir -p build
+  cd build
+  git clone https://github.com/microsoft/vcpkg.git
+  cd vcpkg 
+  git checkout <git_commit>
+  ./vcpkg/bootstrap-vcpkg.sh
+  cd ..
+  ```
+- Download and prepare input-sdk
+```
+  git clone git@github.com:MerginMaps/input-sdk.git
+```
+- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+```
+  mkdir -p build/x64-linux
+  cd build/x64-linux
+  
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
+  export PATH=`pwd`/../vcpkg:$PATH
+  export Qt6_DIR=/opt/Qt/6.5.2/macos
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;export CMAKE_C_COMPILER_LAUNCHER=ccache
+  
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -G Ninja \
+    -DVCPKG_TARGET_TRIPLET=x64-linux \
     -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
     -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
@@ -217,11 +262,8 @@ cmake --build %BUILD_DIR% --config Release --verbose
 - Build and run test app to verify your build
 ```
   cmake --build . --config Release
-```
-
-## Linux 
-
-TODO 
+  ./merginmapsinputsdk
+``` 
 
 # License & Acknowledgement
 
