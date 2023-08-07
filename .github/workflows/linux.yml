@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.repository == 'merginmaps/input-sdk'
     
-    env:
+    env: # update README for devs if you modify these env. variables
       QT_VERSION: '6.5.2'
       TRIPLET: "x64-linux"
       QT_ARCH: "desktop"
@@ -36,13 +36,8 @@ jobs:
         run: |
           sudo apt-get install -y \
             bison flex \
-            cmake ninja-build \
-            gperf autopoint '^libxcb.*-dev' libx11-xcb-dev \
-            libegl1-mesa libegl1-mesa-dev libglu1-mesa-dev \
-            libxrender-dev libxi-dev libxkbcommon-dev \
-            libxkbcommon-x11-dev autoconf-archive \
-            libgstreamer-gl1.0-0 libgstreamer-plugins-base1.0-0 libfuse2
-            
+            cmake ninja-build autoconf-archive
+
           # Required to run unit tests on linux
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
 

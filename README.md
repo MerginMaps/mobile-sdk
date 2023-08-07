@@ -199,10 +199,12 @@ cmake --build %BUILD_DIR% --config Release --verbose
   mkdir -p build/x64-osx
   cd build/x64-osx
   
-  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
-  export PATH=`pwd`/../vcpkg:$PATH
-  export Qt6_DIR=/opt/Qt/6.5.2/macos
-  export DEPLOYMENT_TARGET=10.15.0
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH \
+  export PATH=`pwd`/../vcpkg:$PATH \
+  export Qt6_DIR=/opt/Qt/6.5.2/macos \
+  export DEPLOYMENT_TARGET=10.15.0 \
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+  export CMAKE_C_COMPILER_LAUNCHER=ccache
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \

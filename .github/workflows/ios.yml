@@ -17,7 +17,7 @@ concurrency:
 jobs:
   ios_build:
     runs-on: macos-12
-    env:
+    env: # update README for devs if you modify these env. variables
       QT_VERSION: '6.5.2'
       TRIPLET: "arm64-ios"
       DEPLOYMENT_TARGET: '14.0' # iOS Deployment target 
@@ -45,15 +45,15 @@ jobs:
           pip3 install -U pip
           pip3 install aqtinstall
 
-      - name: Cache Qt
-        id: cache-qt
-        uses: pat-s/always-upload-cache@v2.1.5
+      - name: Restore cached Qt
+        id: cache-qt-restore
+        uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v13-${{ env.QT_VERSION }}-ios
-          
+          key: ${{ runner.os }}-QtCache-v16-${{ env.QT_VERSION }}-ios
+
       - name: Install Qt
-        if: steps.cache-qt.outputs.cache-hit != 'true'
+        if: steps.cache-qt-restore.outputs.cache-hit != 'true'
         run: |
           python3 -m aqt install-qt \
             mac ios ${{ env.QT_VERSION }} \
@@ -65,7 +65,13 @@ jobs:
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
             -O ${{ github.workspace }}/Qt
 
-          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
+      - name: Save Qt cache
+        uses: actions/cache/save@v3
+        if: steps.cache-qt-restore.outputs.cache-hit != 'true'
+        id: cache-qt-save
+        with:
+          path: ${{ github.workspace }}/Qt
+          key: ${{ steps.cache-qt-restore.outputs.cache-primary-key }}
 
       - name: Get vcpkg
         shell: bash
