@@ -58,14 +58,15 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   mkdir -p build/arm64-android
   cd build/arm64-android
   
-  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
-  export PATH=`pwd`/../vcpkg:$PATH
-  export Qt6_DIR=/opt/Qt/6.5.2/android_arm64_v8a;export QT_HOST_PATH=/opt/Qt/6.5.2/macos
-  export ANDROIDAPI=21
-  export NDK_VERSION='25.1.8937393'
-  export ANDROID_BUILD_TOOLS_VERSION='33.0.1'
-  export ANDROID_HOME='/opt/Android/android-sdk/'
-  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;export CMAKE_C_COMPILER_LAUNCHER=ccache
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=`pwd`/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/android_arm64_v8a;export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export ANDROIDAPI=21;\
+  export NDK_VERSION='25.1.8937393';\
+  export ANDROID_BUILD_TOOLS_VERSION='33.0.1';\
+  export ANDROID_HOME='/opt/Android/android-sdk/';\
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;\
+  export CMAKE_C_COMPILER_LAUNCHER=ccache
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
@@ -114,12 +115,12 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   mkdir -p build/arm64-ios
   cd build/arm64-ios
   
-  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH \
-  export PATH=`pwd`/../vcpkg:$PATH \
-  export Qt6_DIR=/opt/Qt/6.5.2/ios \
-  export QT_HOST_PATH=/opt/Qt/6.5.2/macos \
-  export DEPLOYMENT_TARGET=14.0 \
-  export CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+  export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=${PWD}/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/ios;\
+  export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export DEPLOYMENT_TARGET=14.0;\
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;\
   export CMAKE_C_COMPILER_LAUNCHER=ccache
 
   cmake -B . -S ../../input-sdk/ \
@@ -199,11 +200,11 @@ cmake --build %BUILD_DIR% --config Release --verbose
   mkdir -p build/x64-osx
   cd build/x64-osx
   
-  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH \
-  export PATH=`pwd`/../vcpkg:$PATH \
-  export Qt6_DIR=/opt/Qt/6.5.2/macos \
-  export DEPLOYMENT_TARGET=10.15.0 \
-  export CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+  export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=${PWD}/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/macos;\
+  export DEPLOYMENT_TARGET=10.15.0;\
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;\
   export CMAKE_C_COMPILER_LAUNCHER=ccache
   
   cmake -B . -S ../../input-sdk/ \
@@ -246,10 +247,11 @@ cmake --build %BUILD_DIR% --config Release --verbose
   mkdir -p build/x64-linux
   cd build/x64-linux
   
-  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH
-  export PATH=`pwd`/../vcpkg:$PATH
-  export Qt6_DIR=/opt/Qt/6.5.2/macos
-  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;export CMAKE_C_COMPILER_LAUNCHER=ccache
+  export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=${PWD}/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/macos;\
+  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;\
+  export CMAKE_C_COMPILER_LAUNCHER=ccache
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \

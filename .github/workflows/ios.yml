@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v16-${{ env.QT_VERSION }}-ios
+          key: ${{ runner.os }}-QtCache-v20-${{ env.QT_VERSION }}-ios
 
       - name: Install Qt
         if: steps.cache-qt-restore.outputs.cache-hit != 'true'
