@@ -84,7 +84,7 @@ jobs:
         uses: pat-s/always-upload-cache@v2.1.5
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v12-${{ env.QT_VERSION }}-${{ matrix.QT_ARCH }}
+          key: ${{ runner.os }}-QtCache-v13-${{ env.QT_VERSION }}-${{ matrix.QT_ARCH }}
           
       - name: Install Qt
         if: steps.cache-qt.outputs.cache-hit != 'true'
