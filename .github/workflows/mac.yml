@@ -79,7 +79,8 @@ jobs:
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
           
-          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
+          export PATH=${{ env.VCPKG_ROOT }}:$PATH
+
           vcpkg --version
           ls -l ${Qt6_DIR}/lib
           

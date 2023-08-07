@@ -89,9 +89,9 @@ jobs:
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
           
-          echo "Qt6_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/ios" >> $GITHUB_ENV
-          echo "Qt6_HOST_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos" >> $GITHUB_ENV
-          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
+          export Qt6_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/ios
+          export Qt6_HOST_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
+          export PATH=${{ env.VCPKG_ROOT }}:$PATH
           
           vcpkg --version
           ls -l ${Qt6_DIR}/lib

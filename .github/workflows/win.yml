@@ -83,10 +83,12 @@ jobs:
               & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
               if ($LastExitCode -ne 0) { exit $LastExitCode }
           }
-          $env:PATH="$env:VCPKG_ROOT;$env:PATH"
 
           cd $env:GITHUB_WORKSPACE
           mkdir ${{ github.workspace }}\build -ea 0
+
+          $env:PATH="$env:VCPKG_ROOT;$env:PATH"
+
           exec { 
             cmake -B ${{ github.workspace }}\build `
             -S ${{ github.workspace }}\input-sdk `

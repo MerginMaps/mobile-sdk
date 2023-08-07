@@ -120,10 +120,9 @@ jobs:
 
       - name: Build Deps
         run: |
-          echo ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
-          echo "Qt6_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/${{ matrix.QT_ARCH }}" >> $GITHUB_ENV
-          echo "Qt6_HOST_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos" >> $GITHUB_ENV
-          echo "PATH=${{ env.VCPKG_ROOT }}:$PATH" >> $GITHUB_ENV
+          export Qt6_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/${{ matrix.QT_ARCH }}
+          export Qt6_HOST_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
+          export PATH=${{ env.VCPKG_ROOT }}:$PATH
           
           vcpkg --version
           ls -l ${Qt6_DIR}/lib
