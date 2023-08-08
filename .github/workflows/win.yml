@@ -13,6 +13,7 @@ on:
       - 'vcpkg-overlay/triplets/arm64-osx.yml'
       - 'vcpkg-overlay/triplets/x64-linux.yml'
       - 'vcpkg-overlay/triplets/x64-osx.yml'
+      - 'scripts/**'
       - 'LICENSE'
       - 'README.md'
  

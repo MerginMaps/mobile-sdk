@@ -51,7 +51,7 @@ find_package(Protobuf REQUIRED)
 find_package(Qca CONFIG REQUIRED)
 find_package(Qt6Keychain CONFIG REQUIRED)
 find_package(PostgreSQL REQUIRED)
-find_package(Exiv2 REQUIRED)
+find_package(exiv2 CONFIG REQUIRED)
 find_package(expat CONFIG REQUIRED)
 find_package(CURL CONFIG REQUIRED)
 find_package(Iconv)
@@ -69,6 +69,16 @@ if(APPLE)
 endif()
 
 add_executable(merginmapsinputsdk main.cpp)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  set_target_properties(
+    merginmapsinputsdk
+    PROPERTIES MACOSX_BUNDLE TRUE
+               XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "" # disable signing
+               MACOSX_BUNDLE_GUI_IDENTIFIER MerginMaps.SDK
+               XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME TRUE
+  )
+endif ()
 
 target_link_libraries(merginmapsinputsdk PRIVATE
     Qt6::Qml

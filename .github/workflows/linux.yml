@@ -13,6 +13,7 @@ on:
       - 'vcpkg-overlay/triplets/arm64-osx.yml'
       - 'vcpkg-overlay/triplets/x64-osx.yml'
       - 'vcpkg-overlay/triplets/x64-windows.yml'
+      - 'scripts/**'
       - 'LICENSE'
       - 'README.md'
 
@@ -42,7 +43,8 @@ jobs:
         run: |
           sudo apt-get install -y \
             bison flex \
-            cmake ninja-build autoconf-archive
+            cmake ninja-build autoconf-archive \
+            libgl1-mesa-dev libglvnd-dev
 
           # Required to run unit tests on linux
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV

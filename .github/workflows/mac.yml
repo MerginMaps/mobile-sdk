@@ -12,6 +12,7 @@ on:
       - 'vcpkg-overlay/triplets/arm64-ios.yml'
       - 'vcpkg-overlay/triplets/x64-linux.yml'
       - 'vcpkg-overlay/triplets/x64-windows.yml'
+      - 'scripts/**'
       - 'LICENSE'
       - 'README.md'
 
@@ -140,8 +141,8 @@ jobs:
             mkdir -p ${{ github.workspace }}/proj-data
             echo ".. 1/2 qgis database"
             mkdir -p ${{ github.workspace }}/proj-data/resources
-            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/proj/qgis.db ${{ github.workspace }}/proj-data/resources/
-            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/proj/srs.db ${{ github.workspace }}/proj-data/resources/
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/qgis.db ${{ github.workspace }}/proj-data/resources/
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/srs.db ${{ github.workspace }}/proj-data/resources/
             echo ".. 2/2 proj resources"
             mkdir -p ${{ github.workspace }}/proj-data/proj
             ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/proj/* ${{ github.workspace }}/proj-data/proj/

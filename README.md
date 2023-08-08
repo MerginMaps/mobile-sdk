@@ -90,6 +90,8 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   cmake --build . --config Release
 ```
 
+Note that this sdk application is dummy on this target and cannot be executed on any device.
+
 ### android_armv7
 
 - Repeat with other android triplet (`arm-android.cmake` and QT installation `android_armv7`)
@@ -127,6 +129,8 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
 ```
   cmake --build . --config Release
 ```
+
+Note that this sdk application is dummy on this target and cannot be executed on any device.
 
 ##  iOS
 
@@ -179,6 +183,8 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
 ```
   cmake --build . --config Release
 ```
+
+Note that this sdk application is dummy on this target and cannot be executed on any device.
 
 ## Windows
 
