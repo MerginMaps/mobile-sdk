@@ -64,8 +64,8 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   export ANDROIDAPI=21;\
   export NDK_VERSION='25.1.8937393';\
   export ANDROID_BUILD_TOOLS_VERSION='33.0.1';\
-  export ANDROID_HOME='/opt/Android/android-sdk/'
-  export ANDROID_NDK_HOME='/opt/Android/android-sdk/25.1.8937393/'
+  export ANDROID_HOME='/opt/Android/android-sdk/';\
+  export ANDROID_NDK_HOME='/opt/Android/android-sdk/${NDK_VERSION}/'
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
@@ -99,7 +99,7 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   export NDK_VERSION='25.1.8937393';\
   export ANDROID_BUILD_TOOLS_VERSION='33.0.1';\
   export ANDROID_HOME='/opt/Android/android-sdk/';\
-  export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393/'
+  export ANDROID_NDK_HOME='/opt/Android/android-sdk/${NDK_VERSION}/'
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
@@ -112,7 +112,6 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
     -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
     -D ANDROID_NDK_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
     -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
-    -D ANDROID_NDK_HOME="${ANDROID_NDK_HOME}" \
     -D CMAKE_MAKE_PROGRAM=ninja
 ```
 
