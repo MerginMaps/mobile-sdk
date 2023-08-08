@@ -120,7 +120,7 @@ jobs:
           }
           $env:PATH="$env:VCPKG_ROOT;$env:PATH"
           cd $env:GITHUB_WORKSPACE
-          exec { cmake --build ${{ github.workspace }}\build. --config Release --verbose }
+          exec { cmake --build ${{ github.workspace }}\build --config Release --verbose }
 
       - name: Run SDK Tests
         shell: pwsh
@@ -136,7 +136,7 @@ jobs:
          
       - name: Get TimeStamp
         id: time
-        uses: nanzm/get-time-action@v1.1
+        uses: nanzm/get-time-action@v2.0
         with:
           timeZone: 8
           format: 'YYYYMMDD'
@@ -145,7 +145,7 @@ jobs:
         shell: bash
         run: |
             mkdir -p ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk
-            cp -R ${{ steps.vars.outputs.WORKSPACE_DIR }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/*
+            cp -R ${{ steps.vars.outputs.WORKSPACE_DIR }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/
             rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/etc
             rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/mkspecs
             rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/share

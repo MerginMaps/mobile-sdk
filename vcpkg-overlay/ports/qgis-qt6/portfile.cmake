@@ -166,19 +166,20 @@ vcpkg_configure_cmake(
 
 vcpkg_install_cmake()
 
-if(VCPKG_TARGET_IS_WINDOWS)
-    function(copy_path basepath targetdir)
-        file(GLOB ${basepath}_PATH ${CURRENT_PACKAGES_DIR}/${basepath}/*)
-        if( ${basepath}_PATH )
-            file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/${targetdir}/${PORT}/${basepath})
-            file(COPY ${${basepath}_PATH} DESTINATION ${CURRENT_PACKAGES_DIR}/${targetdir}/${PORT}/${basepath})
-        endif()
- 
-        if(EXISTS "${CURRENT_PACKAGES_DIR}/${basepath}/")
-            file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/${basepath}/)
-        endif()
-    endfunction()
+function(copy_path basepath targetdir)
+    file(GLOB ${basepath}_PATH ${CURRENT_PACKAGES_DIR}/${basepath}/*)
+    if( ${basepath}_PATH )
+        file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/${targetdir}/${PORT}/${basepath})
+        file(COPY ${${basepath}_PATH} DESTINATION ${CURRENT_PACKAGES_DIR}/${targetdir}/${PORT}/${basepath})
+    endif()
 
+    if(EXISTS "${CURRENT_PACKAGES_DIR}/${basepath}/")
+        file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/${basepath}/)
+    endif()
+endfunction()
+
+
+if(VCPKG_TARGET_IS_WINDOWS)
     file(GLOB QGIS_TOOL_PATH ${CURRENT_PACKAGES_DIR}/bin/*${VCPKG_TARGET_EXECUTABLE_SUFFIX} ${CURRENT_PACKAGES_DIR}/*${VCPKG_TARGET_EXECUTABLE_SUFFIX})
     if(QGIS_TOOL_PATH)
         file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin)
@@ -246,6 +247,10 @@ if(VCPKG_TARGET_IS_WINDOWS)
             vcpkg_copy_tool_dependencies_ex(${CURRENT_PACKAGES_DIR}/debug/tools/${PORT}/server ${CURRENT_PACKAGES_DIR}/debug/tools/${PORT}/bin debug/bin)
         endif()
     endif()
+endif()
+
+if(VCPKG_TARGET_IS_OSX)
+    copy_path(resources share)
 endif()
 
 file(GLOB QGIS_CMAKE_PATH ${CURRENT_PACKAGES_DIR}/*.cmake)

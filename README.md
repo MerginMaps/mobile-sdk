@@ -64,15 +64,14 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   export ANDROIDAPI=21;\
   export NDK_VERSION='25.1.8937393';\
   export ANDROID_BUILD_TOOLS_VERSION='33.0.1';\
-  export ANDROID_HOME='/opt/Android/android-sdk/';\
-  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;\
-  export CMAKE_C_COMPILER_LAUNCHER=ccache
+  export ANDROID_HOME='/opt/Android/android-sdk/'
+  export ANDROID_NDK_HOME='/opt/Android/android-sdk/25.1.8937393/'
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=arm64-android \
-    -DVCPK_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
     -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
     -D ANDROID_SDK=${ANDROID_HOME} \
@@ -88,6 +87,34 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
 ```
 
 - Repeat with other android triplet (`arm-android.cmake` and QT installation `android_armv7`)
+
+```
+  mkdir -p build/arm-android
+  cd build/arm-android
+  
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=`pwd`/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/android_armv7;export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export ANDROIDAPI=21;\
+  export NDK_VERSION='25.1.8937393';\
+  export ANDROID_BUILD_TOOLS_VERSION='33.0.1';\
+  export ANDROID_HOME='/opt/Android/android-sdk/';\
+  export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393/'
+  
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -G Ninja \
+    -DVCPKG_TARGET_TRIPLET=arm-android \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DCMAKE_BUILD_TYPE=Release \
+    -D ANDROID_SDK=${ANDROID_HOME} \
+    -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
+    -D ANDROID_NDK_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
+    -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
+    -D ANDROID_NDK_HOME="${ANDROID_NDK_HOME}" \
+    -D CMAKE_MAKE_PROGRAM=ninja
+```
 
 ##  iOS
 
@@ -119,9 +146,7 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   export PATH=${PWD}/../vcpkg:$PATH;\
   export Qt6_DIR=/opt/Qt/6.5.2/ios;\
   export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
-  export DEPLOYMENT_TARGET=14.0;\
-  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;\
-  export CMAKE_C_COMPILER_LAUNCHER=ccache
+  export DEPLOYMENT_TARGET=14.0;
 
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
@@ -203,9 +228,7 @@ cmake --build %BUILD_DIR% --config Release --verbose
   export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=${PWD}/../vcpkg:$PATH;\
   export Qt6_DIR=/opt/Qt/6.5.2/macos;\
-  export DEPLOYMENT_TARGET=10.15.0;\
-  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;\
-  export CMAKE_C_COMPILER_LAUNCHER=ccache
+  export DEPLOYMENT_TARGET=10.15.0
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
@@ -249,9 +272,7 @@ cmake --build %BUILD_DIR% --config Release --verbose
   
   export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=${PWD}/../vcpkg:$PATH;\
-  export Qt6_DIR=/opt/Qt/6.5.2/macos;\
-  export CMAKE_CXX_COMPILER_LAUNCHER=ccache;\
-  export CMAKE_C_COMPILER_LAUNCHER=ccache
+  export Qt6_DIR=/opt/Qt/6.5.2/macos
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \

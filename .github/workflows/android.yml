@@ -159,11 +159,11 @@ jobs:
       - name: Build Test App
         run: |
           cd ${{ github.workspace }}/build/${{ matrix.arch }}
-          ninja
+          cmake --build . --config Release --verbose
 
       - name: Get TimeStamp
         id: time
-        uses: nanzm/get-time-action@v1.1
+        uses: nanzm/get-time-action@v2.0
         with:
           timeZone: 8
           format: 'YYYYMMDD'
@@ -171,7 +171,7 @@ jobs:
       - name: Create SDK data folder 
         run: |
             mkdir -p ${{ github.workspace }}/sdk
-            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ matrix.TRIPLET }}/* ${{ github.workspace }}/sdk/*
+            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ matrix.TRIPLET }}/* ${{ github.workspace }}/sdk/
             rm -rf ${{ github.workspace }}/sdk/debug
             rm -rf ${{ github.workspace }}/sdk/etc
             rm -rf ${{ github.workspace }}/sdk/mkspecs

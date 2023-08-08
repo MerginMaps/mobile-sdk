@@ -106,7 +106,7 @@ jobs:
       - name: Build Test App
         run: |
           cd ${{ github.workspace }}/build
-          ninja
+          cmake --build . --config Release --verbose
 
       - name: Run Tests
         run: |
@@ -115,7 +115,7 @@ jobs:
 
       - name: Get TimeStamp
         id: time
-        uses: nanzm/get-time-action@v1.1
+        uses: nanzm/get-time-action@v2.0
         with:
           timeZone: 8
           format: 'YYYYMMDD'
@@ -135,8 +135,8 @@ jobs:
             mkdir -p ${{ github.workspace }}/proj-data
             echo ".. 1/2 qgis database"
             mkdir -p ${{ github.workspace }}/proj-data/resources
-            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/proj/qgis.db ${{ github.workspace }}/proj-data/resources/
-            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/proj/srs.db ${{ github.workspace }}/proj-data/resources/
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/proj/qgis.db ${{ github.workspace }}/proj-data/resources/
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/proj/srs.db ${{ github.workspace }}/proj-data/resources/
             echo ".. 2/2 proj resources"
             mkdir -p ${{ github.workspace }}/proj-data/proj
             ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/proj/* ${{ github.workspace }}/proj-data/proj/
@@ -152,7 +152,7 @@ jobs:
       - name: Create SDK data folder 
         run: |
             mkdir -p ${{ github.workspace }}/sdk
-            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ github.workspace }}/sdk/*
+            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ github.workspace }}/sdk/
             rm -rf ${{ github.workspace }}/sdk/debug
             rm -rf ${{ github.workspace }}/sdk/etc
             rm -rf ${{ github.workspace }}/sdk/mkspecs
@@ -170,7 +170,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
-          if-no-files-found: error    
+          if-no-files-found: error
 
       - name: Upload SUPPORTED_FORMATS artifact
         uses: actions/upload-artifact@v3
