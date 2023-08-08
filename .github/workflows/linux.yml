@@ -41,10 +41,16 @@ jobs:
       - name: Prepare vars
         id: vars
         run: |
+          sudo apt-get update
+          
+          sudo apt-get install -y \
+          gperf autopoint '^libxcb.*-dev' libx11-xcb-dev libegl1-mesa libegl1-mesa-dev \
+          libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
+          autoconf-archive libgstreamer-gl1.0-0 libgstreamer-plugins-base1.0-0 libfuse2
+          
           sudo apt-get install -y \
             bison flex \
-            cmake ninja-build autoconf-archive \
-            libgl1-mesa-dev libglvnd-dev
+            cmake ninja-build
 
           # Required to run unit tests on linux
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
