@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.21)
 
 macro(unset_pc LIBNAME)
   # clean broken PC_SPATIALITE variables causing
@@ -20,7 +20,11 @@ project(MerginMapsInputSdk LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 COMPONENTS 
+message("CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
+message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+
+find_package(Qt6
+    COMPONENTS
     Qml
     Xml
     Concurrent

@@ -7,6 +7,11 @@ on:
       - '.github/workflows/ios.yml'
       - '.github/workflows/linux.yml'
       - '.github/workflows/win.yml'
+      - 'vcpkg-overlay/triplets/arm-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-ios.yml'
+      - 'vcpkg-overlay/triplets/x64-linux.yml'
+      - 'vcpkg-overlay/triplets/x64-windows.yml'
       - 'LICENSE'
       - 'README.md'
 
@@ -20,7 +25,7 @@ jobs:
     if: github.repository == 'merginmaps/input-sdk'
 
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.5.2'
+      QT_VERSION: '6.5.2' # use scripts/update_qt_version.bash to change
       TRIPLET: "x64-osx"
       DEPLOYMENT_TARGET: "10.15.0"
       XC_VERSION: ${{ '14.2' }}

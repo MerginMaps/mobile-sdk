@@ -53,6 +53,9 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
 ```
   git clone git@github.com:MerginMaps/input-sdk.git
 ```
+
+### android_arm64_v8a
+
 - Configure input-sdk test app (this runs VCPKG install - can take few hours)
 ```
   mkdir -p build/arm64-android
@@ -62,29 +65,32 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   export PATH=`pwd`/../vcpkg:$PATH;\
   export Qt6_DIR=/opt/Qt/6.5.2/android_arm64_v8a;export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
   export ANDROIDAPI=21;\
-  export NDK_VERSION='25.1.8937393';\
-  export ANDROID_BUILD_TOOLS_VERSION='33.0.1';\
+  export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393';\
+  export ANDROID_NDK_ROOT='/opt/Android/android-sdk/ndk/25.1.8937393';\
   export ANDROID_HOME='/opt/Android/android-sdk/';\
-  export ANDROID_NDK_HOME='/opt/Android/android-sdk/${NDK_VERSION}/'
-  
+  export ANDROID_ABI='arm64-v8a'
+
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${Qt6_DIR}/lib/cmake/Qt6/qt.toolchain.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=arm64-android \
     -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
     -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
-    -D ANDROID_SDK=${ANDROID_HOME} \
     -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
-    -D ANDROID_NDK_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
-    -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
-    -DCMAKE_MAKE_PROGRAM=ninja
+    -DCMAKE_MAKE_PROGRAM=ninja \
+    -DANDROID_ARM_NEON=ON \
+    -DANDROID_ABI=${ANDROID_ABI} \
+    -DQT_ANDROID_ABIS=$ANDROID_ABI 
 ```
 
 - Build 
 ```
   cmake --build . --config Release
 ```
+
+### android_armv7
 
 - Repeat with other android triplet (`arm-android.cmake` and QT installation `android_armv7`)
 
@@ -94,25 +100,32 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   
   export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=`pwd`/../vcpkg:$PATH;\
-  export Qt6_DIR=/opt/Qt/6.5.2/android_armv7;export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export Qt6_DIR=/opt/Qt/6.5.2/android_armv7;\
+  export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
   export ANDROIDAPI=21;\
-  export NDK_VERSION='25.1.8937393';\
-  export ANDROID_BUILD_TOOLS_VERSION='33.0.1';\
+  export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393';\
+  export ANDROID_NDK_ROOT='/opt/Android/android-sdk/ndk/25.1.8937393';\
   export ANDROID_HOME='/opt/Android/android-sdk/';\
-  export ANDROID_NDK_HOME='/opt/Android/android-sdk/${NDK_VERSION}/'
+  export ANDROID_ABI=armeabi-v7a
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${Qt6_DIR}/lib/cmake/Qt6/qt.toolchain.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=arm-android \
     -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
     -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
-    -D ANDROID_SDK=${ANDROID_HOME} \
     -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
-    -D ANDROID_NDK_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
-    -D ANDROID_BUILD_TOOLS_VERSION="${ANDROID_BUILD_TOOLS_VERSION}" \
-    -D CMAKE_MAKE_PROGRAM=ninja
+    -D CMAKE_MAKE_PROGRAM=ninja \
+    -DANDROID_ARM_NEON=ON \
+    -DANDROID_ABI=${ANDROID_ABI} \
+    -DQT_ANDROID_ABIS=${ANDROID_ABI}
+```
+
+- Build 
+```
+  cmake --build . --config Release
 ```
 
 ##  iOS

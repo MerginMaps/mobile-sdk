@@ -7,6 +7,12 @@ on:
       - '.github/workflows/linux.yml'
       - '.github/workflows/mac.yml'
       - '.github/workflows/win.yml'
+      - 'vcpkg-overlay/triplets/arm-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-osx.yml'
+      - 'vcpkg-overlay/triplets/x64-linux.yml'
+      - 'vcpkg-overlay/triplets/x64-osx.yml'
+      - 'vcpkg-overlay/triplets/x64-windows.yml'
       - 'LICENSE'
       - 'README.md'
 
@@ -18,7 +24,7 @@ jobs:
   ios_build:
     runs-on: macos-12
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.5.2'
+      QT_VERSION: '6.5.2' # use scripts/update_qt_version.bash to change
       TRIPLET: "arm64-ios"
       DEPLOYMENT_TARGET: '14.0' # iOS Deployment target 
       XC_VERSION: ${{ '14.2' }}

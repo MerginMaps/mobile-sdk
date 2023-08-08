@@ -7,6 +7,11 @@ on:
       - '.github/workflows/linux.yml'
       - '.github/workflows/mac.yml'
       - '.github/workflows/win.yml'
+      - 'vcpkg-overlay/triplets/arm64-ios.yml'
+      - 'vcpkg-overlay/triplets/arm64-osx.yml'
+      - 'vcpkg-overlay/triplets/x64-linux.yml'
+      - 'vcpkg-overlay/triplets/x64-osx.yml'
+      - 'vcpkg-overlay/triplets/x64-windows.yml'
       - 'LICENSE'
       - 'README.md'
 
@@ -24,10 +29,10 @@ jobs:
             QT_ARCH: 'android_armv7'
           - TRIPLET: 'arm64-android'
             QT_ARCH: 'android_arm64_v8a'
-                
+
     runs-on: macos-12
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.5.2'
+      QT_VERSION: '6.5.2' # use scripts/update_qt_version.bash to change
       ANDROIDAPI: 24
       NDK_VERSION: '25.1.8937393'
       NDK_VERSION_FULL: r25b
@@ -64,7 +69,7 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: ${{ env.NDK_VERSION_FULL }}
-          add-to-path: true
+          add-to-path: false
 
       - name: Set up JDK
         uses: actions/setup-java@v2
@@ -129,24 +134,27 @@ jobs:
           export Qt6_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/${{ matrix.QT_ARCH }}
           export QT_HOST_PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
           export PATH=${{ env.VCPKG_ROOT }}:$PATH
-          
+          export ANDROID_NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}
+          export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
+ 
           vcpkg --version
           ls -la ${Qt6_DIR}/lib
-          
+
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
           cmake -B ${{ github.workspace }}/build \
                 -S ${{ github.workspace }}/input-sdk \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
+                -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${Qt6_DIR}/lib/cmake/Qt6/qt.toolchain.cmake \
                 -G Ninja \
                 -DVCPKG_TARGET_TRIPLET=${{ matrix.TRIPLET }} \
                 -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/input-sdk/vcpkg-overlay/triplets" \
                 -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/input-sdk/vcpkg-overlay/ports" \
                 -D ANDROID_SDK=${ANDROID_HOME} \
-                -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
-                -D ANDROID_NDK_VERSION="${{ env.NDK_VERSION }}" \
-                -D ANDROID_BUILD_TOOLS_VERSION="${{ env.SDK_BUILD_TOOLS }}" \
-                -DCMAKE_MAKE_PROGRAM=ninja
+                -DCMAKE_MAKE_PROGRAM=ninja \
+                -DANDROID_ARM_NEON=ON \
+                -DANDROID_ABI=${ANDROID_ABI} \
+                -DQT_ANDROID_ABIS=${ANDROID_ABI}
 
       - name: Upload build logs on deps failure
         uses: actions/upload-artifact@v3
