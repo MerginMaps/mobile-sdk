@@ -14,20 +14,26 @@ SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) fo
 
 # Usage
 
-Download, extract and use prebuild SDKs for various arch/platforms from Github Releases/Artefacts. 
+If you are up to building Mergin Maps Input App, just download, extract and use prebuild SDKs for various arch/platforms from Github Releases/Artefacts.
+The steps below are for development, debugging of the SDK itself or when you need to compile architecture not supported by current CI setup.
 
 # Release 
-The release is automatically created from each build on master.
+The release is automatically created for each commit on master for each triplet separately.
 
 # Development
 
-## Tips & Tricks
+## 
 
 - look at `.github/workflows/<platform>.yml` to see how it is done in CI
 - how to do diff `diff -rupN file.orig file`
 - how to do diff from GIT `git diff master`
 - find SHA512 hash for vcpkg: `shasum -a 512 myfile.tar.gz`
 - list QT install options: `aqt list $QT_VERSION windows desktop`
+
+## clean local build
+
+- remove vcpkg and download from scratch
+- clean/remove binary archive `$HOME/.cache/vcpkg/archives`
 
 ## Android (on MacOS)
 
@@ -64,7 +70,7 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=`pwd`/../vcpkg:$PATH;\
   export Qt6_DIR=/opt/Qt/6.5.2/android_arm64_v8a;export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
-  export ANDROIDAPI=21;\
+  export ANDROIDAPI=24;\
   export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393';\
   export ANDROID_NDK_ROOT='/opt/Android/android-sdk/ndk/25.1.8937393';\
   export ANDROID_HOME='/opt/Android/android-sdk/';\
@@ -82,7 +88,11 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
     -DCMAKE_MAKE_PROGRAM=ninja \
     -DANDROID_ARM_NEON=ON \
     -DANDROID_ABI=${ANDROID_ABI} \
-    -DQT_ANDROID_ABIS=$ANDROID_ABI 
+    -DQT_ANDROID_ABIS=$ANDROID_ABI \
+    -DANDROIDAPI=${ANDROIDAPI} \
+    -DANDROID_PLATFORM=android-${ANDROIDAPI} \
+    -DANDROID_NDK_PLATFORM=android-${ANDROIDAPI} \
+    -DANDROID_STL="c++_shared"
 ```
 
 - Build 
@@ -104,7 +114,7 @@ Note that this sdk application is dummy on this target and cannot be executed on
   export PATH=`pwd`/../vcpkg:$PATH;\
   export Qt6_DIR=/opt/Qt/6.5.2/android_armv7;\
   export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
-  export ANDROIDAPI=21;\
+  export ANDROIDAPI=24;\
   export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393';\
   export ANDROID_NDK_ROOT='/opt/Android/android-sdk/ndk/25.1.8937393';\
   export ANDROID_HOME='/opt/Android/android-sdk/';\
@@ -122,12 +132,16 @@ Note that this sdk application is dummy on this target and cannot be executed on
     -D CMAKE_MAKE_PROGRAM=ninja \
     -DANDROID_ARM_NEON=ON \
     -DANDROID_ABI=${ANDROID_ABI} \
-    -DQT_ANDROID_ABIS=${ANDROID_ABI}
+    -DQT_ANDROID_ABIS=${ANDROID_ABI} \
+    -DANDROIDAPI=${ANDROIDAPI} \
+    -DANDROID_PLATFORM=android-${ANDROIDAPI} \
+    -DANDROID_NDK_PLATFORM=android-${ANDROIDAPI} \
+    -DANDROID_STL="c++_shared"
 ```
 
 - Build 
 ```
-  cmake --build . --config Release
+  cmake --build . --config Release --verbose
 ```
 
 Note that this sdk application is dummy on this target and cannot be executed on any device.
@@ -172,7 +186,7 @@ Note that this sdk application is dummy on this target and cannot be executed on
     -DVCPKG_TARGET_TRIPLET=arm64-ios \
     -DCMAKE_BUILD_TYPE=Release \
     -D ENABLE_BITCODE=OFF \
-    -D ENABLE_ARC=ON \
+    -D ENABLE_ARC=OFF \
     -D CMAKE_SYSTEM_NAME=iOS \
     -D CMAKE_SYSTEM_PROCESSOR=aarch64 \
     -D CMAKE_CXX_VISIBILITY_PRESET=hidden \
@@ -307,8 +321,3 @@ cmake --build %BUILD_DIR% --config Release --verbose
   cmake --build . --config Release
   ./merginmapsinputsdk
 ``` 
-
-# License & Acknowledgement
-
-The project use [vcpkg](https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt) framework and build various open-source libraries to SDK as dependencies, 
-including QGIS core library, GDAL, proj, geos and others.

@@ -157,12 +157,10 @@ jobs:
             rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/mkspecs
             rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/share
             rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/tools
-            
+
             SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
             echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-            
-            find ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/bin/ | grep dll
-            
+
       - name: Create ZIP package
         uses: thedoctor0/zip-release@0.7.1
         with:

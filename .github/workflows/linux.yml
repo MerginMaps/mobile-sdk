@@ -140,7 +140,6 @@ jobs:
             echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
             
             cd ${{ github.workspace }}/sdk/
-            find libs/
             tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts

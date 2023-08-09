@@ -155,7 +155,11 @@ jobs:
                 -DCMAKE_MAKE_PROGRAM=ninja \
                 -DANDROID_ARM_NEON=ON \
                 -DANDROID_ABI=${ANDROID_ABI} \
-                -DQT_ANDROID_ABIS=${ANDROID_ABI}
+                -DQT_ANDROID_ABIS=${ANDROID_ABI} \
+                -DANDROIDAPI=${ANDROIDAPI} \
+                -DANDROID_PLATFORM=android-${ANDROIDAPI} \
+                -DANDROID_NDK_PLATFORM=android-${ANDROIDAPI} \
+                -DANDROID_STL="c++_shared"
 
       - name: Upload build logs on deps failure
         uses: actions/upload-artifact@v3
@@ -191,7 +195,6 @@ jobs:
             echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
             
             cd ${{ github.workspace }}/sdk/
-            find libs/
             tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts

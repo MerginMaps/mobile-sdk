@@ -120,7 +120,7 @@ jobs:
                 -D CMAKE_SYSTEM_PROCESSOR=aarch64 \
                 -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ env.DEPLOYMENT_TARGET }} \
                 -D ENABLE_BITCODE=OFF \
-                -D ENABLE_ARC=ON \
+                -D ENABLE_ARC=OFF \
                 -D CMAKE_CXX_VISIBILITY_PRESET=hidden
 
       - name: Upload build logs on deps failure
@@ -157,7 +157,6 @@ jobs:
             echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
             
             cd ${{ github.workspace }}/sdk/
-            find libs/
             tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts

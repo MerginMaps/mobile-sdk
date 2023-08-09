@@ -141,8 +141,8 @@ jobs:
             mkdir -p ${{ github.workspace }}/proj-data
             echo ".. 1/2 qgis database"
             mkdir -p ${{ github.workspace }}/proj-data/resources
-            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/qgis.db ${{ github.workspace }}/proj-data/resources/
-            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/srs.db ${{ github.workspace }}/proj-data/resources/
+            cp ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/qgis.db ${{ github.workspace }}/proj-data/resources/
+            cp ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/srs.db ${{ github.workspace }}/proj-data/resources/
             echo ".. 2/2 proj resources"
             mkdir -p ${{ github.workspace }}/proj-data/proj
             ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/proj/* ${{ github.workspace }}/proj-data/proj/
@@ -151,7 +151,6 @@ jobs:
             echo "PROJ_TAR=${PROJ_TAR}" >> $GITHUB_ENV
             
             cd "${{ github.workspace }}/proj-data"
-            find ./
             tar -c -z -f ${{ github.workspace }}/${PROJ_TAR} ./
 
 
@@ -169,7 +168,6 @@ jobs:
             echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
             
             cd ${{ github.workspace }}/sdk/
-            find libs/
             tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload SDK_TAR artifact
