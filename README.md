@@ -6,27 +6,198 @@
 
 # input-sdk
 
-SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) for mobile devices
+SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) for mobile devices based on VCPG ecosystem
 
-Mergin Maps Input app makes surveying of geospatial data easy. You can design your survey project in QGIS with custom forms.
-
-Click here to download the app on your Android or iOS devices [merginmaps.com](http://merginmaps.com)
+[Mergin Maps](http://merginmaps.com) makes surveying of geospatial data easy and it is powered by QGIS.
 
 <div><img align="left" width="45" height="45" src="https://raw.githubusercontent.com/MerginMaps/docs/main/src/.vuepress/public/slack.svg"><a href="https://merginmaps.com/community/join">Join our community chat</a><br/>and ask questions!</div><br />
 
-# Tips
+If you are up to building Mergin Maps Input App, just download, extract and use prebuild SDKs for various arch/platforms from Github Releases/Artefacts.
+The steps below are for development, debugging of the SDK itself or when you need to compile architecture not supported by current CI setup.
 
+The release is automatically created for each commit on master for each triplet separately.
+
+# Development Tips
+
+- look at `.github/workflows/<platform>.yml` to see how it is done in CI
 - how to do diff `diff -rupN file.orig file`
 - how to do diff from GIT `git diff master`
-- find SHA512 hash (vcpkg): `shasum -a 512 myfile.tar.gz`
+- find SHA512 hash for vcpkg: `shasum -a 512 myfile.tar.gz`
+- list QT install options: `aqt list $QT_VERSION windows desktop`
 
-# Android 
+## clean local build (vcpkg)
 
-Download prebuild android SDKs from the GitHub Artifacts
+- remove vcpkg and download from scratch
+- clean/remove binary archive `$HOME/.cache/vcpkg/archives`
 
-# Windows
+# how to update vcpkg baseline
 
-You can download prebuild android SDKs from the GitHub Artifacts. If you want local build, you should:
+- find a git commit hash you want to use on https://github.com/microsoft/vcpkg
+- edit VCPKG_BASELINE file with the hash 
+
+# how to update qt version
+
+- run `scripts/update_qt_version.bash`
+
+# Install
+
+## Common steps (all platforms)
+
+- Install bison, flex, cmake and add to PATH
+- Install compiler setup for your platform (VS on win, gcc on lnx, XCode on macos) 
+- Install Qt (version from `.github/workflows/ios.yml`). For iOS and Android you need BOTH host (e.g. macos) and target (e.g. ios) installation!
+- Download and prepare input-sdk
+```
+  mkdir -p build
+  cd build
+  git clone git@github.com:MerginMaps/input-sdk.git
+```
+- Install vcpkg and checkout specific commit from VCPKG_BASELINE file
+```
+  mkdir -p build
+  cd build
+  git clone https://github.com/microsoft/vcpkg.git
+  cd vcpkg
+  VCPKG_TAG=`cat ../../input-sdk/VCPKG_BASELINE`
+  git checkout ${VCPKG_TAG}
+  ./bootstrap-vcpkg.sh
+  cd ..
+  ```
+
+- continue with platform/target specific steps
+
+## Android
+
+- Install SDK and NDK, Build Tools (version from `.github/workflows/android.yml`)
+- To build on Linux/Windows, adjust setup of deps from Linux build.
+
+### android_arm64_v8a
+
+- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+```
+  mkdir -p build/arm64-android
+  cd build/arm64-android
+  
+  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
+   
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=`pwd`/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/android_arm64_v8a;export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export ANDROIDAPI=24;\
+  export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393';\
+  export ANDROID_NDK_ROOT='/opt/Android/android-sdk/ndk/25.1.8937393';\
+  export ANDROID_HOME='/opt/Android/android-sdk/';\
+  export ANDROID_ABI='arm64-v8a'
+
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${Qt6_DIR}/lib/cmake/Qt6/qt.toolchain.cmake \
+    -G Ninja \
+    -DVCPKG_TARGET_TRIPLET=arm64-android \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DCMAKE_BUILD_TYPE=Release \
+    -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
+    -DCMAKE_MAKE_PROGRAM=ninja \
+    -DANDROID_ARM_NEON=ON \
+    -DANDROID_ABI=${ANDROID_ABI} \
+    -DQT_ANDROID_ABIS=$ANDROID_ABI \
+    -DANDROIDAPI=${ANDROIDAPI} \
+    -DANDROID_PLATFORM=android-${ANDROIDAPI} \
+    -DANDROID_NDK_PLATFORM=android-${ANDROIDAPI} \
+    -DANDROID_STL="c++_shared"
+```
+
+- Build to verify your build
+```
+  cmake --build . --config Release
+```
+
+Note that this sdk application is dummy on this target and cannot be executed on any device.
+
+### android_armv7
+
+- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+```
+  mkdir -p build/arm-android
+  cd build/arm-android
+  
+  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
+  
+  export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=`pwd`/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/android_armv7;\
+  export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export ANDROIDAPI=24;\
+  export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393';\
+  export ANDROID_NDK_ROOT='/opt/Android/android-sdk/ndk/25.1.8937393';\
+  export ANDROID_HOME='/opt/Android/android-sdk/';\
+  export ANDROID_ABI=armeabi-v7a
+  
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${Qt6_DIR}/lib/cmake/Qt6/qt.toolchain.cmake \
+    -G Ninja \
+    -DVCPKG_TARGET_TRIPLET=arm-android \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DCMAKE_BUILD_TYPE=Release \
+    -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
+    -D CMAKE_MAKE_PROGRAM=ninja \
+    -DANDROID_ARM_NEON=ON \
+    -DANDROID_ABI=${ANDROID_ABI} \
+    -DQT_ANDROID_ABIS=${ANDROID_ABI} \
+    -DANDROIDAPI=${ANDROIDAPI} \
+    -DANDROID_PLATFORM=android-${ANDROIDAPI} \
+    -DANDROID_NDK_PLATFORM=android-${ANDROIDAPI} \
+    -DANDROID_STL="c++_shared"
+```
+
+- Build to verify your build
+```
+  cmake --build . --config Release --verbose
+```
+
+Note that this sdk application is dummy on this target and cannot be executed on any device.
+
+##  iOS
+
+- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+```
+  mkdir -p build/arm64-ios
+  cd build/arm64-ios
+  
+  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
+  
+  export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=${PWD}/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/ios;\
+  export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export DEPLOYMENT_TARGET=14.0;
+
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -G "Xcode" \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DVCPKG_TARGET_TRIPLET=arm64-ios \
+    -DCMAKE_BUILD_TYPE=Release \
+    -D ENABLE_BITCODE=OFF \
+    -D ENABLE_ARC=OFF \
+    -D CMAKE_SYSTEM_NAME=iOS \
+    -D CMAKE_SYSTEM_PROCESSOR=aarch64 \
+    -D CMAKE_CXX_VISIBILITY_PRESET=hidden \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET}
+```
+
+- Build to verify your build
+```
+  cmake --build . --config Release
+```
+
+Note that this sdk application is dummy on this target and cannot be executed on any device.
+
+## Windows
 
 - install cmake, vcpkg, Visual Studio and Qt and add to PATH
 ```
@@ -34,68 +205,80 @@ set ROOT_DIR=C:\Users\Peter\repo
 set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
 set SOURCE_DIR=%ROOT_DIR%\input-sdk
 set VCPKG_ROOT=%ROOT_DIR%\vcpkg
-set Qt6_DIR=C:\Qt\6.3.2\msvc2019_64
+set Qt6_DIR=C:\Qt\6.5.2\msvc2019_64
 set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
 "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
 ```
 
-- run CMake to build deps and test project
+- run CMake to build deps (this runs VCPKG install - can take few hours)
 ```
-cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test "-DCMAKE_MODULE_PATH:PATH=%SOURCE_DIR%\vcpkg-test\cmake" "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" -G "Visual Studio 16 2019" -A x64 -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets -DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports
-cmake --build %BUILD_DIR% --config Release --verbose
+cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test `
+"-DCMAKE_MODULE_PATH:PATH=%SOURCE_DIR%\vcpkg-test\cmake" `
+"-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" `
+-G "Visual Studio 16 2019" -A x64 -DVCPKG_TARGET_TRIPLET=x64-windows `
+-DVCPKG_OVERLAY_TRIPLETS=%SOURCE_DIR%\vcpkg-overlay\triplets `
+-DVCPKG_OVERLAY_PORTS=%SOURCE_DIR%\vcpkg-overlay\ports
 ```
 
-- run tests 
+- build executable and run tests 
 ```
-%BUILD_DIR%\Release\inputsdktest.exe
+cmake --build %BUILD_DIR% --config Release --verbose
+%BUILD_DIR%\Release\merginmapsinputsdk.exe
 ```
 
 - the resulting build tree is then located at `%BUILD_DIR%\vcpkg_installed`
 
-# iOS
+## MacOS
 
-Download prebuild iOS SDKs from the GitHub Artifacts
+- Configure input-sdk test app (this runs VCPKG install - can take few hours) (for arm64 arch builds use `arm64-osx` TRIPLET)
+```
+  mkdir -p build/x64-osx
+  cd build/x64-osx
+  
+  export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=${PWD}/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/macos;\
+  export DEPLOYMENT_TARGET=10.15.0
+  
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -G Ninja \
+    -DVCPKG_TARGET_TRIPLET=x64-osx \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_MAKE_PROGRAM=ninja \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET}
+```
 
-## Manual Build
-1. you need to have Qt installed
-2. copy and modify config.conf.default to config.conf with your setup
-3. run `distribute.sh -mqgis`
+- Build and run test app to verify your build
+```
+  cmake --build . --config Release
+  ./merginmapsinputsdk
+```
 
-- if you want armv7 and different SDK, you may try to build QT yourself (not tested)
-- all libraries are STATIC, due to some limitation for iOS platform (distribution on AppStore, Qt
-distribution for iOS, etc.)
-- sometimes you need to debug from XCode (generated project); use RelWithDb, not full debug build
+## Linux 
+- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+```
+  mkdir -p build/x64-linux
+  cd build/x64-linux
+  
+  export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
+  export PATH=${PWD}/../vcpkg:$PATH;\
+  export Qt6_DIR=/opt/Qt/6.5.2/macos
+  
+  cmake -B . -S ../../input-sdk/ \
+    -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+    -G Ninja \
+    -DVCPKG_TARGET_TRIPLET=x64-linux \
+    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_MAKE_PROGRAM=ninja
+```
 
-# MacOS
-
-Download prebuild mac SDKs from the GitHub Artifacts
-
-## Manual Build
-1. you need to have Qt installed (with Qt Connectivity, Qt Multimedia, Qt Positioning, Qt Sensort, Qt5 Compatibility Module)
-2. copy and modify config.conf.default to config.conf with your setup
-3. run `distribute.sh -mqgis`
-
-# Linux 
-
-We use Ubuntu LTS for building. Download prebuild ubuntu SDKs from the GitHub Artifacts
-
-## Manual Build
-1. you need to have Qt installed (with Qt Connectivity, Qt Multimedia, Qt Positioning, Qt Sensort, Qt5 Compatibility Module)
-2. Check `.github/workflows/linux.yml` for list of apt packages to install
-2. copy and modify config.conf.default to config.conf with your setup
-3. run `distribute.sh -mqgis`
-
-## CI
-
-the release is automatically created from each build on master. See tagged releases which have the SDK as artefact
-
-# License & Acknowledgement
-
-The project is originally based on https://github.com/opengisch/OSGeo4A
-and https://github.com/rabits/dockerfiles
-
-- [Dockerfiles](https://github.com/rabits/dockerfiles) Apache-2.0, rabits.org
-- [distribute.sh](https://github.com/opengisch/OSGeo4A/blob/master/LICENSE-for-distribute-sh) MIT license, Copyright (c) 2010-2013 Kivy Team and other contributors
-- [Dockerfiles & recipes](https://github.com/opengisch/OSGeo4A) MIT license
-- [iOS toolchain](https://github.com/leetal/ios-cmake/blob/)
-- [vcpkg](https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt) MIT License
+- Build and run test app to verify your build
+```
+  cmake --build . --config Release
+  ./merginmapsinputsdk
+``` 

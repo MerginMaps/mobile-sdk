@@ -19,6 +19,22 @@
       "geos",
       "qt6",
       "qca-qt6",
-      "qtkeychain-qt6"
+      "qtkeychain-qt6",
+      {
+          "name": "libtasn1",
+          "platform": "osx | ios"
+      },
+      {
+          "name": "qt6-poly2tri",
+          "platform": "ios"
+      },
+      {
+        "name": "vcpkg-cmake",
+        "host": true
+      },
+      {
+        "name": "vcpkg-cmake-config",
+        "host": true
+      }
     ]
 }

@@ -2,85 +2,56 @@ name: Build win64
 
 on:
   push:
-    paths:
-      - 'vcpkg-test/**'
-      - 'vcpkg-overlay/**'
-      - '.github/workflows/win.yml'
-  release:
-    types:
-      - published
+    paths-ignore:
+      - '.github/workflows/android.yml'
+      - '.github/workflows/ios.yml'
+      - '.github/workflows/linux.yml'
+      - '.github/workflows/mac.yml'
+      - 'vcpkg-overlay/triplets/arm-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-ios.yml'
+      - 'vcpkg-overlay/triplets/arm64-osx.yml'
+      - 'vcpkg-overlay/triplets/x64-linux.yml'
+      - 'vcpkg-overlay/triplets/x64-osx.yml'
+      - 'scripts/**'
+      - 'LICENSE'
+      - 'README.md'
  
 concurrency:
   group: ci-${{github.ref}}-windows
   cancel-in-progress: true
-  
+
 jobs:
   win64_build:
     if: ( github.repository == 'MerginMaps/input-sdk' )
     runs-on: windows-2019
-    
-    env:
-      QT_VERSION: '6.5.2'
-      CACHE_VERSION: 1
-      ARCH: "win64"
+
+    env: # update README for devs if you modify these env. variables
+      QT_VERSION: '6.5.2' # use scripts/update_qt_version.bash to change
       TRIPLET: "x64-windows"
       VS_VERSION: "2019"
       CMAKE_GENERATOR: "Visual Studio 16 2019" # see https://github.com/actions/runner-images/blob/main/images/win/Windows2019-Readme.md
       CMAKE_ARCH: "x64"
-      QT_ARCH: "win64_msvc2019_64" # run: aqt list $QT_VERSION windows desktop
-      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # compatible with vcpkg.json baseline
+      QT_ARCH: "win64_msvc2019_64"
       VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
-      
+
     steps:
-      - run: Get-PSDrive
-      
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          path: input-sdk
 
       - name: Prepare vars
         id: vars
         shell: bash
         run: |
-          # Check deps versions change          
-          DEPS_CHECKSUM=`md5sum vcpkg-test/vcpkg.json | cut -d\  -f1`
-          echo "::set-output name=DEPS_CHECKSUM::$DEPS_CHECKSUM"
-          echo "DEPS_CHECKSUM: $DEPS_CHECKSUM"
-          
           WORKSPACE_DIR=$(cygpath -m "${{ github.workspace }}")
           echo "::set-output name=WORKSPACE_DIR::$WORKSPACE_DIR"
           echo "WORKSPACE_DIR: $WORKSPACE_DIR"
 
-      - name: Clone vcpkg
-        shell: bash
-        run: |
-          mkdir -p "${{ env.VCPKG_ROOT }}"
-          cd "${{ env.VCPKG_ROOT }}"
-          git init
-          git remote add origin https://github.com/microsoft/vcpkg.git
-          git pull origin master
-          git checkout $VCPKG_BASELINE
-
-      - name: Cache vcpkg
-        id: cache-vcpkg-tool
-        uses: pat-s/always-upload-cache@v3.0.1
-        with:
-          path: ${{ env.VCPKG_ROOT }}
-          key: ${{ runner.os }}-vcpkg-${{ env.VCPKG_BASELINE }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}
-          
-      - name: Prepare build cache for branch/tag
-        # use a fork of actions/cache@v2 to upload cache even when the build or test failed
-        uses: pat-s/always-upload-cache@v2.1.5
-        with:
-          path: ${{ github.workspace }}/build
-          # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-${{ steps.vars.outputs.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            cache-${{ steps.vars.outputs.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-
-            cache-${{ steps.vars.outputs.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-
-          
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+      - uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
+          setup-python: 'false'
           target: desktop
           arch: ${{ env.QT_ARCH }}
           dir: ${{ github.workspace }}
@@ -88,16 +59,28 @@ jobs:
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-win
 
-      - name: set compiler environment
+      - name: Get vcpkg
+        shell: bash
+        run: |
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          VCPKG_TAG=`cat ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk/VCPKG_BASELINE`
+          echo "using VCPKG_TAG ${VCPKG_TAG}"
+          git checkout ${VCPKG_TAG}
+
+      - name: Install vcpkg
+        shell: cmd
+        run: |
+          CALL "C:\vcpkg-root\bootstrap-vcpkg.bat"
+
+      - name: Setup compiler
         shell: cmd
         run: |
             CALL "C:\Program Files (x86)\Microsoft Visual Studio\${{ env.VS_VERSION }}\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=${{ env.CMAKE_ARCH }}
-
-      - name: check QT installation
-        shell: cmd
-        run: |
-            DIR /s /b ${{ env.Qt6_Dir }}\lib\cmake
-
+            
       - name: Build Deps
         shell: pwsh
         run: |
@@ -108,26 +91,28 @@ jobs:
               & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
               if ($LastExitCode -ne 0) { exit $LastExitCode }
           }
-          $env:PATH="$env:VCPKG_ROOT;$env:PATH"
+
           cd $env:GITHUB_WORKSPACE
-          mkdir ${{ github.workspace }}\build\${{ env.ARCH }} -ea 0
+          mkdir ${{ github.workspace }}\build -ea 0
+
+          $env:PATH="$env:VCPKG_ROOT;$env:PATH"
+
           exec { 
-            cmake -B ${{ github.workspace }}\build\${{ env.ARCH }} `
-            -S ${{ github.workspace }}\vcpkg-test `
-            -DCMAKE_MODULE_PATH:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-test/cmake" `
+            cmake -B ${{ github.workspace }}\build `
+            -S ${{ github.workspace }}\input-sdk `
             -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
             -G "${{ env.CMAKE_GENERATOR }}" `
             -A ${{ env.CMAKE_ARCH }} `
             -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} `
-            -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/triplets" `
-            -DVCPKG_OVERLAY_PORTS="${{ steps.vars.outputs.WORKSPACE_DIR }}/vcpkg-overlay/ports"
+            -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk/vcpkg-overlay/triplets" `
+            -DVCPKG_OVERLAY_PORTS="${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk/vcpkg-overlay/ports"
           }
 
       - name: Upload build logs on deps failure
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: build-logs-x64-windows
+          name: build-logs-${{ env.TRIPLET }}
           path: |
             ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
 
@@ -143,7 +128,7 @@ jobs:
           }
           $env:PATH="$env:VCPKG_ROOT;$env:PATH"
           cd $env:GITHUB_WORKSPACE
-          exec { cmake --build ${{ github.workspace }}\build\${{ env.ARCH }}. --config Release --verbose }
+          exec { cmake --build ${{ github.workspace }}\build --config Release --verbose }
 
       - name: Run SDK Tests
         shell: pwsh
@@ -155,33 +140,47 @@ jobs:
                 & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
                 if ($LastExitCode -ne 0) { exit $LastExitCode }
             }
-            exec { ${{ github.workspace }}\build\${{ env.ARCH }}\Release\inputsdktest.exe }
+            exec { ${{ github.workspace }}\build\Release\merginmapsinputsdk.exe }
          
       - name: Get TimeStamp
         id: time
-        uses: nanzm/get-time-action@v1.1
+        uses: nanzm/get-time-action@v2.0
         with:
           timeZone: 8
           format: 'YYYYMMDD'
 
-      - name: Create package
+      - name: Create SDK data folder 
+        shell: bash
+        run: |
+            mkdir -p ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk
+            cp -R ${{ steps.vars.outputs.WORKSPACE_DIR }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/
+            rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/etc
+            rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/mkspecs
+            rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/share
+            rm -rf ${{ steps.vars.outputs.WORKSPACE_DIR }}/sdk/tools
+
+            SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+            echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
+
+      - name: Create ZIP package
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: build/${{ env.ARCH }}/vcpkg_installed/${{ env.TRIPLET }}/
-          filename: ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          directory: sdk/
+          filename: ${{ steps.vars.outputs.WORKSPACE_DIR }}/${{ env.SDK_TAR }}
           
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          path: ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          name: sdk-${{ env.TRIPLET }}
+          path: ${{ steps.vars.outputs.WORKSPACE_DIR }}/${{ env.SDK_TAR }}
           if-no-files-found: error
           
       - name: Create Release
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: win64-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: ${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
-          artifacts: input-sdk-qt-${{ env.QT_VERSION }}-win64-${{ steps.time.outputs.time }}-${{ github.run_number }}.zip
+          artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}

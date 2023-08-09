@@ -1,11 +1,12 @@
 {
   "name": "geodiff",
   "version": "2.0.2",
-  "port-version": 1,
+  "port-version": 2,
   "description": "Library for handling diffs for geospatial data",
   "homepage": "https://github.com/MerginMaps/geodiff",
   "license": "MIT",
   "dependencies": [
+    "sqlite3",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -13,12 +14,6 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
-    },
-    {
-      "name": "sqlite3",
-      "host": true
     }
-  ],
-  "features": {
-  }
+  ]
 }

@@ -1,6 +1,6 @@
 # This portfile adds the Qt Cryptographic Arcitecture
 # Changes to the original build:
-#   No -qt6 suffix, which is recommended just for Linux
+#   No -qt5 suffix, which is recommended just for Linux
 #   Output directories according to vcpkg
 #   Updated certstore. See certstore.pem in the output dirs
 #
@@ -11,13 +11,14 @@ vcpkg_add_to_path("${PERL_EXE_PATH}")
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO KDE/qca
-    REF v2.3.4
-    SHA512 04583da17531538fc2a7ae18a1a4f89f1e8d303e2bb390520a8f55a20bab17f8407ab07aefef2a75587e2a0521f41b37a9fdd8430ec483daf5d02c05556b8ddb
+    REF v2.3.6
+    SHA512 983cd023482a2c16e4976a8b75ff739239f82aab039dc879c0cbfb842487d77fb4b153bf3c855bed0ec6b1a48f2c4f654c181982a945e2f83cb9953c4896c70d
     PATCHES
         0001-fix-path-for-vcpkg.patch
         0002-fix-build-error.patch
-        0003-fix-socket.patch
-		0004-fix-cxx17.patch
+        0003-Define-NOMINMAX-for-botan-plugin-with-MSVC.patch
+        ios.patch
+        connect_fix.patch
 )
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
@@ -46,25 +47,30 @@ vcpkg_execute_required_process(
 )
 message(STATUS "Importing certstore done")
 
+if(VCPKG_CROSSCOMPILING)
+   list(APPEND QCA_OPTIONS -DQT_HOST_PATH=${CURRENT_HOST_INSTALLED_DIR})
+   list(APPEND QCA_OPTIONS -DQT_ADDITIONAL_PACKAGES_PREFIX_PATH=${CURRENT_HOST_INSTALLED_DIR})
+   list(APPEND QCA_OPTIONS -DQT_HOST_PATH_CMAKE_DIR:PATH=${CURRENT_HOST_INSTALLED_DIR}/share)
+endif()
+ 
+list(APPEND QCA_OPTIONS -DWITH_gnupg_PLUGIN=no)
 # Configure and build
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
-      -DQT6=ON 
-      -DBUILD_TESTS=OFF
-      -DBUILD_TOOLS=OFF
-      -DWITH_nss_PLUGIN=OFF
-      -DWITH_pkcs11_PLUGIN=OFF
-      -DWITH_gnupg_PLUGIN=OFF
-      -DWITH_gcrypt_PLUGIN=OFF
-      -DWITH_botan_PLUGIN=OFF
-	  -DQCA_SUFFIX=OFF
-      -DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=TRUE
-      -DQCA_FEATURE_INSTALL_DIR=share/qca/mkspecs/features
+        -DBUILD_WITH_QT6=ON
+        -DUSE_RELATIVE_PATHS=ON
+        -DBUILD_TESTS=OFF
+        -DBUILD_TOOLS=OFF
+        -DQCA_SUFFIX=OFF
+        -DQCA_FEATURE_INSTALL_DIR=share/qca/mkspecs/features
+        -DOSX_FRAMEWORK=OFF
+        -DQT6=ON
+        ${QCA_OPTIONS}
     OPTIONS_DEBUG
-      -DQCA_PLUGINS_INSTALL_DIR=${QCA_FEATURE_INSTALL_DIR_DEBUG}
+        -DQCA_PLUGINS_INSTALL_DIR=${QCA_FEATURE_INSTALL_DIR_DEBUG}
     OPTIONS_RELEASE
-      -DQCA_PLUGINS_INSTALL_DIR=${QCA_FEATURE_INSTALL_DIR_RELEASE}
+        -DQCA_PLUGINS_INSTALL_DIR=${QCA_FEATURE_INSTALL_DIR_RELEASE}
 )
 
 vcpkg_cmake_install()

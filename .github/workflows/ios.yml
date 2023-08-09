@@ -2,66 +2,64 @@ name: Build ios
 
 on:
   push:
-    paths:
-      - 'ios/**'
-      - '.github/workflows/ios.yml'
-      - 'versions.conf'
-  release:
-    types:
-      - published
+    paths-ignore:
+      - '.github/workflows/android.yml'
+      - '.github/workflows/linux.yml'
+      - '.github/workflows/mac.yml'
+      - '.github/workflows/win.yml'
+      - 'vcpkg-overlay/triplets/arm-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-osx.yml'
+      - 'vcpkg-overlay/triplets/x64-linux.yml'
+      - 'vcpkg-overlay/triplets/x64-osx.yml'
+      - 'vcpkg-overlay/triplets/x64-windows.yml'
+      - 'scripts/**'
+      - 'LICENSE'
+      - 'README.md'
 
+concurrency:
+  group: ci-${{github.ref}}-ios
+  cancel-in-progress: true
+  
 jobs:
   ios_build:
     runs-on: macos-12
-    env:
-      IOS_MIN_SDK_VERSION: '14.0' # iOS Deployment target 
-      QT_VERSION: '6.5.2'
-      ARCHES: 'arm64'
-      CACHE_VERSION: 1
+    env: # update README for devs if you modify these env. variables
+      QT_VERSION: '6.5.2' # use scripts/update_qt_version.bash to change
+      TRIPLET: "arm64-ios"
+      DEPLOYMENT_TARGET: '14.0' # iOS Deployment target 
       XC_VERSION: ${{ '14.2' }}
+      QT_ARCH: "ios"
+      VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          path: input-sdk
 
       - name: Select latest Xcode
         run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
-        
-      - name: Check deps versions change
-        run: |
-          CHECKSUM=$( md5 -r versions.conf | cut -d ' ' -f1 )
-          echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
 
-      - name: Prepare build cache for branch/tag
-        # use a fork of actions/cache@v2 to upload cache even when the build or test failed
-        uses: pat-s/always-upload-cache@v2.1.5
-        with:
-          path: ${{ github.workspace }}/build
-          # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ env.IOS_MIN_SDK_VERSION }}-${{ github.sha }}
-          restore-keys: |
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-${{ github.ref }}-${{ env.IOS_MIN_SDK_VERSION }}-
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.QT_VERSION }}-refs/heads/master-${{ env.IOS_MIN_SDK_VERSION }}-
-
-      - name: Install Build Dependencies
+      - name: Prepare vars
+        id: vars
         run: |
-          echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-          brew install bison flex automake shtool gtk-doc cmake
-          echo "/usr/local/opt/flex/bin" >> $GITHUB_PATH
-          echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
+          brew install automake bison flex gnu-sed autoconf-archive libtool gettext cmake ninja
+          echo $(brew --prefix bison)/bin >> $GITHUB_PATH
+          echo $(brew --prefix flex)/bin >> $GITHUB_PATH
+          echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
+
           pip3 install -U pip
           pip3 install aqtinstall
-      
-      # cannot use install-qt-action@v3 due to missing input-sdk/Qt/6.3.x/macos/bin/qmake
-      # see also https://github.com/miurahr/aqtinstall/issues/503
-      - name: Cache Qt
-        id: cache-qt
-        uses: pat-s/always-upload-cache@v2.1.5
+
+      - name: Restore cached Qt
+        id: cache-qt-restore
+        uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-ios
-          
+          key: ${{ runner.os }}-QtCache-v20-${{ env.QT_VERSION }}-ios
+
       - name: Install Qt
-        if: steps.cache-qt.outputs.cache-hit != 'true'
+        if: steps.cache-qt-restore.outputs.cache-hit != 'true'
         run: |
           python3 -m aqt install-qt \
             mac ios ${{ env.QT_VERSION }} \
@@ -72,53 +70,106 @@ jobs:
             mac desktop ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
             -O ${{ github.workspace }}/Qt
-            
-          ls -la ${{ github.workspace }}/Qt
-          ls -la ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}
-          
-      - name: Export config.conf
-        run: |
-          touch ./ios/config.conf
-          echo -e "export QT_VERSION=${{ env.QT_VERSION }}"  >> ./ios/config.conf
-          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./ios/config.conf
-          echo -e "export IOS_MIN_SDK_VERSION=${{ env.IOS_MIN_SDK_VERSION }}"  >> ./ios/config.conf
-          echo -e "export QT_BASE=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}"  >> ./ios/config.conf
-          echo -e "export MACOSX_DEPLOYMENT_TARGET=${{ env.IOS_MIN_SDK_VERSION }}"  >> ./ios/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCHES }}"\"")"  >> ./ios/config.conf
-          cat ./ios/config.conf
-          
-          ${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/ios/bin/qmake --version
-          which cmake 
-          cmake --version
 
-      - name: Build Sdk
+      - name: Save Qt cache
+        uses: actions/cache/save@v3
+        if: steps.cache-qt-restore.outputs.cache-hit != 'true'
+        id: cache-qt-save
+        with:
+          path: ${{ github.workspace }}/Qt
+          key: ${{ steps.cache-qt-restore.outputs.cache-primary-key }}
+
+      - name: Get vcpkg
+        shell: bash
         run: |
-          ./ios/distribute.sh -mqgis
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          VCPKG_TAG=`cat ${{ github.workspace }}/input-sdk/VCPKG_BASELINE`
+          echo "using VCPKG_TAG ${VCPKG_TAG}"
+          git checkout ${VCPKG_TAG}
+
+      - name: Install vcpkg
+        run: |
+          echo "install vcpkg"
+          cd "${{ env.VCPKG_ROOT }}"
+          chmod +x ./bootstrap-vcpkg.sh
+          ./bootstrap-vcpkg.sh
+
+      - name: Build Deps
+        run: |
+          mkdir -p ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
+          
+          export Qt6_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/ios
+          export QT_HOST_PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
+          export PATH=${{ env.VCPKG_ROOT }}:$PATH
+
+          vcpkg --version
+
+          cmake -B ${{ github.workspace }}/build \
+                -S ${{ github.workspace }}/input-sdk \
+                -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
+                -G Xcode \
+                -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
+                -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/input-sdk/vcpkg-overlay/triplets" \
+                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/input-sdk/vcpkg-overlay/ports" \
+                -D CMAKE_SYSTEM_NAME=iOS \
+                -D CMAKE_SYSTEM_PROCESSOR=aarch64 \
+                -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ env.DEPLOYMENT_TARGET }} \
+                -D ENABLE_BITCODE=OFF \
+                -D ENABLE_ARC=OFF \
+                -D CMAKE_CXX_VISIBILITY_PRESET=hidden
+
+      - name: Upload build logs on deps failure
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: build-logs-${{ env.TRIPLET }}
+          path: |
+            ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
+
+      - name: Build Test App
+        run: |
+          cd ${{ github.workspace }}/build
+          cmake --build . --config Release --verbose
 
       - name: Get TimeStamp
         id: time
-        uses: nanzm/get-time-action@v1.1
+        uses: nanzm/get-time-action@v2.0
         with:
           timeZone: 8
           format: 'YYYYMMDD'
 
-      - name: Create package
+      - name: Create SDK data folder 
         run: |
-          SDK_TAR=input-sdk-qt-${{ env.QT_VERSION }}-ios-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
-          echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd "${{ github.workspace }}/build/stage"
-          tar -c -z --exclude=*.pyc -f ${{ github.workspace }}/${SDK_TAR} ./
+            mkdir -p ${{ github.workspace }}/sdk
+            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ github.workspace }}/sdk/
+            rm -rf ${{ github.workspace }}/sdk/debug
+            rm -rf ${{ github.workspace }}/sdk/etc
+            rm -rf ${{ github.workspace }}/sdk/mkspecs
+            rm -rf ${{ github.workspace }}/sdk/share
+            rm -rf ${{ github.workspace }}/sdk/tools
+            
+            SDK_TAR=mergin-maps-input-sdk-qt-${{ env.QT_VERSION }}-${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+            echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
+            
+            cd ${{ github.workspace }}/sdk/
+            tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
+          name: sdk-${{ env.TRIPLET }}
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
 
       - name: Create Release
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ios-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: ${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}

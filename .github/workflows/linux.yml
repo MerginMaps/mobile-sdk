@@ -2,99 +2,158 @@ name: Build Linux
 
 on:
   push:
-    paths:
-      - 'linux/**'
-      - '.github/workflows/linux.yml'
-      - 'versions.conf'
-  release:
-    types:
-      - published
+    paths-ignore:
+      - '.github/workflows/android.yml'
+      - '.github/workflows/ios.yml'
+      - '.github/workflows/mac.yml'
+      - '.github/workflows/win.yml'
+      - 'vcpkg-overlay/triplets/arm-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-android.yml'
+      - 'vcpkg-overlay/triplets/arm64-ios.yml'
+      - 'vcpkg-overlay/triplets/arm64-osx.yml'
+      - 'vcpkg-overlay/triplets/x64-osx.yml'
+      - 'vcpkg-overlay/triplets/x64-windows.yml'
+      - 'scripts/**'
+      - 'LICENSE'
+      - 'README.md'
 
+concurrency:
+  group: ci-${{github.ref}}-linux
+  cancel-in-progress: true
+  
 jobs:
   linux_build:
     runs-on: ubuntu-22.04
     if: github.repository == 'merginmaps/input-sdk'
-    env:
-      ARCH: 'linux-x86_64'
-      UBUNTU_VERSION: 2204
-      QT_VERSION: '6.5.2'
-      CACHE_VERSION: 0
+    
+    env: # update README for devs if you modify these env. variables
+      QT_VERSION: '6.5.2' # use scripts/update_qt_version.bash to change
+      TRIPLET: "x64-linux"
+      QT_ARCH: "desktop"
+      VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Check deps versions change
-        run: |
-          CHECKSUM=$( md5sum versions.conf | cut -d ' ' -f1 )
-          echo "DEPS_CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
-
-      - name: Prepare build cache for branch/tag
-        # use a fork of actions/cache@v2 to upload cache even when the build or test failed
-        uses: pat-s/always-upload-cache@v2.1.5
+      - uses: actions/checkout@v3
         with:
-          path: ${{ github.workspace }}/build
-          # The branch or tag ref that triggered the workflow run. For branches this in the format refs/heads/<branch_name>, and for tags it is refs/tags/<tag_name>
-          key: cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-${{ github.ref }}-
-            cache-${{ env.DEPS_CHECKSUM }}-v${{ env.CACHE_VERSION }}-${{ env.UBUNTU_VERSION }}-refs/heads/master-
+          path: input-sdk
 
-      - name: Install Build Dependencies
+      - name: Prepare vars
+        id: vars
         run: |
-            echo "Versions checksum: ${{ env.DEPS_CHECKSUM }}"
-            sudo apt-get install -y bison ca-certificates ccache cmake cmake-curses-gui dh-python expect flex flip \
-                            git graphviz libexiv2-dev libexpat1-dev libfcgi-dev libgeos-dev \
-                            libgsl-dev libfreexl-dev libpq-dev libprotobuf-dev \
-                            libspatialindex-dev libsqlite3-dev libyaml-tiny-perl \
-                            libzip-dev libzstd-dev lighttpd locales ninja-build \
-                            pkg-config poppler-utils protobuf-compiler python3-all-dev \
-                            spawn-fcgi xauth xfonts-100dpi xfonts-75dpi xfonts-base xfonts-scalable xvfb
+          sudo apt-get update
+          
+          sudo apt-get install -y \
+          gperf autopoint '^libxcb.*-dev' libx11-xcb-dev libegl1-mesa libegl1-mesa-dev \
+          libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
+          autoconf-archive libgstreamer-gl1.0-0 libgstreamer-plugins-base1.0-0 libfuse2
+          
+          sudo apt-get install -y \
+            bison flex \
+            cmake ninja-build
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+          # Required to run unit tests on linux
+          echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
+
+      - uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
+          target: ${{ env.QT_ARCH }}
           setup-python: 'false'
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
           cache: true
           cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-lnx
-
-      - name: Export config.conf
+          
+      - name: Get vcpkg
+        shell: bash
         run: |
-          touch ./linux/config.conf
-          echo -e "export ROOT_OUT_PATH=${{ github.workspace }}/build"  >> ./linux/config.conf
-          echo -e "export ARCHES=("\""${{ env.ARCH }}"\"")"  >> ./linux/config.conf
-          cat ./linux/config.conf
-
-      - name: Build Sdk
+          mkdir -p "${{ env.VCPKG_ROOT }}"
+          cd "${{ env.VCPKG_ROOT }}"
+          git init
+          git remote add origin https://github.com/microsoft/vcpkg.git
+          git pull origin master
+          VCPKG_TAG=`cat ${{ github.workspace }}/input-sdk/VCPKG_BASELINE`
+          echo "using VCPKG_TAG ${VCPKG_TAG}"
+          git checkout ${VCPKG_TAG}
+          
+      - name: Install vcpkg
         run: |
-          ./linux/distribute.sh -mqgis
+          echo "install vcpkg"
+          cd "${{ env.VCPKG_ROOT }}"
+          chmod +x ./bootstrap-vcpkg.sh
+          ./bootstrap-vcpkg.sh
 
+      - name: Build Deps
+        run: |
+          mkdir -p ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
+
+          export PATH=${{ env.VCPKG_ROOT }}:$PATH
+
+          vcpkg --version
+          ls -l ${Qt6_DIR}/lib
+
+          cmake -B ${{ github.workspace }}/build \
+                -S ${{ github.workspace }}/input-sdk \
+                -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
+                -G Ninja \
+                -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} \
+                -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ github.workspace }}/input-sdk/vcpkg-overlay/triplets" \
+                -DVCPKG_OVERLAY_PORTS="${{ github.workspace }}/input-sdk/vcpkg-overlay/ports"\
+                -DCMAKE_MAKE_PROGRAM=ninja
+
+      - name: Upload build logs on deps failure
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: build-logs-${{ env.TRIPLET }}
+          path: |
+            ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
+
+      - name: Build Test App
+        run: |
+          cd ${{ github.workspace }}/build
+          cmake --build . --config Release --verbose
+
+      - name: Run Tests
+        run: |
+            cd ${{ github.workspace }}/build
+            ./merginmapsinputsdk
+            
       - name: Get TimeStamp
         id: time
-        uses: nanzm/get-time-action@v1.1
+        uses: nanzm/get-time-action@v2.0
         with:
           timeZone: 8
           format: 'YYYYMMDD'
 
-      - name: Create package
+      - name: Create SDK data folder 
         run: |
-          SDK_TAR=input-sdk-ubuntu-${{ env.UBUNTU_VERSION }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
-          echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
-          cd "${{ github.workspace }}/build/stage/${{ env.ARCH }}"
-          tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
+            mkdir -p ${{ github.workspace }}/sdk
+            cp -R ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/* ${{ github.workspace }}/sdk/
+            rm -rf ${{ github.workspace }}/sdk/debug
+            rm -rf ${{ github.workspace }}/sdk/etc
+            rm -rf ${{ github.workspace }}/sdk/mkspecs
+            rm -rf ${{ github.workspace }}/sdk/share
+            rm -rf ${{ github.workspace }}/sdk/tools
+            
+            SDK_TAR=mergin-maps-input-sdk-qt-${{ env.QT_VERSION }}-${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
+            echo "SDK_TAR=${SDK_TAR}" >> $GITHUB_ENV
+            
+            cd ${{ github.workspace }}/sdk/
+            tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
+          name: sdk-${{ env.TRIPLET }}
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
 
       - name: Create Release
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ubuntu-${{ env.UBUNTU_VERSION }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
+          tag: ${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
           artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}

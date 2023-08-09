@@ -10,15 +10,28 @@ vcpkg_from_github(
     HEAD_REF master
 )
 
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    list(APPEND GEODIFF_LINK_OPTIONS -DBUILD_STATIC=ON)
+    list(APPEND GEODIFF_LINK_OPTIONS -DBUILD_SHARED=OFF)
+else()
+    list(APPEND GEODIFF_LINK_OPTIONS -DBUILD_STATIC=OFF)
+    list(APPEND GEODIFF_LINK_OPTIONS -DBUILD_SHARED=ON)
+endif()
+
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}/geodiff
     OPTIONS 
         -DENABLE_TESTS=OFF 
         -DBUILD_TOOLS=OFF
         -DWITH_POSTGRESQL=OFF
+        ${GEODIFF_LINK_OPTIONS}
 )
 
 vcpkg_install_cmake()
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+
 file(WRITE ${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright "Geodiff is MIT licensed\n")
 configure_file(${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake ${CURRENT_PACKAGES_DIR}/share/${PORT}/vcpkg-cmake-wrapper.cmake @ONLY)
 file(INSTALL ${CMAKE_CURRENT_LIST_DIR}/usage DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
