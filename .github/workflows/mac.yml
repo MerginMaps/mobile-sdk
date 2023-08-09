@@ -127,13 +127,14 @@ jobs:
 
       - name: Create GDAL supported formats 
         run: |
-            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/tools/gdal/gdalinfo --formats | tee -a ${{ github.workspace }}/supported_formats.log
-            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/tools/gdal/ogrinfo --formats | tee -a ${{ github.workspace }}/supported_formats.log
-            
             SUPPORTED_FORMATS="mergin-maps-input-sdk-gdal-supported-formats-${{ steps.time.outputs.time }}-${{ github.run_number }}.log"
             echo "SUPPORTED_FORMATS=${SUPPORTED_FORMATS}" >> $GITHUB_ENV
-            
-            cat ${{ github.workspace }}/supported_formats.log
+
+            echo ".. 1/2 GDALINFO"
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/tools/gdal/gdalinfo --formats | tee -a ${{ github.workspace }}/${SUPPORTED_FORMATS}
+
+            echo ".. 2/2 OGRINFO"
+            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/tools/gdal/ogrinfo --formats | tee -a ${{ github.workspace }}/${SUPPORTED_FORMATS}
 
       - name: Create PROJ data folder 
         run: |
