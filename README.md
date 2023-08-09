@@ -12,17 +12,12 @@ SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) fo
 
 <div><img align="left" width="45" height="45" src="https://raw.githubusercontent.com/MerginMaps/docs/main/src/.vuepress/public/slack.svg"><a href="https://merginmaps.com/community/join">Join our community chat</a><br/>and ask questions!</div><br />
 
-# Usage
-
 If you are up to building Mergin Maps Input App, just download, extract and use prebuild SDKs for various arch/platforms from Github Releases/Artefacts.
 The steps below are for development, debugging of the SDK itself or when you need to compile architecture not supported by current CI setup.
 
-# Release 
 The release is automatically created for each commit on master for each triplet separately.
 
-# Development
-
-## 
+# Development Tips
 
 - look at `.github/workflows/<platform>.yml` to see how it is done in CI
 - how to do diff `diff -rupN file.orig file`
@@ -30,35 +25,42 @@ The release is automatically created for each commit on master for each triplet 
 - find SHA512 hash for vcpkg: `shasum -a 512 myfile.tar.gz`
 - list QT install options: `aqt list $QT_VERSION windows desktop`
 
-## clean local build
+## clean local build (vcpkg)
 
 - remove vcpkg and download from scratch
 - clean/remove binary archive `$HOME/.cache/vcpkg/archives`
 
-## Android (on MacOS)
+# Install
 
-To build on Linux/Windows, adjust setup of deps from Linux build.
+## Common steps (all platforms)
 
-- Install SDK and NDK, Build Tools (version from `.github/workflows/android.yml`)
-- Install XCode, Cmake, bison, flex, ...
+- Install bison, flex, cmake and add to PATH
+- Install compiler setup for your platform (VS on win, gcc on lnx, XCode on macos) 
+- Install Qt (version from `.github/workflows/ios.yml`). For iOS and Android you need BOTH host (e.g. macos) and target (e.g. ios) installation!
+- Download and prepare input-sdk
 ```
-  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
+  mkdir -p build
+  cd build
+  git clone git@github.com:MerginMaps/input-sdk.git
 ```
-- Qt (version from `.github/workflows/android.yml`); you need BOTH desktop (macos) and android installation!
-- Install Vcpkg (git commit from `.github/workflows/android.yml`)
+- Install vcpkg and checkout specific commit from VCPKG_BASELINE file
 ```
   mkdir -p build
   cd build
   git clone https://github.com/microsoft/vcpkg.git
-  cd vcpkg 
-  git checkout <git_commit>
-  ./vcpkg/bootstrap-vcpkg.sh
+  cd vcpkg
+  VCPKG_TAG=`cat ../../input-sdk/VCPKG_BASELINE`
+  git checkout ${VCPKG_TAG}
+  ./bootstrap-vcpkg.sh
   cd ..
   ```
-- Download and prepare input-sdk
-```
-  git clone git@github.com:MerginMaps/input-sdk.git
-```
+
+- continue with platform/target specific steps
+
+## Android
+
+- Install SDK and NDK, Build Tools (version from `.github/workflows/android.yml`)
+- To build on Linux/Windows, adjust setup of deps from Linux build.
 
 ### android_arm64_v8a
 
@@ -67,6 +69,8 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
   mkdir -p build/arm64-android
   cd build/arm64-android
   
+  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
+   
   export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=`pwd`/../vcpkg:$PATH;\
   export Qt6_DIR=/opt/Qt/6.5.2/android_arm64_v8a;export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
@@ -95,7 +99,7 @@ To build on Linux/Windows, adjust setup of deps from Linux build.
     -DANDROID_STL="c++_shared"
 ```
 
-- Build 
+- Build to verify your build
 ```
   cmake --build . --config Release
 ```
@@ -104,11 +108,12 @@ Note that this sdk application is dummy on this target and cannot be executed on
 
 ### android_armv7
 
-- Repeat with other android triplet (`arm-android.cmake` and QT installation `android_armv7`)
-
+- Configure input-sdk test app (this runs VCPKG install - can take few hours)
 ```
   mkdir -p build/arm-android
   cd build/arm-android
+  
+  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
   
   export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=`pwd`/../vcpkg:$PATH;\
@@ -139,7 +144,7 @@ Note that this sdk application is dummy on this target and cannot be executed on
     -DANDROID_STL="c++_shared"
 ```
 
-- Build 
+- Build to verify your build
 ```
   cmake --build . --config Release --verbose
 ```
@@ -148,29 +153,12 @@ Note that this sdk application is dummy on this target and cannot be executed on
 
 ##  iOS
 
-- Install XCode, Cmake, bison, flex, ...
-```
-  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
-```
-- Qt (version from `.github/workflows/ios.yml`); you need BOTH desktop (macos) and ios installation!
-- Install Vcpkg (git commit from `.github/workflows/ios.yml`)
-```
-  mkdir -p build
-  cd build
-  git clone https://github.com/microsoft/vcpkg.git
-  cd vcpkg 
-  git checkout <git_commit>
-  ./vcpkg/bootstrap-vcpkg.sh
-  cd ..
-  ```
-- Download and prepare input-sdk
-```
-  git clone git@github.com:MerginMaps/input-sdk.git
-```
-- Configure input-sdk test app (this runs VCPKG install - can take few hours) for particular triplet (`arm64-ios.cmake`)
+- Configure input-sdk test app (this runs VCPKG install - can take few hours)
 ```
   mkdir -p build/arm64-ios
   cd build/arm64-ios
+  
+  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
   
   export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=${PWD}/../vcpkg:$PATH;\
@@ -193,7 +181,7 @@ Note that this sdk application is dummy on this target and cannot be executed on
     -DCMAKE_OSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET}
 ```
 
-- Build 
+- Build to verify your build
 ```
   cmake --build . --config Release
 ```
@@ -226,32 +214,13 @@ cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test `
 - build executable and run tests 
 ```
 cmake --build %BUILD_DIR% --config Release --verbose
-%BUILD_DIR%\Release\inputsdktest.exe
+%BUILD_DIR%\Release\merginmapsinputsdk.exe
 ```
 
 - the resulting build tree is then located at `%BUILD_DIR%\vcpkg_installed`
 
 ## MacOS
 
-- Install XCode, Cmake, bison, flex, ...
-```
-  brew install cmake automake bison flex gnu-sed autoconf-archive libtool
-```
-- Qt (version from `.github/workflows/mac.yml`) 
-- Install Vcpkg (git commit from `.github/workflows/mac.yml`)
-```
-  mkdir -p build
-  cd build
-  git clone https://github.com/microsoft/vcpkg.git
-  cd vcpkg 
-  git checkout <git_commit>
-  ./vcpkg/bootstrap-vcpkg.sh
-  cd ..
-  ```
-- Download and prepare input-sdk
-```
-  git clone git@github.com:MerginMaps/input-sdk.git
-```
 - Configure input-sdk test app (this runs VCPKG install - can take few hours) (for arm64 arch builds use `arm64-osx` TRIPLET)
 ```
   mkdir -p build/x64-osx
@@ -280,23 +249,6 @@ cmake --build %BUILD_DIR% --config Release --verbose
 ```
 
 ## Linux 
-
-- Install ninja, cmake, bison, flex, ...
-- Qt (version from `.github/workflows/linux.yml`) 
-- Install Vcpkg (git commit from `.github/workflows/linux.yml`)
-```
-  mkdir -p build
-  cd build
-  git clone https://github.com/microsoft/vcpkg.git
-  cd vcpkg 
-  git checkout <git_commit>
-  ./vcpkg/bootstrap-vcpkg.sh
-  cd ..
-  ```
-- Download and prepare input-sdk
-```
-  git clone git@github.com:MerginMaps/input-sdk.git
-```
 - Configure input-sdk test app (this runs VCPKG install - can take few hours)
 ```
   mkdir -p build/x64-linux

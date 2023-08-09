@@ -31,7 +31,6 @@ jobs:
       XC_VERSION: ${{ '14.2' }}
       QT_ARCH: "ios"
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
-      VCPKG_BASELINE: "d765306b074717dea8dc1c4723e1b025acb61c2d" # use scripts/update_vcpkg_base.bash to change
 
     steps:
       - uses: actions/checkout@v3
@@ -88,7 +87,8 @@ jobs:
           git init
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
-          git checkout $VCPKG_BASELINE
+          VCPKG_TAG=`cat ${{ github.workspace }}/input-sdk/VCPKG_BASELINE`
+          git checkout ${VCPKG_TAG}
 
       - name: Install vcpkg
         run: |
@@ -105,10 +105,9 @@ jobs:
           export Qt6_DIR=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/ios
           export QT_HOST_PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/macos
           export PATH=${{ env.VCPKG_ROOT }}:$PATH
-          
+
           vcpkg --version
-          ls -la ${Qt6_DIR}/lib
-          
+
           cmake -B ${{ github.workspace }}/build \
                 -S ${{ github.workspace }}/input-sdk \
                 -DCMAKE_TOOLCHAIN_FILE:PATH="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
@@ -162,6 +161,7 @@ jobs:
       - name: Upload Sdk in Artifacts
         uses: actions/upload-artifact@v3
         with:
+          name: sdk-${{ env.TRIPLET }}
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
 
       - name: Create Release

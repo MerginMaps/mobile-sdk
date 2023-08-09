@@ -52,12 +52,10 @@ if(VCPKG_TARGET_IS_ANDROID AND ANRDOID_PLATFORM VERSION_LESS 24 AND (VCPKG_TARGE
     list(APPEND FEATURE_OPTIONS -DBUILD_WITHOUT_64BIT_OFFSET=ON)
 endif()
 
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(BUILD_APPS ON)
+# we want gdalinfo/ogrinfo on macOS to generate supported formats list
+if(VCPKG_TARGET_IS_OSX)
     list(APPEND FEATURE_OPTIONS -DBUILD_APPS=ON)
 else()
-    set(BUILD_APPS OFF)
     list(APPEND FEATURE_OPTIONS -DBUILD_APPS=OFF)
 endif()
 
@@ -106,7 +104,7 @@ get_filename_component(vcpkg_host_prefix \"\${CMAKE_CURRENT_LIST_DIR}/../../../$
 list(APPEND CMAKE_PROGRAM_PATH \"\${vcpkg_host_prefix}/tools/pkgconf\")"
 )
 
-if (BUILD_APPS)
+if(VCPKG_TARGET_IS_OSX)
     vcpkg_copy_tools(
         TOOL_NAMES
             gdalinfo
