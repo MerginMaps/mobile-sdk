@@ -145,7 +145,7 @@ jobs:
             cp ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/srs.db ${{ github.workspace }}/proj-data/resources/
             echo ".. 2/2 proj resources"
             mkdir -p ${{ github.workspace }}/proj-data/proj
-            ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/proj/* ${{ github.workspace }}/proj-data/proj/
+            cp ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/proj/* ${{ github.workspace }}/proj-data/proj/
             
             PROJ_TAR=mergin-maps-input-sdk-proj-mac-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
             echo "PROJ_TAR=${PROJ_TAR}" >> $GITHUB_ENV
