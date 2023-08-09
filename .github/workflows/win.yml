@@ -68,6 +68,7 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           VCPKG_TAG=`cat ${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk/VCPKG_BASELINE`
+          echo "using VCPKG_TAG ${VCPKG_TAG}"
           git checkout ${VCPKG_TAG}
 
       - name: Install vcpkg

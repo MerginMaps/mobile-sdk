@@ -122,6 +122,7 @@ jobs:
           git remote add origin https://github.com/microsoft/vcpkg.git
           git pull origin master
           VCPKG_TAG=`cat ${{ github.workspace }}/input-sdk/VCPKG_BASELINE`
+          echo "using VCPKG_TAG ${VCPKG_TAG}"
           git checkout ${VCPKG_TAG}
 
       - name: Install vcpkg
@@ -138,7 +139,7 @@ jobs:
           export PATH=${{ env.VCPKG_ROOT }}:$PATH
           export ANDROID_NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}
           export ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}
-          export ANDROID_ABI= ${{ matrix.ANDROID_ABI }}
+          export ANDROID_ABI=${{ matrix.ANDROID_ABI }}
 
           vcpkg --version
 

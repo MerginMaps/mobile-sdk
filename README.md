@@ -30,6 +30,15 @@ The release is automatically created for each commit on master for each triplet 
 - remove vcpkg and download from scratch
 - clean/remove binary archive `$HOME/.cache/vcpkg/archives`
 
+# how to update vcpkg baseline
+
+- find a git commit hash you want to use on https://github.com/microsoft/vcpkg
+- edit VCPKG_BASELINE file with the hash 
+
+# how to update qt version
+
+- run `scripts/update_qt_version.bash`
+
 # Install
 
 ## Common steps (all platforms)
