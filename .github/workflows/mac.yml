@@ -139,20 +139,25 @@ jobs:
       - name: Create PROJ data folder 
         run: |
             mkdir -p ${{ github.workspace }}/proj-data
+
             echo ".. 1/2 qgis database"
             mkdir -p ${{ github.workspace }}/proj-data/resources
             cp ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/qgis.db ${{ github.workspace }}/proj-data/resources/
             cp ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/qgis/resources/srs.db ${{ github.workspace }}/proj-data/resources/
+
             echo ".. 2/2 proj resources"
             mkdir -p ${{ github.workspace }}/proj-data/proj
             cp ${{ github.workspace }}/build/vcpkg_installed/${{ env.TRIPLET }}/share/proj/* ${{ github.workspace }}/proj-data/proj/
-            
+            rm -f ${{ github.workspace }}/proj-data/proj/copyright
+            rm -f ${{ github.workspace }}/proj-data/proj/usage
+            rm -f ${{ github.workspace }}/proj-data/proj/*.cmake
+            rm -f ${{ github.workspace }}/proj-data/proj/vcpkg*
+
             PROJ_TAR=mergin-maps-input-sdk-proj-mac-${{ steps.time.outputs.time }}-${{ github.run_number }}.tar.gz
             echo "PROJ_TAR=${PROJ_TAR}" >> $GITHUB_ENV
-            
+
             cd "${{ github.workspace }}/proj-data"
             tar -c -z -f ${{ github.workspace }}/${PROJ_TAR} ./
-
 
       - name: Create SDK data folder 
         run: |
