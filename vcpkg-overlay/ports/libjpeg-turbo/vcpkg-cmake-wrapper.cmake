@@ -9,9 +9,9 @@ find_package_handle_standard_args(
 
 if(JPEG_FOUND AND NOT TARGET JPEG::JPEG)
     add_library(JPEG::JPEG UNKNOWN IMPORTED)
-    if(DEFINED JPEG_INCLUDE_DIRS)
+    if(DEFINED JPEG_INCLUDE_DIR)
         set_target_properties(JPEG::JPEG PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${JPEG_INCLUDE_DIRS}")
+            INTERFACE_INCLUDE_DIRECTORIES "${JPEG_INCLUDE_DIR}")
     endif()
     if(EXISTS "${JPEG_LIBRARY}")
         set_target_properties(JPEG::JPEG PROPERTIES
