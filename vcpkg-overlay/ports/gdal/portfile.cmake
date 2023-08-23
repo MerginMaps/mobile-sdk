@@ -64,8 +64,8 @@ string(REPLACE "dynamic" "" qhull_target "Qhull::qhull${VCPKG_LIBRARY_LINKAGE}_r
 # PCIDSK does not add compile interface defininions!
 # do this instead of patching for now
 # https://github.com/OSGeo/gdal/blob/af5b75ecc6b8d3cef36f2b6fecf085319d39a546/frmts/pcidsk/sdk/CMakeLists.txt#L84
-string(APPEND VCPKG_C_FLAGS "-DRENAME_INTERNAL_LIBJPEG_SYMBOLS")
-string(APPEND VCPKG_CXX_FLAGS "-DRENAME_INTERNAL_LIBJPEG_SYMBOLS")
+set(VCPKG_C_FLAGS "${VCPKG_C_FLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS")
+set(VCPKG_CXX_FLAGS "${VCPKG_CXX_FLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS")
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
