@@ -1,7 +1,7 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO OSGeo/gdal
-    REF "v${VERSION}"
+    REF "v${VERSION}" # keep up to date with vcpkg-overlay/libjpeg-turbo version
     SHA512 dfc7ccf5c1a3184fa93be762a880b7631faa4cd178cd72df8f5fd8a6296edafc56de2594617bebcb75ddf19ed4471dafcb574b22d7e9217dedfd7ea72c9247f2
     HEAD_REF master
     PATCHES
@@ -13,7 +13,6 @@ vcpkg_from_github(
 # `vcpkg clean` stumbles over one subdir
 file(REMOVE_RECURSE "${SOURCE_PATH}/autotest")
 
-list(APPEND FEATURE_OPTIONS -DGDAL_USE_JPEG_INTERNAL=ON)
 list(APPEND FEATURE_OPTIONS -DGDAL_USE_PNG_INTERNAL=ON)
 list(APPEND FEATURE_OPTIONS -DGDAL_USE_JSONC_INTERNAL=ON)
 
@@ -33,6 +32,7 @@ list(APPEND FEATURE_OPTIONS -DGDAL_USE_SPATIALITE=ON)
 list(APPEND FEATURE_OPTIONS -DGDAL_USE_EXPAT=ON)
 list(APPEND FEATURE_OPTIONS -DGDAL_USE_ZLIB=ON)
 list(APPEND FEATURE_OPTIONS -DGDAL_USE_FREEXL=ON)
+list(APPEND FEATURE_OPTIONS -DGDAL_USE_JPEG=ON)
 
 list(APPEND FEATURE_OPTIONS -DGDAL_USE_POSTGRESQL=OFF)
 list(APPEND FEATURE_OPTIONS -DGDAL_USE_PCRE2=OFF)
@@ -60,6 +60,12 @@ else()
 endif()
 
 string(REPLACE "dynamic" "" qhull_target "Qhull::qhull${VCPKG_LIBRARY_LINKAGE}_r")
+
+# PCIDSK does not add compile interface defininions!
+# do this instead of patching for now
+# https://github.com/OSGeo/gdal/blob/af5b75ecc6b8d3cef36f2b6fecf085319d39a546/frmts/pcidsk/sdk/CMakeLists.txt#L84
+set(VCPKG_C_FLAGS "${VCPKG_C_FLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS")
+set(VCPKG_CXX_FLAGS "${VCPKG_CXX_FLAGS} -DRENAME_INTERNAL_LIBJPEG_SYMBOLS")
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
