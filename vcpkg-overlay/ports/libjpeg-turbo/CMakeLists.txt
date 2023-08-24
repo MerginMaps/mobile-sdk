@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 3.6)
 project(JPEG)
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 add_library(
   jpeg ${JPEG_BUILD_TYPE}
   jcapimin.c
@@ -76,16 +78,5 @@ target_compile_definitions(jpeg PUBLIC -DRENAME_INTERNAL_LIBJPEG_SYMBOLS)
 configure_file(libjpeg.pc.in libjpeg.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libjpeg.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 
-IF(WIN32)
-	INSTALL(TARGETS jpeg
-    	RUNTIME DESTINATION bin
-        ARCHIVE DESTINATION lib
-    )
-ELSE(WIN32)
-    INSTALL(TARGETS jpeg
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-    )
-ENDIF(WIN32)
-
+INSTALL(TARGETS jpeg)
 INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ DESTINATION include FILES_MATCHING PATTERN "*.h")
