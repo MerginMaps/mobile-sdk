@@ -27,7 +27,7 @@ jobs:
     if: github.repository == 'merginmaps/input-sdk'
     
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.5.2' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.5.3' # use scripts/update_qt_version.bash to change
       TRIPLET: "x64-linux"
       QT_ARCH: "desktop"
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"

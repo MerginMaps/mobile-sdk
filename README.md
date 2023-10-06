@@ -82,7 +82,7 @@ The release is automatically created for each commit on master for each triplet 
    
   export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=`pwd`/../vcpkg:$PATH;\
-  export Qt6_DIR=/opt/Qt/6.5.2/android_arm64_v8a;export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export Qt6_DIR=/opt/Qt/6.5.3/android_arm64_v8a;export QT_HOST_PATH=/opt/Qt/6.5.3/macos;\
   export ANDROIDAPI=24;\
   export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393';\
   export ANDROID_NDK_ROOT='/opt/Android/android-sdk/ndk/25.1.8937393';\
@@ -126,8 +126,8 @@ Note that this sdk application is dummy on this target and cannot be executed on
   
   export PATH=$(brew --prefix flex):$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=`pwd`/../vcpkg:$PATH;\
-  export Qt6_DIR=/opt/Qt/6.5.2/android_armv7;\
-  export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export Qt6_DIR=/opt/Qt/6.5.3/android_armv7;\
+  export QT_HOST_PATH=/opt/Qt/6.5.3/macos;\
   export ANDROIDAPI=24;\
   export ANDROID_NDK_HOME='/opt/Android/android-sdk/ndk/25.1.8937393';\
   export ANDROID_NDK_ROOT='/opt/Android/android-sdk/ndk/25.1.8937393';\
@@ -171,8 +171,8 @@ Note that this sdk application is dummy on this target and cannot be executed on
   
   export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=${PWD}/../vcpkg:$PATH;\
-  export Qt6_DIR=/opt/Qt/6.5.2/ios;\
-  export QT_HOST_PATH=/opt/Qt/6.5.2/macos;\
+  export Qt6_DIR=/opt/Qt/6.5.3/ios;\
+  export QT_HOST_PATH=/opt/Qt/6.5.3/macos;\
   export DEPLOYMENT_TARGET=14.0;
 
   cmake -B . -S ../../input-sdk/ \
@@ -205,7 +205,7 @@ set ROOT_DIR=C:\Users\Peter\repo
 set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
 set SOURCE_DIR=%ROOT_DIR%\input-sdk
 set VCPKG_ROOT=%ROOT_DIR%\vcpkg
-set Qt6_DIR=C:\Qt\6.5.2\msvc2019_64
+set Qt6_DIR=C:\Qt\6.5.3\msvc2019_64
 set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
 "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
 ```
@@ -237,7 +237,7 @@ cmake --build %BUILD_DIR% --config Release --verbose
   
   export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=${PWD}/../vcpkg:$PATH;\
-  export Qt6_DIR=/opt/Qt/6.5.2/macos;\
+  export Qt6_DIR=/opt/Qt/6.5.3/macos;\
   export DEPLOYMENT_TARGET=10.15.0
   
   cmake -B . -S ../../input-sdk/ \
@@ -265,7 +265,7 @@ cmake --build %BUILD_DIR% --config Release --verbose
   
   export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=${PWD}/../vcpkg:$PATH;\
-  export Qt6_DIR=/opt/Qt/6.5.2/macos
+  export Qt6_DIR=/opt/Qt/6.5.3/macos
   
   cmake -B . -S ../../input-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
