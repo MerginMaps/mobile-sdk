@@ -1,18 +1,18 @@
-[![Build win64](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml/badge.svg)](https://github.com/MerginMaps/input-sdk/actions/workflows/win.yml)
-[![Build macOS](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/mac.yml)
-[![Build iOS](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/ios.yml)
-[![Build android (on MacOS)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/android.yml)
-[![Build Linux](https://github.com/merginmaps/input-sdk/actions/workflows/linux.yml/badge.svg)](https://github.com/merginmaps/input-sdk/actions/workflows/linux.yml)
+[![Build win64](https://github.com/MerginMaps/mobile-sdk/actions/workflows/win.yml/badge.svg)](https://github.com/MerginMaps/mobile-sdk/actions/workflows/win.yml)
+[![Build macOS](https://github.com/merginmaps/mobile-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/merginmaps/mobile-sdk/actions/workflows/mac.yml)
+[![Build iOS](https://github.com/merginmaps/mobile-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/merginmaps/mobile-sdk/actions/workflows/ios.yml)
+[![Build android (on MacOS)](https://github.com/merginmaps/mobile-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/merginmaps/mobile-sdk/actions/workflows/android.yml)
+[![Build Linux](https://github.com/merginmaps/mobile-sdk/actions/workflows/linux.yml/badge.svg)](https://github.com/merginmaps/mobile-sdk/actions/workflows/linux.yml)
 
-# input-sdk
+# Mergin Maps mobile app SDK
 
-SDK for building [Mergin Maps Input app](https://github.com/merginmaps/input) for mobile devices based on VCPG ecosystem
+SDK for building [Mergin Maps mobile app](https://github.com/merginmaps/mobile) for mobile devices based on VCPG ecosystem
 
 [Mergin Maps](http://merginmaps.com) makes surveying of geospatial data easy and it is powered by QGIS.
 
 <div><img align="left" width="45" height="45" src="https://raw.githubusercontent.com/MerginMaps/docs/main/src/.vuepress/public/slack.svg"><a href="https://merginmaps.com/community/join">Join our community chat</a><br/>and ask questions!</div><br />
 
-If you are up to building Mergin Maps Input App, just download, extract and use prebuild SDKs for various arch/platforms from Github Releases/Artefacts.
+If you are up to building Mergin Maps mobile app, just download, extract and use prebuild SDKs for various arch/platforms from Github Releases/Artefacts.
 The steps below are for development, debugging of the SDK itself or when you need to compile architecture not supported by current CI setup.
 
 The release is automatically created for each commit on master for each triplet separately.
@@ -46,11 +46,11 @@ The release is automatically created for each commit on master for each triplet 
 - Install bison, flex, cmake and add to PATH
 - Install compiler setup for your platform (VS on win, gcc on lnx, XCode on macos) 
 - Install Qt (version from `.github/workflows/ios.yml`). For iOS and Android you need BOTH host (e.g. macos) and target (e.g. ios) installation!
-- Download and prepare input-sdk
+- Download and prepare mobile-sdk
 ```
   mkdir -p build
   cd build
-  git clone git@github.com:MerginMaps/input-sdk.git
+  git clone git@github.com:MerginMaps/mobile-sdk.git
 ```
 - Install vcpkg and checkout specific commit from VCPKG_BASELINE file
 ```
@@ -58,7 +58,7 @@ The release is automatically created for each commit on master for each triplet 
   cd build
   git clone https://github.com/microsoft/vcpkg.git
   cd vcpkg
-  VCPKG_TAG=`cat ../../input-sdk/VCPKG_BASELINE`
+  VCPKG_TAG=`cat ../../mobile-sdk/VCPKG_BASELINE`
   git checkout ${VCPKG_TAG}
   ./bootstrap-vcpkg.sh
   cd ..
@@ -73,7 +73,7 @@ The release is automatically created for each commit on master for each triplet 
 
 ### android_arm64_v8a
 
-- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+- Configure mobile-sdk test app (this runs VCPKG install - can take few hours)
 ```
   mkdir -p build/arm64-android
   cd build/arm64-android
@@ -89,13 +89,13 @@ The release is automatically created for each commit on master for each triplet 
   export ANDROID_HOME='/opt/Android/android-sdk/';\
   export ANDROID_ABI='arm64-v8a'
 
-  cmake -B . -S ../../input-sdk/ \
+  cmake -B . -S ../../mobile-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${Qt6_DIR}/lib/cmake/Qt6/qt.toolchain.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=arm64-android \
-    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
-    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DVCPKG_OVERLAY_TRIPLETS=../../mobile-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../mobile-sdk/vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
     -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
     -DCMAKE_MAKE_PROGRAM=ninja \
@@ -117,7 +117,7 @@ Note that this sdk application is dummy on this target and cannot be executed on
 
 ### android_armv7
 
-- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+- Configure mobile-sdk test app (this runs VCPKG install - can take few hours)
 ```
   mkdir -p build/arm-android
   cd build/arm-android
@@ -134,13 +134,13 @@ Note that this sdk application is dummy on this target and cannot be executed on
   export ANDROID_HOME='/opt/Android/android-sdk/';\
   export ANDROID_ABI=armeabi-v7a
   
-  cmake -B . -S ../../input-sdk/ \
+  cmake -B . -S ../../mobile-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=${Qt6_DIR}/lib/cmake/Qt6/qt.toolchain.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=arm-android \
-    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
-    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DVCPKG_OVERLAY_TRIPLETS=../../mobile-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../mobile-sdk/vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
     -D ANDROID_SDK_ROOT=${ANDROID_HOME} \
     -D CMAKE_MAKE_PROGRAM=ninja \
@@ -162,7 +162,7 @@ Note that this sdk application is dummy on this target and cannot be executed on
 
 ##  iOS
 
-- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+- Configure mobile-sdk test app (this runs VCPKG install - can take few hours)
 ```
   mkdir -p build/arm64-ios
   cd build/arm64-ios
@@ -175,11 +175,11 @@ Note that this sdk application is dummy on this target and cannot be executed on
   export QT_HOST_PATH=/opt/Qt/6.5.3/macos;\
   export DEPLOYMENT_TARGET=14.0;
 
-  cmake -B . -S ../../input-sdk/ \
+  cmake -B . -S ../../mobile-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G "Xcode" \
-    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
-    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DVCPKG_OVERLAY_TRIPLETS=../../mobile-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../mobile-sdk/vcpkg-overlay/ports \
     -DVCPKG_TARGET_TRIPLET=arm64-ios \
     -DCMAKE_BUILD_TYPE=Release \
     -D ENABLE_BITCODE=OFF \
@@ -203,7 +203,7 @@ Note that this sdk application is dummy on this target and cannot be executed on
 ```
 set ROOT_DIR=C:\Users\Peter\repo
 set BUILD_DIR=%ROOT_DIR%\build-sdk\win64
-set SOURCE_DIR=%ROOT_DIR%\input-sdk
+set SOURCE_DIR=%ROOT_DIR%\mobile-sdk
 set VCPKG_ROOT=%ROOT_DIR%\vcpkg
 set Qt6_DIR=C:\Qt\6.5.3\msvc2019_64
 set PATH=%VCPKG_ROOT%;%QT_ROOT%\bin;C:\Program Files\CMake\bin\;%PATH%
@@ -223,14 +223,14 @@ cmake -B %BUILD_DIR% -S %SOURCE_DIR%\vcpkg-test `
 - build executable and run tests 
 ```
 cmake --build %BUILD_DIR% --config Release --verbose
-%BUILD_DIR%\Release\merginmapsinputsdk.exe
+%BUILD_DIR%\Release\merginmapsmobilesdk.exe
 ```
 
 - the resulting build tree is then located at `%BUILD_DIR%\vcpkg_installed`
 
 ## MacOS
 
-- Configure input-sdk test app (this runs VCPKG install - can take few hours) (for arm64 arch builds use `arm64-osx` TRIPLET)
+- Configure mobile-sdk test app (this runs VCPKG install - can take few hours) (for arm64 arch builds use `arm64-osx` TRIPLET)
 ```
   mkdir -p build/x64-osx
   cd build/x64-osx
@@ -240,12 +240,12 @@ cmake --build %BUILD_DIR% --config Release --verbose
   export Qt6_DIR=/opt/Qt/6.5.3/macos;\
   export DEPLOYMENT_TARGET=10.15.0
   
-  cmake -B . -S ../../input-sdk/ \
+  cmake -B . -S ../../mobile-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=x64-osx \
-    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
-    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DVCPKG_OVERLAY_TRIPLETS=../../mobile-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../mobile-sdk/vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_MAKE_PROGRAM=ninja \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET}
@@ -254,11 +254,11 @@ cmake --build %BUILD_DIR% --config Release --verbose
 - Build and run test app to verify your build
 ```
   cmake --build . --config Release
-  ./merginmapsinputsdk
+  ./merginmapsmobilesdk
 ```
 
 ## Linux 
-- Configure input-sdk test app (this runs VCPKG install - can take few hours)
+- Configure mobile-sdk test app (this runs VCPKG install - can take few hours)
 ```
   mkdir -p build/x64-linux
   cd build/x64-linux
@@ -267,12 +267,12 @@ cmake --build %BUILD_DIR% --config Release --verbose
   export PATH=${PWD}/../vcpkg:$PATH;\
   export Qt6_DIR=/opt/Qt/6.5.3/macos
   
-  cmake -B . -S ../../input-sdk/ \
+  cmake -B . -S ../../mobile-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=x64-linux \
-    -DVCPKG_OVERLAY_TRIPLETS=../../input-sdk/vcpkg-overlay/triplets \
-    -DVCPKG_OVERLAY_PORTS=../../input-sdk/vcpkg-overlay/ports \
+    -DVCPKG_OVERLAY_TRIPLETS=../../mobile-sdk/vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../mobile-sdk/vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_MAKE_PROGRAM=ninja
 ```
@@ -280,5 +280,5 @@ cmake --build %BUILD_DIR% --config Release --verbose
 - Build and run test app to verify your build
 ```
   cmake --build . --config Release
-  ./merginmapsinputsdk
+  ./merginmapsmobilesdk
 ``` 
