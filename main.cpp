@@ -66,7 +66,7 @@ int test_qgis()
 }
 
 int main(int argc, char** argv){
-	std::cout << "Test Input-SDK" << std::endl;
+	std::cout << "Mergin Maps Mobile-SDK" << std::endl;
     int res = 0;
     
     res += test_sqlite3();

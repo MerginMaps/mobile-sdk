@@ -1,5 +1,5 @@
-set(QGIS_REF final-3_32_1)
-set(QGIS_SHA512 37a8f92739e0ed1df1e8bc1b81b513d275b25d6afeb5d612c3e4cd51123deee29406b3347b863d06d1f6055fac0dd3e032d81ddda19f21e845ddb113c0724974)
+set(QGIS_REF final-3_34_0)
+set(QGIS_SHA512 59125ebef3d9047850d839ddc3f1fda18c1d758aeabfe3a3e88570fe2338b545c1c82ff8f455c6e590798a9cf081d607b1659c475ea23395bcb736ce138fbcaa)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
@@ -7,12 +7,12 @@ vcpkg_from_github(
     REF ${QGIS_REF}
     SHA512 ${QGIS_SHA512}
     PATCHES
-        gdal.patch
-        keychain.patch
-        libxml2.patch
-        exiv2.patch
+        cmakelists.patch
         crssync.patch
-        bigobj.patch
+        libxml2.patch
+        awss3.patch # already fixed on QGIS 3.35.0 master
+        wcs_capabilities_qt66.patch # already fixed on QGIS 3.35.0 master
+        qsharedmemory_android.patch # already fixed on QGIS 3.35.0 master
 )
 
 file(REMOVE ${SOURCE_PATH}/cmake/FindQtKeychain.cmake)
@@ -49,6 +49,7 @@ list(APPEND QGIS_OPTIONS -DWITH_QGIS_PROCESS:BOOL=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_PDAL:BOOL=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_EPT:BOOL=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_3D:BOOL=OFF)
+list(APPEND QGIS_OPTIONS -DWITH_DRACO:BOOL=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_COPC=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_ANALYSIS=OFF)
 list(APPEND QGIS_OPTIONS -DWITH_GRASS=OFF)

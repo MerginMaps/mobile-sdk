@@ -35,7 +35,7 @@ jobs:
 
     runs-on: macos-12
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.5.3' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.6.0' # use scripts/update_qt_version.bash to change
       ANDROIDAPI: 24
       NDK_VERSION: '25.1.8937393'
       NDK_VERSION_FULL: r25b
