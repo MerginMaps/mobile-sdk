@@ -139,7 +139,7 @@ jobs:
                 & $ScriptBlock 2>&1 | ForEach-Object -Process { "$_" }
                 if ($LastExitCode -ne 0) { exit $LastExitCode }
             }
-            exec { ${{ github.workspace }}\build\Release\merginmapsinputsdk.exe }
+            exec { ${{ github.workspace }}\build\Release\merginmapsmobilesdk.exe }
          
       - name: Get TimeStamp
         id: time

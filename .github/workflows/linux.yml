@@ -117,7 +117,7 @@ jobs:
       - name: Run Tests
         run: |
             cd ${{ github.workspace }}/build
-            ./merginmapsinputsdk
+            ./merginmapsmobilesdk
             
       - name: Get TimeStamp
         id: time
