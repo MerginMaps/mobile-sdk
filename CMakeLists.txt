@@ -17,7 +17,7 @@ unset_pc(FREEXL)
 
 #######################################
 
-project(MerginMapsInputSdk LANGUAGES CXX)
+project(MerginMapsMobileSdk LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -72,11 +72,11 @@ endif()
 
 #######################################
 
-add_executable(merginmapsinputsdk main.cpp)
+add_executable(merginmapsmobilesdk main.cpp)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
   set_target_properties(
-    merginmapsinputsdk
+    merginmapsmobilesdk
     PROPERTIES MACOSX_BUNDLE TRUE
                XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "" # disable signing
                MACOSX_BUNDLE_GUI_IDENTIFIER MerginMaps.SDK
@@ -105,11 +105,11 @@ find_library(
   NO_DEFAULT_PATH
 )
 
-target_include_directories(merginmapsinputsdk PRIVATE ${QGIS_INCLUDE_DIR})
-target_link_libraries(merginmapsinputsdk PRIVATE ${QGIS_LIBRARY})
+target_include_directories(merginmapsmobilesdk PRIVATE ${QGIS_INCLUDE_DIR})
+target_link_libraries(merginmapsmobilesdk PRIVATE ${QGIS_LIBRARY})
 
 # 2/ Qt
-target_link_libraries(merginmapsinputsdk PRIVATE
+target_link_libraries(merginmapsmobilesdk PRIVATE
     Qt6::Qml
     Qt6::Xml
     Qt6::Concurrent
@@ -126,15 +126,15 @@ target_link_libraries(merginmapsinputsdk PRIVATE
 )
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
   find_package(Qt6 COMPONENTS PrintSupport)
-  target_link_libraries(merginmapsinputsdk PRIVATE
+  target_link_libraries(merginmapsmobilesdk PRIVATE
     Qt6::PrintSupport
   )
 endif()
 
 # 3/ next libs 
-target_link_libraries(merginmapsinputsdk PRIVATE Geodiff::Geodiff)
-target_link_libraries(merginmapsinputsdk PRIVATE PROJ::proj)
-target_link_libraries(merginmapsinputsdk PRIVATE ZXing::Core ZXing::ZXing)
+target_link_libraries(merginmapsmobilesdk PRIVATE Geodiff::Geodiff)
+target_link_libraries(merginmapsmobilesdk PRIVATE PROJ::proj)
+target_link_libraries(merginmapsmobilesdk PRIVATE ZXing::Core ZXing::ZXing)
 
 # 4/ QGIS providers
 set(QGIS_PROVIDERS_LIST
@@ -163,35 +163,35 @@ foreach (provider ${QGIS_PROVIDERS_LIST})
     PATH_SUFFIXES qgis
     NO_DEFAULT_PATH
   )
-  target_link_libraries(merginmapsinputsdk PRIVATE ${QGIS_${provider}_LIBRARY}
+  target_link_libraries(merginmapsmobilesdk PRIVATE ${QGIS_${provider}_LIBRARY}
   )
 endforeach ()
 
 # fix cycling dependencies between qgis_core and providers
-target_link_libraries(merginmapsinputsdk PRIVATE ${QGIS_LIBRARY})
+target_link_libraries(merginmapsmobilesdk PRIVATE ${QGIS_LIBRARY})
 
 # 5/ GDAL
-target_link_libraries(merginmapsinputsdk PRIVATE GDAL::GDAL)
+target_link_libraries(merginmapsmobilesdk PRIVATE GDAL::GDAL)
 
 # 6/ rest
-target_link_libraries(merginmapsinputsdk PRIVATE PostgreSQL::PostgreSQL)
-target_link_libraries(merginmapsinputsdk PRIVATE Qt6Keychain::Qt6Keychain)
-target_link_libraries(merginmapsinputsdk PRIVATE qca) 
+target_link_libraries(merginmapsmobilesdk PRIVATE PostgreSQL::PostgreSQL)
+target_link_libraries(merginmapsmobilesdk PRIVATE Qt6Keychain::Qt6Keychain)
+target_link_libraries(merginmapsmobilesdk PRIVATE qca) 
 
 if(APPLE)
-    target_link_libraries(merginmapsinputsdk PRIVATE ${LIBTASN1_LIBRARY})
+    target_link_libraries(merginmapsmobilesdk PRIVATE ${LIBTASN1_LIBRARY})
 endif()
 
-target_link_libraries(merginmapsinputsdk PRIVATE GEOS::geos_c)
-target_link_libraries(merginmapsinputsdk PRIVATE libzip::zip)
-target_link_libraries(merginmapsinputsdk PRIVATE protobuf::libprotobuf-lite)
-target_link_libraries(merginmapsinputsdk PRIVATE exiv2lib exiv2-xmp)
-target_link_libraries(merginmapsinputsdk PRIVATE CURL::libcurl)
-target_link_libraries(merginmapsinputsdk PRIVATE expat::expat)
-target_link_libraries(merginmapsinputsdk PRIVATE WebP::webp WebP::webpdemux WebP::libwebpmux WebP::webpdecoder)
-target_link_libraries(merginmapsinputsdk PRIVATE ${FREEXL_LIBRARY})
-target_link_libraries(merginmapsinputsdk PRIVATE ${ZLIB_LIBRARY})
-target_link_libraries(merginmapsinputsdk PRIVATE ${SPATIALINDEX_LIBRARY})
-target_link_libraries(merginmapsinputsdk PRIVATE ${SPATIALITE_LIBRARY})
-target_link_libraries(merginmapsinputsdk PRIVATE Iconv::Iconv)
-target_link_libraries(merginmapsinputsdk PRIVATE unofficial::sqlite3::sqlite3)
+target_link_libraries(merginmapsmobilesdk PRIVATE GEOS::geos_c)
+target_link_libraries(merginmapsmobilesdk PRIVATE libzip::zip)
+target_link_libraries(merginmapsmobilesdk PRIVATE protobuf::libprotobuf-lite)
+target_link_libraries(merginmapsmobilesdk PRIVATE exiv2lib exiv2-xmp)
+target_link_libraries(merginmapsmobilesdk PRIVATE CURL::libcurl)
+target_link_libraries(merginmapsmobilesdk PRIVATE expat::expat)
+target_link_libraries(merginmapsmobilesdk PRIVATE WebP::webp WebP::webpdemux WebP::libwebpmux WebP::webpdecoder)
+target_link_libraries(merginmapsmobilesdk PRIVATE ${FREEXL_LIBRARY})
+target_link_libraries(merginmapsmobilesdk PRIVATE ${ZLIB_LIBRARY})
+target_link_libraries(merginmapsmobilesdk PRIVATE ${SPATIALINDEX_LIBRARY})
+target_link_libraries(merginmapsmobilesdk PRIVATE ${SPATIALITE_LIBRARY})
+target_link_libraries(merginmapsmobilesdk PRIVATE Iconv::Iconv)
+target_link_libraries(merginmapsmobilesdk PRIVATE unofficial::sqlite3::sqlite3)
