@@ -58,7 +58,7 @@ The release is automatically created for each commit on master for each triplet 
   cd build
   git clone https://github.com/microsoft/vcpkg.git
   cd vcpkg
-  VCPKG_TAG=`cat ../../mobile-sdk/VCPKG_BASELINE`
+  VCPKG_TAG=`cat ../../VCPKG_BASELINE`
   git checkout ${VCPKG_TAG}
   ./bootstrap-vcpkg.sh
   cd ..
@@ -237,15 +237,15 @@ cmake --build %BUILD_DIR% --config Release --verbose
   
   export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
   export PATH=${PWD}/../vcpkg:$PATH;\
-  export Qt6_DIR=/opt/Qt/6.6.0/macos;\
+  export Qt6_DIR=~/Qt/6.6.0/macos;\
   export DEPLOYMENT_TARGET=10.15.0
   
-  cmake -B . -S ../../mobile-sdk/ \
+  cmake -B . -S ../../ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G Ninja \
     -DVCPKG_TARGET_TRIPLET=x64-osx \
-    -DVCPKG_OVERLAY_TRIPLETS=../../mobile-sdk/vcpkg-overlay/triplets \
-    -DVCPKG_OVERLAY_PORTS=../../mobile-sdk/vcpkg-overlay/ports \
+    -DVCPKG_OVERLAY_TRIPLETS=../../vcpkg-overlay/triplets \
+    -DVCPKG_OVERLAY_PORTS=../../vcpkg-overlay/ports \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_MAKE_PROGRAM=ninja \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET}
