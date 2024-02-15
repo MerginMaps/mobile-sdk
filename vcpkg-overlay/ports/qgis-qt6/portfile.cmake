@@ -1,5 +1,5 @@
-set(QGIS_REF final-3_34_0)
-set(QGIS_SHA512 59125ebef3d9047850d839ddc3f1fda18c1d758aeabfe3a3e88570fe2338b545c1c82ff8f455c6e590798a9cf081d607b1659c475ea23395bcb736ce138fbcaa)
+set(QGIS_REF 2a5ada7d8cc286ed9b8f1bc3976bb82db9a754fd) # branch release-3_34, on 15 Feb 2024, including fix qgis#55914
+set(QGIS_SHA512 ecf7967810a719e798c8e759fb6804a63ddebfddb8e18550daa0c2bb813645cedbf011965bfb33799431b977101646adafccc4a550c8291c5a0bdb0e08015b44)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
@@ -10,9 +10,6 @@ vcpkg_from_github(
         cmakelists.patch
         crssync.patch
         libxml2.patch
-        awss3.patch # already fixed on QGIS 3.35.0 master
-        wcs_capabilities_qt66.patch # already fixed on QGIS 3.35.0 master
-        qsharedmemory_android.patch # already fixed on QGIS 3.35.0 master
 )
 
 file(REMOVE ${SOURCE_PATH}/cmake/FindQtKeychain.cmake)
