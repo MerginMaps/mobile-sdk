@@ -28,7 +28,7 @@ jobs:
       QT_VERSION: '6.6.0' # use scripts/update_qt_version.bash to change
       TRIPLET: "arm64-ios"
       DEPLOYMENT_TARGET: '13.0' # iOS Deployment target 
-      XC_VERSION: ${{ '15.1' }}
+      XC_VERSION: ${{ '15.2' }}
       QT_ARCH: "ios"
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
