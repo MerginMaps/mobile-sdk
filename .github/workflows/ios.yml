@@ -38,7 +38,9 @@ jobs:
           path: input-sdk
 
       - name: Select latest Xcode
-        run: "sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
+        run: |
+          ls -la /Applications/Xcode*
+          sudo xcode-select -s /Applications/Xcode_$XC_VERSION.app"
 
       - name: Prepare vars
         id: vars
