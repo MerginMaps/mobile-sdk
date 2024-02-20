@@ -43,6 +43,7 @@ find_package(Qt6
     REQUIRED
 )
 find_package(Geodiff CONFIG REQUIRED)
+find_package(unofficial-minizip CONFIG REQUIRED)
 find_package(PROJ CONFIG REQUIRED)
 find_package(GEOS CONFIG REQUIRED)
 find_package(GDAL CONFIG REQUIRED)
@@ -184,6 +185,7 @@ endif()
 
 target_link_libraries(merginmapsmobilesdk PRIVATE GEOS::geos_c)
 target_link_libraries(merginmapsmobilesdk PRIVATE libzip::zip)
+target_link_libraries(merginmapsmobilesdk PRIVATE unofficial::minizip::minizip)
 target_link_libraries(merginmapsmobilesdk PRIVATE protobuf::libprotobuf-lite)
 target_link_libraries(merginmapsmobilesdk PRIVATE exiv2lib exiv2-xmp)
 target_link_libraries(merginmapsmobilesdk PRIVATE CURL::libcurl)
