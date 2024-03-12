@@ -24,6 +24,7 @@ vcpkg_cmake_configure(
         -DBUILD_TOOLS=OFF
         -DWITH_nss_PLUGIN=OFF
         -DWITH_pkcs11_PLUGIN=OFF
+        -DLIBSECRET_SUPPORT=OFF
 )
 
 vcpkg_cmake_install()
