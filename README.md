@@ -263,9 +263,8 @@ cmake --build %BUILD_DIR% --config Release --verbose
   mkdir -p build/x64-linux
   cd build/x64-linux
   
-  export PATH=$(brew --prefix flex)/bin:$(brew --prefix bison)/bin:$(brew --prefix gettext)/bin:$PATH;\
-  export PATH=${PWD}/../vcpkg:$PATH;\
-  export Qt6_DIR=/opt/Qt/6.6.0/macos
+  export PATH=${PWD}/../vcpkg:$PATH
+  export Qt6_DIR=~/Qt/6.6.0/gcc_64
   
   cmake -B . -S ../../mobile-sdk/ \
     -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
