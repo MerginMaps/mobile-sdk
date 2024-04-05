@@ -26,7 +26,6 @@ linux/.optional-deps
 
 vcpkg-test/build*
 *vcpkg_installed*
-build-*
 
 .idea
 .DS_Store
