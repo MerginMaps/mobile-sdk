@@ -50,6 +50,14 @@ jobs:
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
 
+          # With cmake 2.29.2 there is an build error when building tiff (in webp include dir)
+          # see https://github.com/MerginMaps/mobile-sdk/actions/runs/8568041959/job/23484551008 
+          # force back older cmake 3.28.2 which was working before
+          brew remove cmake
+          curl -o cmake.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/de4b578b0e7150fb1a2361cbac5ba599c7a3bacd/Formula/c/cmake.rb
+          brew install cmake.rb
+          cmake --version
+
           pip3 install -U pip
           pip3 install aqtinstall
 
