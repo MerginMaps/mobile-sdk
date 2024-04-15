@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   mac_os_build:
-    runs-on: macos-12
+    runs-on: macos-13
 
     env: # update README for devs if you modify these env. variables
       QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
