@@ -35,14 +35,15 @@ jobs:
 
     runs-on: macos-12
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.0' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
       ANDROIDAPI: 24
       NDK_VERSION: '25.1.8937393'
       NDK_VERSION_FULL: r25b
       JDK_VERSION: 11
       SDK_PLATFORM: android-33
       SDK_BUILD_TOOLS: 33.0.1
-      XC_VERSION: ${{ '14.2' }}
+      XC_VERSION: ${{ '15.2' }}
+      CMAKE_VERSION: '3.29.0'
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
@@ -53,7 +54,7 @@ jobs:
       - name: Prepare vars
         id: vars
         run: |
-          brew install automake bison flex gnu-sed autoconf-archive libtool gettext cmake ninja
+          brew install automake bison flex gnu-sed autoconf-archive libtool gettext
           echo $(brew --prefix bison)/bin >> $GITHUB_PATH
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
@@ -61,6 +62,11 @@ jobs:
           pip3 install -U pip
           pip3 install aqtinstall
 
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: ${{ env.CMAKE_VERSION }}
+          
       - name: Setup compiler
         uses: maxim-lobanov/setup-xcode@v1
         with:

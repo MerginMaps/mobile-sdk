@@ -26,12 +26,13 @@ jobs:
     runs-on: windows-2019
 
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.0' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
       TRIPLET: "x64-windows"
       VS_VERSION: "2019"
       CMAKE_GENERATOR: "Visual Studio 16 2019" # see https://github.com/actions/runner-images/blob/main/images/win/Windows2019-Readme.md
       CMAKE_ARCH: "x64"
       QT_ARCH: "win64_msvc2019_64"
+      CMAKE_VERSION: '3.29.0'
       VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
 
     steps:
@@ -47,6 +48,11 @@ jobs:
           echo "::set-output name=WORKSPACE_DIR::$WORKSPACE_DIR"
           echo "WORKSPACE_DIR: $WORKSPACE_DIR"
 
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: ${{ env.CMAKE_VERSION }}
+          
       - uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}

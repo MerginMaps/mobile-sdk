@@ -26,9 +26,10 @@ jobs:
     runs-on: ubuntu-22.04
     
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.0' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
       TRIPLET: "x64-linux"
       QT_ARCH: "desktop"
+      CMAKE_VERSION: '3.29.0'
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
@@ -53,6 +54,11 @@ jobs:
           # Required to run unit tests on linux
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
 
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: ${{ env.CMAKE_VERSION }}
+          
       - uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}

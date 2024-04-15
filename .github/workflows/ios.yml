@@ -25,11 +25,12 @@ jobs:
   ios_build:
     runs-on: macos-13
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.0' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
       TRIPLET: "arm64-ios"
       DEPLOYMENT_TARGET: '13.0' # iOS Deployment target 
       XC_VERSION: ${{ '15.2' }}
       QT_ARCH: "ios"
+      CMAKE_VERSION: '3.29.0'
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
@@ -45,22 +46,19 @@ jobs:
       - name: Prepare vars
         id: vars
         run: |
-          brew install automake bison flex gnu-sed autoconf-archive libtool gettext cmake ninja
+          brew install automake bison flex gnu-sed autoconf-archive libtool gettext
           echo $(brew --prefix bison)/bin >> $GITHUB_PATH
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
 
-          # With cmake 2.29.2 there is an build error when building tiff (in webp include dir)
-          # see https://github.com/MerginMaps/mobile-sdk/actions/runs/8568041959/job/23484551008 
-          # force back older cmake 3.28.2 which was working before
-          brew remove cmake
-          curl -o cmake.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/de4b578b0e7150fb1a2361cbac5ba599c7a3bacd/Formula/c/cmake.rb
-          brew install cmake.rb
-          cmake --version
-
           pip3 install -U pip
           pip3 install aqtinstall
 
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: ${{ env.CMAKE_VERSION }}
+          
       - name: Restore cached Qt
         id: cache-qt-restore
         uses: actions/cache/restore@v3
@@ -118,6 +116,7 @@ jobs:
           export PATH=${{ env.VCPKG_ROOT }}:$PATH
 
           vcpkg --version
+          cmake --version
 
           cmake -B ${{ github.workspace }}/build \
                 -S ${{ github.workspace }}/input-sdk \
