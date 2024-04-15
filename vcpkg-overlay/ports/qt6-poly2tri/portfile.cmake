@@ -5,7 +5,7 @@ else()
     vcpkg_download_distfile(ARCHIVE
         URLS "https://download.qt.io/archive/qt/6.6/${VERSION}/submodules/qtpositioning-everywhere-src-${VERSION}.zip"
         FILENAME "qtpositioning-${VERSION}.zip"
-        SHA512 927926c2efbc2f0fa94a4a33174a88c2c121f4e7ffa1f67370a9b88f4d0e1f22932c9c416cacd10562713daba8f1530688b81697bedebae84d727e0657dc052d
+        SHA512 4ad169157f8e8c8f232644b3267b3cee6dc91fd31e4352a16b77292a243bfc1b3be163a456f9d882a6a208fee9ffdcb9b237c29d01cb0e3c49a45cccc6e3a68b
     )
     
     vcpkg_extract_source_archive(
