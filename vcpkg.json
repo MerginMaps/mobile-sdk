@@ -24,7 +24,7 @@
         {
             "name": "tiff",
             "default-features": false,
-            "features": ["webp", "zip", "lzma", "jpeg"]
+            "features": ["webp", "zip", "lzma", "jpeg", "zstd"]
         },
         {
             "name": "kdab-openssl",
