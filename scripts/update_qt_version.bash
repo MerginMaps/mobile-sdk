@@ -30,6 +30,7 @@ for FNAME in \
     $DIR/../.github/workflows/ios.yml \
     $DIR/../.github/workflows/linux.yml \
     $DIR/../.github/workflows/mac.yml \
+    $DIR/../.github/workflows/mac_arm64.yml \
     $DIR/../.github/workflows/win.yml
 do
     echo "patching $FNAME"

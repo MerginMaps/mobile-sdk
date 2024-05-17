@@ -1,5 +1,6 @@
 [![Build win64](https://github.com/MerginMaps/mobile-sdk/actions/workflows/win.yml/badge.svg)](https://github.com/MerginMaps/mobile-sdk/actions/workflows/win.yml)
 [![Build macOS](https://github.com/merginmaps/mobile-sdk/actions/workflows/mac.yml/badge.svg)](https://github.com/merginmaps/mobile-sdk/actions/workflows/mac.yml)
+[![Build macOS arm64](https://github.com/merginmaps/mobile-sdk/actions/workflows/mac_arm64.yml/badge.svg)](https://github.com/merginmaps/mobile-sdk/actions/workflows/mac_arm64.yml)
 [![Build iOS](https://github.com/merginmaps/mobile-sdk/actions/workflows/ios.yml/badge.svg)](https://github.com/merginmaps/mobile-sdk/actions/workflows/ios.yml)
 [![Build android (on MacOS)](https://github.com/merginmaps/mobile-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/merginmaps/mobile-sdk/actions/workflows/android.yml)
 [![Build Linux](https://github.com/merginmaps/mobile-sdk/actions/workflows/linux.yml/badge.svg)](https://github.com/merginmaps/mobile-sdk/actions/workflows/linux.yml)
