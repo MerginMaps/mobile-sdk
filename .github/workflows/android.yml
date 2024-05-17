@@ -6,6 +6,7 @@ on:
       - '.github/workflows/ios.yml'
       - '.github/workflows/linux.yml'
       - '.github/workflows/mac.yml'
+      - '.github/workflows/mac_arm64.yml'
       - '.github/workflows/win.yml'
       - 'vcpkg-overlay/triplets/arm64-ios.yml'
       - 'vcpkg-overlay/triplets/arm64-osx.yml'
