@@ -171,5 +171,5 @@ jobs:
         with:
           tag: ${{ env.TRIPLET }}-${{ steps.time.outputs.time }}-${{ github.run_number }}
           allowUpdates: true
-          artifacts: "${{ env.SDK_TAR }}
+          artifacts: ${{ env.SDK_TAR }}
           token: ${{ secrets.GITHUB_TOKEN }}
