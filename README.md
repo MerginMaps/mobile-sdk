@@ -7,7 +7,7 @@
 
 # Mergin Maps mobile app SDK
 
-SDK for building [Mergin Maps mobile app](https://github.com/merginmaps/mobile) for mobile devices based on VCPG ecosystem
+SDK for building [Mergin Maps mobile app](https://github.com/merginmaps/mobile) for mobile devices based on VCPGK ecosystem
 
 [Mergin Maps](http://merginmaps.com) makes surveying of geospatial data easy and it is powered by QGIS.
 
