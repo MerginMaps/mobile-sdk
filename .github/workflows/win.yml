@@ -37,7 +37,7 @@ jobs:
       VCPKG_ROOT: "C:/vcpkg-root" # Looks like there is more space on C: than on D: drive (~14GB)
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: input-sdk
 
@@ -115,7 +115,7 @@ jobs:
           }
 
       - name: Upload build logs on deps failure
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: build-logs-${{ env.TRIPLET }}
@@ -176,7 +176,7 @@ jobs:
           filename: ${{ steps.vars.outputs.WORKSPACE_DIR }}/${{ env.SDK_TAR }}
           
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sdk-${{ env.TRIPLET }}
           path: ${{ steps.vars.outputs.WORKSPACE_DIR }}/${{ env.SDK_TAR }}

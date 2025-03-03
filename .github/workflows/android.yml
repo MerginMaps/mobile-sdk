@@ -48,7 +48,7 @@ jobs:
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: input-sdk
 
@@ -171,7 +171,7 @@ jobs:
                 -DANDROID_STL="c++_shared"
 
       - name: Upload build logs on deps failure
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: build-logs-${{ matrix.TRIPLET }}
@@ -207,7 +207,7 @@ jobs:
             tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sdk-${{ matrix.TRIPLET }}
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}

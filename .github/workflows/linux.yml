@@ -34,7 +34,7 @@ jobs:
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: input-sdk
 
@@ -109,7 +109,7 @@ jobs:
                 -DCMAKE_MAKE_PROGRAM=ninja
 
       - name: Upload build logs on deps failure
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: build-logs-${{ env.TRIPLET }}
@@ -150,7 +150,7 @@ jobs:
             tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sdk-${{ env.TRIPLET }}
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
