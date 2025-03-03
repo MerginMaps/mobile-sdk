@@ -26,7 +26,7 @@ jobs:
     runs-on: macos-13
 
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.8.2' # use scripts/update_qt_version.bash to change
       TRIPLET: "x64-osx"
       DEPLOYMENT_TARGET: "10.15.0"
       XC_VERSION: ${{ '15.2' }}
@@ -60,7 +60,7 @@ jobs:
           dir: ${{ github.workspace }}
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-mac
+          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-mac
 
       - name: Setup compiler
         uses: maxim-lobanov/setup-xcode@v1

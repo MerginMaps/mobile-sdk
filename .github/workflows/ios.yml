@@ -24,12 +24,12 @@ concurrency:
   
 jobs:
   ios_build:
-    runs-on: macos-13
+    runs-on: macos-15
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.8.2' # use scripts/update_qt_version.bash to change
       TRIPLET: "arm64-ios"
       DEPLOYMENT_TARGET: '13.0' # iOS Deployment target 
-      XC_VERSION: ${{ '15.2' }}
+      XC_VERSION: ${{ '16.2' }}
       QT_ARCH: "ios"
       CMAKE_VERSION: '3.29.0'
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
@@ -65,7 +65,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v20-${{ env.QT_VERSION }}-ios
+          key: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-ios
 
       - name: Install Qt
         if: steps.cache-qt-restore.outputs.cache-hit != 'true'

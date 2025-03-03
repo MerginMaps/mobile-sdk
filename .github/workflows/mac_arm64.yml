@@ -23,13 +23,13 @@ concurrency:
 
 jobs:
   mac_os_build:
-    runs-on: macos-14
+    runs-on: macos-15
 
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.8.2' # use scripts/update_qt_version.bash to change
       TRIPLET: "arm64-osx"
-      DEPLOYMENT_TARGET: "10.15.0"
-      XC_VERSION: ${{ '15.2' }}
+      DEPLOYMENT_TARGET: "12.0" # arm64 only
+      XC_VERSION: ${{ '16.2' }}
       CMAKE_VERSION: '3.29.0'
       QT_ARCH: "desktop"
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
@@ -59,7 +59,7 @@ jobs:
           dir: ${{ github.workspace }}
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-mac-arm64
+          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-mac-arm64
 
       - name: Setup compiler
         uses: maxim-lobanov/setup-xcode@v1
