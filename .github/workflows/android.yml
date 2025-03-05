@@ -97,17 +97,17 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-${{ matrix.QT_ARCH }}
+          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-${{ matrix.QT_ARCH }}
 
       - name: Install Qt
         if: steps.cache-qt-restore.outputs.cache-hit != 'true'
         run: |
-          python3 -m aqt install-qt \
+          aqt install-qt \
             mac android ${{ env.QT_VERSION }} ${{ matrix.QT_ARCH }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
             -O ${{ github.workspace }}/Qt
 
-          python3 -m aqt install-qt \
+          aqt install-qt \
             mac desktop ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
             -O ${{ github.workspace }}/Qt
