@@ -63,7 +63,7 @@ jobs:
           dir: ${{ github.workspace }}
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-win
+          cache-key-prefix: ${{ runner.os }}-QtCache-v3-${{ env.QT_VERSION }}-win
 
       - name: Get vcpkg
         shell: bash
