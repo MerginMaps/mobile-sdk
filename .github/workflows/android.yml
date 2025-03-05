@@ -60,8 +60,7 @@ jobs:
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
 
-          pip3 install -U pip
-          pip3 install aqtinstall
+          brew install aqtinstall
 
       - name: Install CMake and Ninja
         uses: lukka/get-cmake@latest
