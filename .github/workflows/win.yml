@@ -110,6 +110,7 @@ jobs:
             -G "${{ env.CMAKE_GENERATOR }}" `
             -A ${{ env.CMAKE_ARCH }} `
             -DVCPKG_TARGET_TRIPLET=${{ env.TRIPLET }} `
+            -DVCPKG_INSTALL_OPTIONS="--x-buildtrees-root=C:/src" `
             -DVCPKG_OVERLAY_TRIPLETS:PATH="${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk/vcpkg-overlay/triplets" `
             -DVCPKG_OVERLAY_PORTS="${{ steps.vars.outputs.WORKSPACE_DIR }}/input-sdk/vcpkg-overlay/ports"
           }
@@ -120,7 +121,7 @@ jobs:
         with:
           name: build-logs-${{ env.TRIPLET }}
           path: |
-            ${{ env.VCPKG_ROOT }}/buildtrees/**/*.log
+            C:/src/**/*.log
 
       - name: Build Test App
         shell: pwsh
