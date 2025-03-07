@@ -41,7 +41,7 @@ jobs:
       NDK_VERSION: '26.1.10909125'
       NDK_VERSION_FULL: r26b
       JDK_VERSION: 17
-      SDK_PLATFORM: android-33
+      SDK_PLATFORM: android-34
       SDK_BUILD_TOOLS: 34.0.0
       XC_VERSION: ${{ '16.2' }}
       CMAKE_VERSION: '3.29.0'
