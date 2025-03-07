@@ -1,5 +1,5 @@
-set(QGIS_REF 2a5ada7d8cc286ed9b8f1bc3976bb82db9a754fd) # branch release-3_34, on 15 Feb 2024, including fix qgis#55914
-set(QGIS_SHA512 ecf7967810a719e798c8e759fb6804a63ddebfddb8e18550daa0c2bb813645cedbf011965bfb33799431b977101646adafccc4a550c8291c5a0bdb0e08015b44)
+set(QGIS_REF 55d788f1f80183bd52fd8045c1fbed5e6260f194) # final-3_40_4
+set(QGIS_SHA512 6eb3e2259fda72f7e2e8203d951b891963d52d47128793af02dfa989a467ba5524ab7a1019b4cf4acfd9e70c21635bd7b8577dc452d5cf7b98fcf7ce03d97b9f)
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
@@ -156,9 +156,9 @@ if(VCPKG_TARGET_IS_IOS)
     endif()
     # on iOS (static) Qt ships Poly2Tri ( but without headers :( )
     list(APPEND QGIS_OPTIONS -DWITH_INTERNAL_POLY2TRI=OFF)
-    list(APPEND QGIS_OPTIONS -DPoly2Tri_INCLUDE_DIR:PATH=${CURRENT_INSTALLED_DIR}/include/poly2tri)
-    list(APPEND QGIS_OPTIONS_DEBUG -DPoly2Tri_LIBRARY:PATH="$ENV{Qt6_DIR}/lib/libQt6Bundled_Poly2Tri_debug.a")
-    list(APPEND QGIS_OPTIONS_RELEASE -DPoly2Tri_LIBRARY:PATH="$ENV{Qt6_DIR}/lib/libQt6Bundled_Poly2Tri.a")
+    list(APPEND QGIS_OPTIONS -Dpoly2tri_INCLUDE_DIR:PATH=${CURRENT_INSTALLED_DIR}/include/poly2tri)
+    list(APPEND QGIS_OPTIONS_DEBUG -Dpoly2tri_LIBRARY:PATH="$ENV{Qt6_DIR}/lib/libQt6Bundled_Poly2Tri_debug.a")
+    list(APPEND QGIS_OPTIONS_RELEASE -Dpoly2tri_LIBRARY:PATH="$ENV{Qt6_DIR}/lib/libQt6Bundled_Poly2Tri.a")
 else()
     list(APPEND QGIS_OPTIONS -DWITH_INTERNAL_POLY2TRI=ON)
 endif()

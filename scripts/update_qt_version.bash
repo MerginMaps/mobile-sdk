@@ -57,5 +57,13 @@ echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 echo "!!!! You need to update SHA512 HASH in $PORTFILE_FILE. Download zip file, find SHA512 and update manually"
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
+############
+# qt6 
+QT6_FILE=$DIR/../vcpkg-overlay/ports/qt6/vcpkg.json
+echo "patching $QT6_FILE"
+# e.g. "version-string": "6.5.2",,
+sed -i.orig -E "s|\"version-string\": \"[0-9]+.[0-9]+.[0-9]+\"|\"version-string\": \"${VERSION}\"|g" $QT6_FILE
+rm -f $QT6_FILE.orig
+
 # DONE
 echo "patching done"

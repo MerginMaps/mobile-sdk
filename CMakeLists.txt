@@ -132,6 +132,10 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
   )
 endif()
 
+if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  qt_add_ios_ffmpeg_libraries(merginmapsmobilesdk)
+endif()
+
 # 3/ next libs 
 target_link_libraries(merginmapsmobilesdk PRIVATE Geodiff::Geodiff)
 target_link_libraries(merginmapsmobilesdk PRIVATE PROJ::proj)

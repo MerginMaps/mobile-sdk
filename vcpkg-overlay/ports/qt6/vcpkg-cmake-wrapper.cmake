@@ -100,10 +100,12 @@ set(QT_MODULES
     Qt6QmlDomPrivate
     Qt6QmlIntegration
     Qt6QmlLocalStorage
+    Qt6QmlMeta
     Qt6QmlModels
     Qt6QmlWorkerScript
     Qt6QmlXmlListModel
     Qt6Quick
+    Qt6Quick3DUtils
     Qt6QuickControls2
     Qt6QuickControls2Impl
     Qt6QuickControls2ImplPrivate

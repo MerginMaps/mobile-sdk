@@ -27,14 +27,14 @@ jobs:
     runs-on: ubuntu-22.04
     
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.8.2' # use scripts/update_qt_version.bash to change
       TRIPLET: "x64-linux"
       QT_ARCH: "desktop"
       CMAKE_VERSION: '3.29.0'
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: input-sdk
 
@@ -68,7 +68,7 @@ jobs:
           modules: 'qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools'
           dir: ${{ github.workspace }}
           cache: true
-          cache-key-prefix: ${{ runner.os }}-QtCache-v2-${{ env.QT_VERSION }}-lnx
+          cache-key-prefix: ${{ runner.os }}-QtCache-v0-${{ env.QT_VERSION }}-lnx
           
       - name: Get vcpkg
         shell: bash
@@ -109,7 +109,7 @@ jobs:
                 -DCMAKE_MAKE_PROGRAM=ninja
 
       - name: Upload build logs on deps failure
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: build-logs-${{ env.TRIPLET }}
@@ -150,7 +150,7 @@ jobs:
             tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sdk-${{ env.TRIPLET }}
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}

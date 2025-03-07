@@ -34,34 +34,34 @@ jobs:
             QT_ARCH: 'android_arm64_v8a'
             ANDROID_ABI: 'arm64-v8a'
 
-    runs-on: macos-13
+    runs-on: macos-15
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.8.2' # use scripts/update_qt_version.bash to change
       ANDROIDAPI: 24
       NDK_VERSION: '25.1.8937393'
       NDK_VERSION_FULL: r25b
       JDK_VERSION: 11
       SDK_PLATFORM: android-33
       SDK_BUILD_TOOLS: 33.0.1
-      XC_VERSION: ${{ '15.2' }}
+      XC_VERSION: ${{ '16.2' }}
       CMAKE_VERSION: '3.29.0'
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: input-sdk
 
       - name: Prepare vars
         id: vars
         run: |
+          brew update
           brew install automake bison flex gnu-sed autoconf-archive libtool gettext
           echo $(brew --prefix bison)/bin >> $GITHUB_PATH
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
 
-          pip3 install -U pip
-          pip3 install aqtinstall
+          brew install aqtinstall
 
       - name: Install CMake and Ninja
         uses: lukka/get-cmake@latest
@@ -97,17 +97,17 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v15-${{ env.QT_VERSION }}-${{ matrix.QT_ARCH }}
+          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-${{ matrix.QT_ARCH }}
 
       - name: Install Qt
         if: steps.cache-qt-restore.outputs.cache-hit != 'true'
         run: |
-          python3 -m aqt install-qt \
+          aqt install-qt \
             mac android ${{ env.QT_VERSION }} ${{ matrix.QT_ARCH }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
             -O ${{ github.workspace }}/Qt
 
-          python3 -m aqt install-qt \
+          aqt install-qt \
             mac desktop ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
             -O ${{ github.workspace }}/Qt
@@ -171,7 +171,7 @@ jobs:
                 -DANDROID_STL="c++_shared"
 
       - name: Upload build logs on deps failure
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: build-logs-${{ matrix.TRIPLET }}
@@ -207,7 +207,7 @@ jobs:
             tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sdk-${{ matrix.TRIPLET }}
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}

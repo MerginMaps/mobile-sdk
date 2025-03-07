@@ -11,8 +11,8 @@ vcpkg_add_to_path("${PERL_EXE_PATH}")
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO KDE/qca
-    REF v2.3.6
-    SHA512 983cd023482a2c16e4976a8b75ff739239f82aab039dc879c0cbfb842487d77fb4b153bf3c855bed0ec6b1a48f2c4f654c181982a945e2f83cb9953c4896c70d
+    REF "v${VERSION}"
+    SHA512 956d36058db61498c492fc9b5345b45ca75a5e8214fcbf358273dfacdd5980c1394394652536d9332df05f29fc912d0781338bcca403d98de1285bb8b1216402
     PATCHES
         0001-fix-path-for-vcpkg.patch
         0002-fix-build-error.patch

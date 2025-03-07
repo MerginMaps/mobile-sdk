@@ -3,9 +3,9 @@ if(NOT VCPKG_TARGET_IS_IOS)
     message(FATAL_ERROR "qt poly2tri only needed on iOS")
 else()
     vcpkg_download_distfile(ARCHIVE
-        URLS "https://download.qt.io/archive/qt/6.6/${VERSION}/submodules/qtpositioning-everywhere-src-${VERSION}.zip"
+        URLS "https://download.qt.io/archive/qt/6.8/${VERSION}/submodules/qtpositioning-everywhere-src-${VERSION}.zip"
         FILENAME "qtpositioning-${VERSION}.zip"
-        SHA512 4ad169157f8e8c8f232644b3267b3cee6dc91fd31e4352a16b77292a243bfc1b3be163a456f9d882a6a208fee9ffdcb9b237c29d01cb0e3c49a45cccc6e3a68b 
+        SHA512 647484035722ed015a6ec92a6d2ca966d507dd5e63c29676b36d6250611f7c228907e0acb5d1c195f7e1164d4092c1536c98c073cc81d28c3b868b1383defd4d 
     )
     
     vcpkg_extract_source_archive(

@@ -24,18 +24,18 @@ concurrency:
   
 jobs:
   ios_build:
-    runs-on: macos-13
+    runs-on: macos-15
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.6.3' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.8.2' # use scripts/update_qt_version.bash to change
       TRIPLET: "arm64-ios"
       DEPLOYMENT_TARGET: '13.0' # iOS Deployment target 
-      XC_VERSION: ${{ '15.2' }}
+      XC_VERSION: ${{ '16.2' }}
       QT_ARCH: "ios"
       CMAKE_VERSION: '3.29.0'
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: input-sdk
 
@@ -47,13 +47,13 @@ jobs:
       - name: Prepare vars
         id: vars
         run: |
+          brew update
           brew install automake bison flex gnu-sed autoconf-archive libtool gettext
           echo $(brew --prefix bison)/bin >> $GITHUB_PATH
           echo $(brew --prefix flex)/bin >> $GITHUB_PATH
           echo $(brew --prefix gettext)/bin >> $GITHUB_PATH
 
-          pip3 install -U pip
-          pip3 install aqtinstall
+          brew install aqtinstall
 
       - name: Install CMake and Ninja
         uses: lukka/get-cmake@latest
@@ -65,17 +65,17 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ${{ github.workspace }}/Qt
-          key: ${{ runner.os }}-QtCache-v20-${{ env.QT_VERSION }}-ios
+          key: ${{ runner.os }}-QtCache-v1-${{ env.QT_VERSION }}-ios
 
       - name: Install Qt
         if: steps.cache-qt-restore.outputs.cache-hit != 'true'
         run: |
-          python3 -m aqt install-qt \
+          aqt install-qt \
             mac ios ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
             -O ${{ github.workspace }}/Qt
             
-          python3 -m aqt install-qt \
+          aqt install-qt \
             mac desktop ${{ env.QT_VERSION }} \
             -m qtsensors qtconnectivity qt5compat qtmultimedia qtpositioning qtshadertools \
             -O ${{ github.workspace }}/Qt
@@ -134,7 +134,7 @@ jobs:
                 -D CMAKE_CXX_VISIBILITY_PRESET=hidden
 
       - name: Upload build logs on deps failure
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: build-logs-${{ env.TRIPLET }}
@@ -170,7 +170,7 @@ jobs:
             tar -c -z -f ${{ github.workspace }}/${SDK_TAR} ./
 
       - name: Upload Sdk in Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sdk-${{ env.TRIPLET }}
           path: ${{ github.workspace }}/${{ env.SDK_TAR }}
