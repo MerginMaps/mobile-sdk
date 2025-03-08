@@ -189,7 +189,7 @@ endif()
 
 target_link_libraries(merginmapsmobilesdk PRIVATE libzip::zip)
 target_link_libraries(merginmapsmobilesdk PRIVATE protobuf::libprotobuf-lite)
-target_link_libraries(merginmapsmobilesdk PRIVATE exiv2lib exiv2-xmp)
+target_link_libraries(merginmapsmobilesdk PRIVATE Exiv2::exiv2lib)
 target_link_libraries(merginmapsmobilesdk PRIVATE CURL::libcurl)
 target_link_libraries(merginmapsmobilesdk PRIVATE expat::expat)
 target_link_libraries(merginmapsmobilesdk PRIVATE WebP::webp WebP::webpdemux WebP::libwebpmux WebP::webpdecoder)
