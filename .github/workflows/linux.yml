@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-22.04
     
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.8.2' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.8.3' # use scripts/update_qt_version.bash to change
       TRIPLET: "x64-linux"
       QT_ARCH: "desktop"
       CMAKE_VERSION: '3.29.0'
