@@ -62,6 +62,7 @@ set(QT_MODULES
     Qt6EntryPointPrivate
     Qt6EventDispatcherSupport
     Qt6FbSupport
+    Qt6FFmpegMediaPluginImplPrivate
     Qt6FontDatabaseSupport
     Qt6Gamepad
     Qt6Gui

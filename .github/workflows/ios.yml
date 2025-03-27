@@ -26,7 +26,7 @@ jobs:
   ios_build:
     runs-on: macos-15
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.8.2' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.8.3' # use scripts/update_qt_version.bash to change
       TRIPLET: "arm64-ios"
       DEPLOYMENT_TARGET: '13.0' # iOS Deployment target 
       XC_VERSION: ${{ '16.2' }}

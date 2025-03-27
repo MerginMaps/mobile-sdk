@@ -27,7 +27,7 @@ jobs:
     runs-on: windows-2022
 
     env: # update README for devs if you modify these env. variables
-      QT_VERSION: '6.8.2' # use scripts/update_qt_version.bash to change
+      QT_VERSION: '6.8.3' # use scripts/update_qt_version.bash to change
       TRIPLET: "x64-windows"
       VS_VERSION: "2022"
       CMAKE_GENERATOR: "Visual Studio 17 2022" # see https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md
