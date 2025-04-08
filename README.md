@@ -11,7 +11,7 @@ SDK for building [Mergin Maps mobile app](https://github.com/merginmaps/mobile) 
 
 [Mergin Maps](http://merginmaps.com) makes surveying of geospatial data easy and it is powered by QGIS.
 
-<div><img align="left" width="45" height="45" src="https://raw.githubusercontent.com/MerginMaps/docs/main/src/.vuepress/public/slack.svg"><a href="https://merginmaps.com/community/join">Join our community chat</a><br/>and ask questions!</div><br />
+<div><img align="left" width="45" height="45" src="https://raw.githubusercontent.com/MerginMaps/docs/main/src/public/slack.svg"><a href="https://merginmaps.com/community/join">Join our community chat</a><br/>and ask questions!</div>
 
 If you are up to building Mergin Maps mobile app, just download, extract and use prebuild SDKs for various arch/platforms from Github Releases/Artefacts.
 The steps below are for development, debugging of the SDK itself or when you need to compile architecture not supported by current CI setup.
